@@ -1,0 +1,22 @@
+name: webinkgraphics-dev
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: webink_graphics
+      POSTGRES_USER: webink
+      POSTGRES_PASSWORD: change-me
+    ports:
+      - "5433:5432"
+    volumes:
+      - webink_dev_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U webink -d webink_graphics"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  webink_dev_postgres:

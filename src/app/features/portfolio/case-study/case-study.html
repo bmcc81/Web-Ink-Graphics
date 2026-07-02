@@ -1,0 +1,91 @@
+<main>
+  @if (loading()) {
+    <section class="case-state"><p>{{ i18n.french ? 'Chargement du projet…' : 'Loading project…' }}</p></section>
+  } @else if (notFound()) {
+    <section class="case-state">
+      <p class="eyebrow">Portfolio</p>
+      <h1>{{ i18n.french ? 'Projet introuvable.' : 'Project not found.' }}</h1>
+      <p>{{ i18n.french ? 'Le projet peut être non publié ou son adresse peut avoir changé.' : 'The project may be unpublished or its address may have changed.' }}</p>
+      <a class="btn btn-primary" [routerLink]="i18n.path('/portfolio')">{{ i18n.french ? 'Voir le portfolio' : 'View portfolio' }} <span>→</span></a>
+    </section>
+  } @else if (project(); as project) {
+    <article>
+      <header class="case-hero">
+        <div class="container">
+          <a class="back-link" [routerLink]="i18n.path('/portfolio')">← {{ i18n.french ? 'Tous les projets' : 'All projects' }}</a>
+          <div class="row align-items-end g-5">
+            <div class="col-lg-8">
+              <p class="eyebrow">{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || (i18n.french ? 'Étude de cas' : 'Case study') }}</p>
+              <h1>{{ content()?.title }}</h1>
+            </div>
+            <div class="col-lg-4">
+              <p class="summary">{{ content()?.summary }}</p>
+              @if (project.projectUrl) {
+                <a class="visit-link" [href]="project.projectUrl" target="_blank" rel="noopener">
+                  {{ i18n.french ? 'Visiter le projet' : 'Visit project' }} <span>↗</span>
+                </a>
+              }
+            </div>
+          </div>
+          <dl>
+            @if (project.clientName) {
+              <div><dt>Client</dt><dd>{{ project.clientName }}</dd></div>
+            }
+            <div><dt>Services</dt><dd>{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || (i18n.french ? 'Services créatifs' : 'Creative services') }}</dd></div>
+            @if (project.completedAt) {
+              <div><dt>{{ i18n.french ? 'Réalisé' : 'Completed' }}</dt><dd>{{ project.completedAt.slice(0, 4) }}</dd></div>
+            }
+          </dl>
+        </div>
+      </header>
+
+      @if (cover(project); as coverImage) {
+        <figure class="cover">
+          <img [src]="coverImage.url" [alt]="i18n.french ? (coverImage.altTextFr || coverImage.altTextEn) : coverImage.altTextEn" />
+        </figure>
+      }
+
+      <div class="case-content container">
+        @if (content()?.challenge) {
+          <section>
+            <p class="section-label">{{ i18n.french ? 'Le défi' : 'The challenge' }}</p>
+            <h2>{{ i18n.french ? 'Comprendre le vrai problème.' : 'Understanding the real problem.' }}</h2>
+            <div class="rich-copy">{{ content()?.challenge }}</div>
+          </section>
+        }
+        @if (content()?.solution) {
+          <section>
+            <p class="section-label">{{ i18n.french ? 'La solution' : 'The solution' }}</p>
+            <h2>{{ i18n.french ? 'Transformer la stratégie en solution utile.' : 'Turning strategy into something useful.' }}</h2>
+            <div class="rich-copy">{{ content()?.solution }}</div>
+          </section>
+        }
+        @if (content()?.results) {
+          <section class="results">
+            <p class="section-label">{{ i18n.french ? 'Les résultats' : 'The outcome' }}</p>
+            <h2>{{ i18n.french ? 'Ce que le travail a produit.' : 'What the work delivered.' }}</h2>
+            <div class="rich-copy">{{ content()?.results }}</div>
+          </section>
+        }
+      </div>
+
+      @if (project.images.length > 1) {
+        <section class="gallery container">
+          @for (image of project.images; track image.id) {
+            @if (!image.isCover) {
+              <img [src]="image.url" [alt]="i18n.french ? (image.altTextFr || image.altTextEn) : image.altTextEn" />
+            }
+          }
+        </section>
+      }
+
+      <section class="case-cta">
+        <div class="container">
+          <p>{{ i18n.french ? 'Vous avez un défi semblable?' : 'Have a similar challenge?' }}</p>
+          <h2>{{ i18n.french ? 'Faisons de votre prochain projet' : "Let's make your next project" }} <em>{{ i18n.french ? 'un succès.' : 'count.' }}</em></h2>
+          <a class="btn btn-light btn-lg" [routerLink]="i18n.path('/')" fragment="contact">{{ i18n.french ? 'Démarrer une conversation' : 'Start a conversation' }} <span>↗</span></a>
+        </div>
+      </section>
+    </article>
+  }
+</main>

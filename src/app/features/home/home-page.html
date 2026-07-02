@@ -1,0 +1,161 @@
+<main>
+  <section class="hero">
+    <div class="hero-orb hero-orb-one"></div>
+    <div class="hero-orb hero-orb-two"></div>
+    <div class="container position-relative">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-7">
+          <p class="eyebrow"><span></span> {{ i18n.french ? 'Conception Web et marketing numérique à Montréal' : 'Montreal web design & digital marketing' }}</p>
+          <h1>@if (i18n.french) { Rendez votre entreprise <em>impossible</em> à ignorer. } @else { Make your business <em>impossible</em> to overlook. }</h1>
+          <p class="hero-copy">
+            {{ i18n.french
+              ? 'Sites Web stratégiques, référencement, campagnes courriel et design graphique conçus pour transformer l’attention en résultats.'
+              : 'Strategic websites, search optimization, email campaigns and graphic design created to turn attention into meaningful business.' }}
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="#contact">{{ i18n.french ? 'Travaillons ensemble' : "Let's work together" }} <span>→</span></a>
+            <a class="text-link" href="#work">{{ i18n.french ? 'Voir nos réalisations' : 'Explore our work' }} <span>↘</span></a>
+          </div>
+          <div class="trust-row">
+            <div><strong>15+</strong><span>{{ i18n.french ? "Années d’expérience" : 'Years of experience' }}</span></div>
+            <div><strong>EN / FR</strong><span>{{ i18n.french ? 'Service bilingue' : 'Bilingual service' }}</span></div>
+            <div><strong>360°</strong><span>{{ i18n.french ? 'Soutien créatif' : 'Creative support' }}</span></div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="hero-visual" aria-label="A sample of WebInk Graphics creative work">
+            <div class="visual-card visual-card-main">
+              <div class="browser-bar"><i></i><i></i><i></i></div>
+              <div class="mock-brand">webink<span>.</span></div>
+              <div class="mock-title">{{ i18n.french ? 'Les bonnes idées' : 'Good ideas' }}<br />{{ i18n.french ? 'méritent un impact.' : 'deserve impact.' }}</div>
+              <div class="mock-button">{{ i18n.french ? 'Découvrir' : 'Discover more' }}</div>
+              <div class="mock-shape"></div>
+            </div>
+            <div class="visual-card visual-card-stat">
+              <small>{{ i18n.french ? 'Portée organique' : 'Organic reach' }}</small>
+              <strong>+142%</strong>
+              <span>↗ {{ i18n.french ? 'ce trimestre' : 'this quarter' }}</span>
+            </div>
+            <div class="visual-sticker">Ideas<br />to ink.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro section-pad" id="about">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <p class="section-number">01 — {{ i18n.french ? 'Notre expertise' : 'What we do' }}</p>
+        </div>
+        <div class="col-lg-8">
+          <h2>{{ i18n.french ? 'Un seul partenaire créatif.' : 'One creative partner.' }}<br /><span>{{ i18n.french ? 'Tous vos points de contact numériques.' : 'Every digital touchpoint.' }}</span></h2>
+          <p class="lead-copy">
+            {{ i18n.french
+              ? 'Vous ne devriez pas avoir besoin de cinq fournisseurs pour que votre entreprise soit belle et efficace. Nous réunissons stratégie, design et technologie.'
+              : "You shouldn't need five suppliers to make your business look good and work well. We bring strategy, design and technology together under one roof." }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services pb-section" id="services">
+    <div class="container">
+      <div class="service-grid">
+        @for (service of services(); track service.number) {
+          <article class="service-card">
+            <div class="service-top">
+              <span>{{ service.number }}</span>
+              <span class="service-icon" aria-hidden="true">{{ service.icon }}</span>
+            </div>
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description }}</p>
+            <a [routerLink]="i18n.path(service.link)">{{ i18n.french ? 'En savoir plus' : 'Learn more' }} <span>→</span></a>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="work section-pad" id="work">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <p class="section-number light">02 — {{ i18n.french ? 'Réalisations choisies' : 'Selected work' }}</p>
+          <h2>{{ i18n.french ? 'Conçu pour faire' : 'Built to make' }}<br /><span>{{ i18n.french ? 'une différence.' : 'a difference.' }}</span></h2>
+        </div>
+        <a class="text-link light-link" [routerLink]="i18n.path('/portfolio')">{{ i18n.french ? 'Voir tous les projets' : 'View all projects' }} <span>→</span></a>
+      </div>
+      <div class="row g-4">
+        @for (project of featuredProjects(); track project.id; let first = $first; let index = $index) {
+          <div [class]="first ? 'col-lg-7' : 'col-lg-5'">
+            <article class="project-card" [style.--project-color]="color(index)">
+              <a class="project-art" [routerLink]="[i18n.path('/portfolio'), project.slug]">
+                @if (cover(project); as image) {
+                  <img class="project-cover" [src]="image.url" [alt]="i18n.french ? (image.altTextFr || image.altTextEn) : image.altTextEn" />
+                } @else {
+                <span class="project-monogram">{{ monogram(project) }}</span>
+                <div class="project-screen">
+                  <small>{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || (i18n.french ? 'Réalisation' : 'Selected work') }}</small>
+                  <strong>{{ content(project).title }}</strong>
+                  <i></i><i></i>
+                </div>
+                }
+              </a>
+              <div class="project-meta">
+                <div><p>{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || 'Portfolio' }}</p><h3>{{ content(project).title }}</h3></div>
+                <a [routerLink]="[i18n.path('/portfolio'), project.slug]"
+                  [attr.aria-label]="'View ' + content(project).title + ' case study'">↗</a>
+              </div>
+            </article>
+          </div>
+        } @empty {
+          @if (projectsLoaded()) {
+            <div class="col-12 empty-work">
+              <p>{{ i18n.french ? 'De nouvelles études de cas sont en préparation.' : 'New case studies are being prepared.' }}</p>
+              <a class="text-link light-link" [routerLink]="i18n.path('/portfolio')">{{ i18n.french ? 'Explorer le portfolio' : 'Explore the portfolio' }} <span>→</span></a>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="process section-pad" id="process">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-5">
+          <p class="section-number">03 — {{ i18n.french ? 'Notre méthode' : 'How it works' }}</p>
+          <h2>{{ i18n.french ? 'Une méthode claire.' : 'Clear process.' }}<br /><span>{{ i18n.french ? 'Sans mystère.' : 'No mystery.' }}</span></h2>
+          <p>{{ i18n.french ? 'Un bon projet créatif ne devrait pas être chaotique. Chaque étape reste ciblée, collaborative et facile à comprendre.' : "Good creative work shouldn't feel chaotic. We keep every step focused, collaborative and easy to understand." }}</p>
+        </div>
+        <div class="col-lg-7">
+          <ol class="process-list">
+            @for (step of process(); track step.number) {
+              <li>
+                <span>{{ step.number }}</span>
+                <div><h3>{{ step.title }}</h3><p>{{ step.description }}</p></div>
+              </li>
+            }
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-band" id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="contact-heading">
+          <p class="eyebrow"><span></span> {{ i18n.french ? 'Vous avez un projet en tête?' : 'Have a project in mind?' }}</p>
+          <h2>{{ i18n.french ? 'Créons quelque chose' : "Let's make something" }}<br /><em>{{ i18n.french ? 'qui mérite l’attention.' : 'worth noticing.' }}</em></h2>
+          <p>{{ i18n.french ? 'Partagez quelques détails et nous vous proposerons une prochaine étape concrète.' : 'Share a few details and we will recommend a practical next step.' }}</p>
+          <a href="mailto:hello@webinkgraphics.com">hello&#64;webinkgraphics.com <span>↗</span></a>
+        </div>
+        <app-contact-form />
+      </div>
+    </div>
+  </section>
+</main>

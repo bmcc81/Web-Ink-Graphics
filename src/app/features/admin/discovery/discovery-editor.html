@@ -1,0 +1,291 @@
+<main class="discovery">
+  <header>
+    <a routerLink="/admin/clients">← Clients</a>
+    <div><button type="button" (click)="printBrief()">Print / Save PDF</button><button type="button" (click)="generatePrompt()" [disabled]="generating()">{{ generating() ? 'Generating…' : 'Generate Codex prompt' }}</button><button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save brief' }}</button></div>
+  </header>
+
+  @if (loading()) { <p class="loading">Loading discovery workspace…</p> }
+  @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="intro"><p>Client discovery</p><h1>{{ clientName() }}</h1><span>Use this page during the meeting. Unknown answers should stay visibly unresolved.</span></div>
+      @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+      <aside class="workspace-status">
+        <div class="score">
+          <div><strong>{{ completeness() }}%</strong><span>discovery complete</span></div>
+          <progress [value]="completeness()" max="100">{{ completeness() }}%</progress>
+        </div>
+        <div class="save-state" aria-live="polite">
+          @if (!editing) { <span>Initial save required</span> }
+          @else if (autosaveStatus() === 'saving') { <span>Saving changes…</span> }
+          @else if (autosaveStatus() === 'error') { <span class="save-error">Autosave failed</span> }
+          @else if (lastSaved()) { <span>Saved at {{ lastSaved() }}</span> }
+        </div>
+        <button type="button" class="mode-toggle" (click)="toggleGuidedMode()">
+          {{ guidedMode() ? 'Show full form' : 'Start guided meeting' }}
+        </button>
+      </aside>
+
+      @if (scopeLocked()) {
+        <aside class="scope-lock" role="status">
+          <div><strong>Approved scope is locked</strong><span>Discovery fields are read-only to prevent unapproved scope changes.</span></div>
+          <button type="button" (click)="reopenScope()">Create change request</button>
+          <button type="button" class="development" (click)="startDevelopment()">Move to development</button>
+        </aside>
+      } @else {
+        <aside class="template-picker">
+          <div><strong>Start from a discovery template</strong><span>{{ selectedTemplateDescription() }}</span></div>
+          <select #templateSelect [value]="selectedTemplate()" (change)="selectedTemplate.set(templateSelect.value)">
+            @for (template of templates; track template.id) { <option [value]="template.id">{{ template.name }}</option> }
+          </select>
+          <button type="button" (click)="applyTemplate()">Apply template</button>
+        </aside>
+      }
+
+      @if (missingItems().length) {
+        <details class="missing">
+          <summary>{{ missingItems().length }} important item{{ missingItems().length === 1 ? '' : 's' }} still missing</summary>
+          <div>@for (item of missingItems(); track item) { <span>{{ item }}</span> }</div>
+        </details>
+      }
+
+      @if (guidedMode()) {
+        <nav class="guide" aria-label="Discovery progress">
+          <span>Step {{ guidedStep() + 1 }} of {{ steps.length }}</span>
+          <strong>{{ steps[guidedStep()] }}</strong>
+          <div>
+            <button type="button" (click)="previousStep()" [disabled]="guidedStep() === 0">Previous</button>
+            <button type="button" (click)="nextStep()" [disabled]="guidedStep() === steps.length - 1">Next section</button>
+          </div>
+        </nav>
+      }
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 0">
+        <h2><span>01</span> Meeting and project</h2>
+        <div class="grid">
+          <label>Brief title<input formControlName="title" /></label>
+          <label>Status<select formControlName="status"><option value="DRAFT">Draft</option><option value="INTERNAL_REVIEW">Internal review</option><option value="CLIENT_REVIEW">Client review</option><option value="APPROVED">Approved</option><option value="IN_PROGRESS">In development</option><option value="COMPLETE">Complete</option><option value="ARCHIVED">Archived</option></select></label>
+          <label>Meeting date<input type="datetime-local" formControlName="meetingAt" /></label>
+          <label>Project type<select formControlName="projectType"><option value="new-website">New website</option><option value="redesign">Website redesign</option><option value="web-application">Web application</option><option value="maintenance">Updates / maintenance</option></select></label>
+          <label class="wide">What does the client want to create or change?<textarea rows="4" formControlName="projectSummary"></textarea></label>
+          <label class="wide">Why are they considering it now?<textarea rows="3" formControlName="motivation"></textarea></label>
+          <label class="wide">What is wrong with the current solution?<textarea rows="4" formControlName="currentProblems"></textarea></label>
+          <label class="wide">What would make this project successful?<textarea rows="4" formControlName="successDefinition"></textarea></label>
+          <label>Target launch<input formControlName="targetLaunch" /></label><label>Approximate budget<input formControlName="budget" /></label>
+          <label class="wide">Decision makers and approval process<textarea rows="3" formControlName="decisionMakers"></textarea></label>
+          @if (form.controls.status.value === 'APPROVED' || form.controls.approvedBy.value) {
+            <label>Approved by<input formControlName="approvedBy" placeholder="Client approver's name" /></label>
+            @if (approvalDate()) { <p class="approval-date">Approval recorded {{ approvalDate() }}</p> }
+          }
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 1">
+        <h2><span>02</span> Audience and conversion</h2>
+        <div class="grid">
+          <label class="wide">Primary customer<textarea rows="3" formControlName="primaryAudience"></textarea></label>
+          <label class="wide">Secondary audiences<textarea rows="3" formControlName="secondaryAudiences"></textarea></label>
+          <label class="wide">Problems customers need solved<textarea rows="4" formControlName="audienceProblems"></textarea></label>
+          <label class="wide">Common objections or concerns<textarea rows="3" formControlName="commonObjections"></textarea></label>
+          <label class="wide">Most important action visitors should take<textarea rows="3" formControlName="desiredAction"></textarea></label>
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 2">
+        <h2><span>03</span> Design, content and search</h2>
+        <div class="grid">
+          <label class="wide">How should customers perceive the business?<textarea rows="3" formControlName="designDirection"></textarea></label>
+          <label>Sites they like and why<textarea rows="4" formControlName="likedSites"></textarea></label>
+          <label>Sites they dislike and why<textarea rows="4" formControlName="dislikedSites"></textarea></label>
+          <label class="wide">Existing logo, photography, copy and brand assets<textarea rows="3" formControlName="brandAssets"></textarea></label>
+          <label>Priority services and search phrases<textarea rows="4" formControlName="seoTargets"></textarea></label>
+          <label>Target cities or regions<textarea rows="4" formControlName="targetLocations"></textarea></label>
+        </div>
+        <div class="attachments">
+          <div class="attachment-head">
+            <div><h3>Source files</h3><p>Private files are available only through signed, five-minute download links.</p></div>
+            <div>
+              <select #attachmentType [value]="attachmentCategory()" (change)="attachmentCategory.set(attachmentType.value)" aria-label="Attachment category">
+                <option value="BRAND">Brand</option><option value="CONTENT">Content</option><option value="REFERENCE">Reference</option><option value="CONTRACT">Contract</option><option value="SCREENSHOT">Screenshot</option><option value="OTHER">Other</option>
+              </select>
+              <label class="upload-button" [class.disabled]="!editing || uploadingAttachment() || scopeLocked()">
+                {{ uploadingAttachment() ? 'Uploading…' : '+ Attach file' }}
+                <input type="file" (change)="uploadAttachment($event)" [disabled]="!editing || uploadingAttachment() || scopeLocked()" accept=".jpg,.jpeg,.png,.webp,.avif,.pdf,.docx,.xlsx,.txt" />
+              </label>
+            </div>
+          </div>
+          @if (!editing) { <p class="hint">Save the brief once before attaching files.</p> }
+          @if (attachmentError()) { <p class="error" role="alert">{{ attachmentError() }}</p> }
+          @if (attachments().length) {
+            <ul>
+              @for (item of attachments(); track item.id) {
+                <li>
+                  <button type="button" class="file-name" (click)="downloadAttachment(item)">{{ item.fileName }}</button>
+                  <span>{{ item.category }} · {{ fileSize(item.fileSize) }}</span>
+                  <button type="button" class="remove-file" (click)="deleteAttachment(item)" [disabled]="scopeLocked()">Delete</button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 3">
+        <h2><span>04</span> Technical context</h2>
+        <div class="grid">
+          <label>Current platform<textarea rows="3" formControlName="currentPlatform"></textarea></label>
+          <label>Required integrations<textarea rows="3" formControlName="integrations"></textarea></label>
+          <label>Hosting provider<textarea rows="3" formControlName="hostingProvider"></textarea></label>
+          <label>Domain registrar<textarea rows="3" formControlName="domainRegistrar"></textarea></label>
+          <label class="wide">Privacy, accessibility or regulatory requirements<textarea rows="3" formControlName="compliance"></textarea></label>
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 4">
+        <div class="section-head"><h2><span>05</span> Structured requirements</h2><button type="button" (click)="addRequirement()">+ Add requirement</button></div>
+        <div formArrayName="requirements" class="repeaters">
+          @for (group of requirements.controls; track group; let index = $index) {
+            <div [formGroupName]="index" class="repeater">
+              <input class="req-code" formControlName="referenceCode" [placeholder]="'REQ-' + (index + 1).toString().padStart(3, '0')" aria-label="Requirement code" />
+              <select formControlName="category"><option>PAGE</option><option>FEATURE</option><option>CONTENT</option><option>SEO</option><option>DESIGN</option><option>TECHNICAL</option></select>
+              <select formControlName="priority"><option>MUST</option><option>SHOULD</option><option>FUTURE</option></select>
+              <select formControlName="status"><option value="PLANNED">Planned</option><option value="IN_PROGRESS">In progress</option><option value="COMPLETED">Completed</option><option value="DEFERRED">Deferred</option><option value="REJECTED">Rejected</option></select>
+              <input class="grow" formControlName="title" placeholder="Requirement title" />
+              <textarea formControlName="details" placeholder="Details and expected behavior"></textarea>
+              <textarea formControlName="acceptanceCriteria" placeholder="How will we know this is complete?"></textarea>
+              <button type="button" (click)="removeRequirement(index)">Remove</button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 5">
+        <div class="section-head"><h2><span>06</span> Questions and follow-ups</h2><div class="followup-actions"><span>{{ openFollowUps() }} open</span>@if (overdueFollowUps()) { <span class="overdue">{{ overdueFollowUps() }} overdue</span> }<button type="button" (click)="addQuestion()">+ Add question</button></div></div>
+        <div formArrayName="openQuestions" class="repeaters">
+          @for (group of questions.controls; track group; let index = $index) {
+            <div [formGroupName]="index" class="question" [class.is-overdue]="group.value.status !== 'ANSWERED' && group.value.dueDate && group.value.dueDate < (newDateToday)">
+              <input class="question-text" formControlName="question" placeholder="Question that still needs an answer" />
+              <select formControlName="priority" aria-label="Priority"><option value="LOW">Low</option><option value="NORMAL">Normal</option><option value="HIGH">High</option><option value="URGENT">Urgent</option></select>
+              <input formControlName="owner" placeholder="Owner" aria-label="Follow-up owner" />
+              <input type="date" formControlName="dueDate" aria-label="Due date" />
+              <select formControlName="status"><option value="OPEN">Open</option><option value="FOLLOW_UP">Follow up</option><option value="ANSWERED">Answered</option></select>
+              <textarea formControlName="answer" placeholder="Answer or current note"></textarea>
+              <button type="button" (click)="removeQuestion(index)">Remove</button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section [class.guided-hidden]="guidedMode() && guidedStep() !== 6">
+        <h2><span>07</span> Boundaries and raw notes</h2>
+        <div class="grid">
+          <label class="wide">Assumptions<textarea rows="4" formControlName="assumptions"></textarea></label>
+          <label class="wide">Explicitly out of scope<textarea rows="4" formControlName="outOfScope"></textarea></label>
+          <label class="wide">Raw meeting notes<textarea rows="10" formControlName="rawNotes"></textarea></label>
+        </div>
+      </section>
+
+      <section class="handoff">
+        <div class="section-head"><h2>Codex handoff</h2></div>
+        <div class="prompt-controls">
+          <label>What should Codex produce?
+            <select #outputType [value]="promptOutputType()" (change)="promptOutputType.set(outputType.value)">
+              <option value="IMPLEMENTATION">Implement the website or update</option>
+              <option value="TECHNICAL_PLAN">Technical implementation plan</option>
+              <option value="PROPOSAL">Client proposal and scope</option>
+              <option value="WEBSITE_AUDIT">Existing website audit</option>
+              <option value="CONTENT_SEO">Content and SEO plan</option>
+              <option value="FEATURE">Focused feature implementation</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="button" (click)="generatePrompt()" [disabled]="generating() || !editing">
+            {{ generating() ? 'Generating…' : 'Generate new prompt' }}
+          </button>
+        </div>
+        @if (!editing) { <p class="hint">Save the brief once before generating a prompt.</p> }
+
+        @if (promptHistory().length) {
+          <div class="history">
+            <strong>Recent versions</strong>
+            <div>
+              @for (item of promptHistory(); track item.id) {
+                <button type="button" (click)="selectPrompt(item)">
+                  <span>{{ promptLabel(item.content) }}</span>
+                  <small>{{ promptDate(item.createdAt) }}</small>
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (prompt()) {
+          <div class="prompt">
+            <div class="section-head"><h3>{{ promptLabel(prompt()) }}</h3><button type="button" (click)="copyPrompt()">Copy prompt</button></div>
+          <textarea rows="24" readonly [value]="prompt()"></textarea>
+          </div>
+        }
+      </section>
+
+      <article class="print-brief">
+        <header>
+          <p>WebInk Graphics · Client Discovery Brief</p>
+          <h1>{{ clientName() }}</h1>
+          <div><strong>{{ form.controls.title.value }}</strong><span>{{ form.controls.status.value.replaceAll('_', ' ') }}</span></div>
+        </header>
+        <section>
+          <h2>Project overview</h2>
+          <dl>
+            <div><dt>Project type</dt><dd>{{ form.controls.projectType.value }}</dd></div>
+            <div><dt>Objective</dt><dd>{{ form.controls.projectSummary.value || 'To be confirmed' }}</dd></div>
+            <div><dt>Success</dt><dd>{{ form.controls.successDefinition.value || 'To be confirmed' }}</dd></div>
+            <div><dt>Target launch</dt><dd>{{ form.controls.targetLaunch.value || 'To be confirmed' }}</dd></div>
+            <div><dt>Budget</dt><dd>{{ form.controls.budget.value || 'To be confirmed' }}</dd></div>
+          </dl>
+        </section>
+        <section>
+          <h2>Audience and direction</h2>
+          <dl>
+            <div><dt>Primary audience</dt><dd>{{ form.controls.primaryAudience.value || 'To be confirmed' }}</dd></div>
+            <div><dt>Primary visitor action</dt><dd>{{ form.controls.desiredAction.value || 'To be confirmed' }}</dd></div>
+            <div><dt>Design direction</dt><dd>{{ form.controls.designDirection.value || 'To be confirmed' }}</dd></div>
+          </dl>
+        </section>
+        <section>
+          <h2>Agreed requirements</h2>
+          <ol>
+            @for (requirement of requirements.controls; track requirement) {
+              @if (requirement.value.title) {
+                <li><strong>{{ requirement.value.referenceCode || ('REQ-' + (requirements.controls.indexOf(requirement) + 1).toString().padStart(3, '0')) }} · {{ requirement.value.title }}</strong> <span>{{ requirement.value.status }} · {{ requirement.value.priority }} · {{ requirement.value.category }}</span><p>{{ requirement.value.details || 'Details to be confirmed' }}</p></li>
+              }
+            }
+          </ol>
+        </section>
+        <section>
+          <h2>Scope boundaries</h2>
+          <dl>
+            <div><dt>Assumptions</dt><dd>{{ form.controls.assumptions.value || 'None recorded' }}</dd></div>
+            <div><dt>Out of scope</dt><dd>{{ form.controls.outOfScope.value || 'None recorded' }}</dd></div>
+          </dl>
+        </section>
+        <section>
+          <h2>Outstanding decisions</h2>
+          <ul>
+            @for (question of questions.controls; track question) {
+              @if (question.value.question && question.value.status !== 'ANSWERED') {
+                <li>{{ question.value.question }} @if (question.value.owner) { <span>· {{ question.value.owner }}</span> } @if (question.value.dueDate) { <span>· due {{ question.value.dueDate }}</span> }</li>
+              }
+            }
+          </ul>
+        </section>
+        <footer>
+          @if (form.controls.status.value === 'APPROVED') {
+            <p><strong>Approved by:</strong> {{ form.controls.approvedBy.value || 'Client approval recorded' }} @if (approvalDate()) { <span>· {{ approvalDate() }}</span> }</p>
+          } @else {
+            <p class="draft-mark">Not approved for implementation · {{ form.controls.status.value.replaceAll('_', ' ') }}</p>
+          }
+        </footer>
+      </article>
+      <div class="bottom"><button class="btn btn-primary btn-lg" type="submit" [disabled]="saving()">Save discovery brief</button></div>
+    </form>
+  }
+</main>

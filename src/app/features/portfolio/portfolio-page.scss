@@ -1,0 +1,32 @@
+:host { display: block; }
+.portfolio-hero { padding: 12rem 0 6rem; background: var(--ink); color: white; }
+.eyebrow { display: flex; align-items: center; gap: .75rem; margin-bottom: 2rem; color: #a8aaad; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.eyebrow span { width: 2rem; height: 2px; background: var(--lime); }
+h1, h2 { font-family: var(--font-display); }
+h1 { margin: 0; font-size: clamp(4rem, 8vw, 7.5rem); font-weight: 700; letter-spacing: -.075em; line-height: .9; }
+h1 em { color: var(--lime); font-family: Georgia, serif; font-weight: 400; }
+.portfolio-hero > .container > p:last-child { max-width: 580px; margin: 2.5rem 0 0 auto; color: #a8aaad; font-size: 1.1rem; line-height: 1.7; }
+.portfolio-content { padding: 3rem 0 8rem; }
+.filters { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 3rem; }
+.filters button { padding: .65rem 1.1rem; background: transparent; border: 1px solid var(--line); border-radius: 100px; color: var(--muted); font: 600 .8rem var(--font-body); }
+.filters button.active { background: var(--ink); border-color: var(--ink); color: white; }
+.project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem 1.5rem; }
+.project-art { --project-color: var(--lime); position: relative; display: grid; min-height: 410px; overflow: hidden; place-items: center; background: var(--project-color); border-radius: .75rem; }
+.project-art > img { width: 100%; height: 100%; min-height: 410px; object-fit: cover; transition: transform .45s ease; }
+.project-art:hover > img { transform: scale(1.025); }
+.project-art > span { position: absolute; top: 1.5rem; left: 1.5rem; color: rgba(23,25,28,.22); font: 800 2rem var(--font-display); }
+.project-art > div { display: grid; width: 65%; min-height: 250px; padding: 2rem; background: #faf9f4; box-shadow: 0 25px 55px rgba(23,25,28,.22); transform: rotate(-4deg); }
+.project-art small { text-transform: uppercase; }
+.project-art strong { align-self: center; font: 700 clamp(2rem, 4vw, 3.3rem)/.95 var(--font-display); letter-spacing: -.07em; }
+.project-copy { padding-top: 1.3rem; }
+.project-copy p { margin: 0; color: var(--violet); font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+.project-copy h2 { margin: .4rem 0; font-size: 1.5rem; }
+.project-copy span { color: var(--muted); line-height: 1.5; }
+.portfolio-state { grid-column: 1 / -1; margin: 2rem 0; color: var(--muted); }
+.portfolio-state.error { color: #9a3f2d; }
+@media (max-width: 767.98px) {
+  .portfolio-hero { padding: 9rem 0 5rem; }
+  .portfolio-content { padding-bottom: 5rem; }
+  .project-grid { grid-template-columns: 1fr; }
+  .project-art { min-height: 340px; }
+}

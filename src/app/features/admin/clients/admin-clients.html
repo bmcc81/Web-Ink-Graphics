@@ -1,0 +1,83 @@
+<main class="admin-shell">
+  <aside>
+    <a class="brand" routerLink="/"><span>W</span><strong>WebInk</strong></a>
+    <nav aria-label="Admin navigation">
+      <a routerLink="/admin">Portfolio</a>
+      <a class="active" routerLink="/admin/clients">Clients &amp; discovery</a>
+      <a routerLink="/admin/leads">Inquiries</a>
+      <a routerLink="/">View website ↗</a>
+    </nav>
+  </aside>
+
+  <section class="admin-content">
+    <header>
+      <div><p>Discovery workspace</p><h1>Clients</h1></div>
+      <button class="btn btn-primary" type="button" (click)="showForm.set(!showForm())">
+        {{ showForm() ? 'Close' : 'New client +' }}
+      </button>
+    </header>
+
+    @if (showForm()) {
+      <form [formGroup]="form" (ngSubmit)="create()">
+        <h2>Add a client</h2>
+        <div class="fields">
+          <label>Company name *<input formControlName="companyName" /></label>
+          <label>Industry<input formControlName="industry" /></label>
+          <label>Status<select formControlName="status"><option>LEAD</option><option>PROPOSAL</option><option>APPROVED</option><option>ACTIVE</option></select></label>
+          <label>Contact name<input formControlName="contactName" /></label>
+          <label>Contact email<input type="email" formControlName="contactEmail" /></label>
+          <label>Contact phone<input formControlName="contactPhone" /></label>
+          <label>Website<input type="url" formControlName="website" placeholder="https://" /></label>
+          <label>Service area<input formControlName="serviceArea" /></label>
+        </div>
+        <button class="btn btn-dark" type="submit" [disabled]="creating()">{{ creating() ? 'Creating…' : 'Create client' }}</button>
+      </form>
+    }
+
+    @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+    <div class="summary" aria-label="Client discovery summary">
+      <article><strong>{{ clients().length }}</strong><span>Total clients</span></article>
+      <article><strong>{{ activeBriefs() }}</strong><span>Active briefs</span></article>
+      <article><strong>{{ awaitingApproval() }}</strong><span>Awaiting approval</span></article>
+      <article [class.alert]="overdueFollowUps()"><strong>{{ overdueFollowUps() }}</strong><span>Overdue follow-ups</span></article>
+    </div>
+
+    <div class="filters">
+      <label>Search clients<input #clientSearch type="search" placeholder="Company, contact or industry" [value]="search()" (input)="search.set(clientSearch.value)" /></label>
+      <label>Status<select #clientStatus [value]="statusFilter()" (change)="statusFilter.set(clientStatus.value)"><option value="ALL">All statuses</option><option value="LEAD">Lead</option><option value="PROPOSAL">Proposal</option><option value="APPROVED">Approved</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></label>
+    </div>
+
+    <div class="client-grid">
+      @if (loading()) {
+        <p>Loading clients…</p>
+      } @else {
+        @for (client of filteredClients(); track client.id) {
+          <article>
+            <div class="client-top"><span>{{ client.companyName.slice(0, 1) }}</span><small>{{ client.status }}</small></div>
+            <h2>{{ client.companyName }}</h2>
+            <p>{{ client.industry || 'Industry not recorded' }}</p>
+            <dl>
+              <div><dt>Contact</dt><dd>{{ client.contactName || 'Not recorded' }}</dd></div>
+              <div><dt>Briefs</dt><dd>{{ client._count.discoveryBriefs }}</dd></div>
+            </dl>
+            @if (client.discoveryBriefs[0]; as brief) {
+              <div class="brief-health">
+                <span class="brief-status">{{ briefStatus(brief.status) }}</span>
+                <span>{{ brief._count.requirements }} requirements</span>
+                <span>{{ brief.openQuestions.length }} open</span>
+                @if (overdueCount(client)) { <span class="overdue">{{ overdueCount(client) }} overdue</span> }
+              </div>
+              <a class="latest" [routerLink]="['/admin/clients', client.id, 'discovery', brief.id]">
+                Continue: {{ brief.title }} <span>→</span>
+              </a>
+            }
+            <a class="new-brief" [routerLink]="['/admin/clients', client.id, 'discovery', 'new']">+ New discovery brief</a>
+          </article>
+        } @empty {
+          <p>{{ clients().length ? 'No clients match these filters.' : 'No clients yet. Add the first client before a discovery meeting.' }}</p>
+        }
+      }
+    </div>
+  </section>
+</main>

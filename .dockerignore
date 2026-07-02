@@ -1,0 +1,12 @@
+node_modules
+server/node_modules
+dist
+server/dist
+.angular
+.git
+.agents
+.env
+server/.env
+server/.env.production
+coverage
+*.log

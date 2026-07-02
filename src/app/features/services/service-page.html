@@ -1,0 +1,56 @@
+<main>
+  <section class="service-hero">
+    <div class="container">
+      <p class="eyebrow"><span></span>{{ content.eyebrow }}</p>
+      <div class="row align-items-end g-5">
+        <div class="col-lg-8">
+          <h1>{{ content.title }}<br><em>{{ content.accent }}</em></h1>
+        </div>
+        <div class="col-lg-4">
+          <p class="intro">{{ content.introduction }}</p>
+          <a class="btn btn-primary" [routerLink]="i18n.path('/')" fragment="contact">{{ i18n.french ? 'Parler de votre projet' : 'Discuss your project' }} <span>→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deliverables">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4">
+          <p class="section-label">{{ i18n.french ? 'Ce qui est inclus' : "What's included" }}</p>
+          <h2>{{ i18n.french ? 'Tout le nécessaire' : 'Everything needed' }}<br>{{ i18n.french ? 'pour bien faire les choses.' : 'to do it properly.' }}</h2>
+        </div>
+        <div class="col-lg-8">
+          <ul>
+            @for (item of content.deliverables; track item; let index = $index) {
+              <li><span>0{{ index + 1 }}</span>{{ item }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="benefits">
+    <div class="container">
+      <p class="section-label">{{ i18n.french ? 'Pourquoi c’est important' : 'Why it matters' }}</p>
+      <div class="benefit-grid">
+        @for (benefit of content.benefits; track benefit.title) {
+          <article>
+            <i aria-hidden="true">✦</i>
+            <h3>{{ benefit.title }}</h3>
+            <p>{{ benefit.description }}</p>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="next-step">
+    <div class="container">
+      <h2>{{ i18n.french ? 'Prêt à faire de votre prochaine étape' : 'Ready to make your next move' }} <em>{{ i18n.french ? 'un succès?' : 'count?' }}</em></h2>
+      <a class="btn btn-light btn-lg" [routerLink]="i18n.path('/')" fragment="contact">{{ i18n.french ? 'Démarrer une conversation' : 'Start a conversation' }} <span>↗</span></a>
+    </div>
+  </section>
+</main>

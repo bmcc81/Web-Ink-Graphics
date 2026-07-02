@@ -1,0 +1,141 @@
+<main class="editor-shell">
+  <header>
+    <a routerLink="/admin">← Projects</a>
+    <div>
+      @if (editing) {
+        <button class="archive" type="button" (click)="archive()" [disabled]="archiving()">
+          {{ archiving() ? 'Archiving…' : 'Archive' }}
+        </button>
+      }
+      <button class="btn btn-primary" type="button" (click)="save()" [disabled]="saving() || loading()">
+        {{ saving() ? 'Saving…' : 'Save project' }}
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="loading">Loading project…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="title-row">
+        <div>
+          <p>Portfolio administration</p>
+          <h1>{{ editing ? 'Edit project' : 'New project' }}</h1>
+        </div>
+        <label>
+          Publication status
+          <select formControlName="status">
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+            <option value="ARCHIVED">Archived</option>
+          </select>
+        </label>
+      </div>
+
+      @if (error()) {
+        <p class="form-error" role="alert">{{ error() }}</p>
+      }
+
+      <section class="readiness">
+        <div class="section-heading"><span>✓</span><div><h2>Translation readiness</h2><p>Published projects must have essential content and accessible images in both languages.</p></div></div>
+        <div class="readiness-grid">
+          <article>
+            <strong>English</strong>
+            <span [class.complete]="translationCoreComplete('en')">{{ translationCoreComplete('en') ? '✓' : '○' }} Title and summary</span>
+            <span [class.complete]="seoComplete('en')">{{ seoComplete('en') ? '✓' : '○' }} SEO metadata <small>recommended</small></span>
+            <span [class.complete]="altTextComplete('en')">{{ altTextComplete('en') ? '✓' : '○' }} Cover alt text</span>
+          </article>
+          <article>
+            <strong>Français</strong>
+            <span [class.complete]="translationCoreComplete('fr')">{{ translationCoreComplete('fr') ? '✓' : '○' }} Titre et résumé</span>
+            <span [class.complete]="seoComplete('fr')">{{ seoComplete('fr') ? '✓' : '○' }} Métadonnées SEO <small>recommandé</small></span>
+            <span [class.complete]="altTextComplete('fr')">{{ altTextComplete('fr') ? '✓' : '○' }} Texte alternatif</span>
+          </article>
+        </div>
+        @if (form.controls.status.value === 'PUBLISHED' && publishingIssues().length) {
+          <p class="readiness-warning">Publishing is blocked until all required items are complete.</p>
+        }
+      </section>
+
+      <section>
+        <div class="section-heading"><span>01</span><div><h2>Project details</h2><p>Internal organization and publishing controls.</p></div></div>
+        <div class="field-grid">
+          <label>URL slug *<input formControlName="slug" placeholder="team-transport" /></label>
+          <label>Client name<input formControlName="clientName" /></label>
+          <label>Project URL<input type="url" formControlName="projectUrl" placeholder="https://example.com" /></label>
+          <label>Completion date<input type="date" formControlName="completedAt" /></label>
+          <label>Display order<input type="number" min="0" formControlName="displayOrder" /></label>
+          <label class="check"><input type="checkbox" formControlName="featured" /> Feature this project</label>
+          <label class="wide">Categories
+            <select multiple formControlName="categoryIds">
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.nameEn }} / {{ category.nameFr }}</option>
+              }
+            </select>
+            <small>Hold Ctrl or Command to select multiple categories.</small>
+          </label>
+        </div>
+      </section>
+
+      <section formGroupName="en">
+        <div class="section-heading"><span>02</span><div><h2>English content</h2><p>Primary case-study content and search metadata.</p></div></div>
+        <div class="field-grid">
+          <label class="wide">Project title *<input formControlName="title" /></label>
+          <label class="wide">Short summary *<textarea rows="3" formControlName="summary"></textarea></label>
+          <label class="wide">Client challenge<textarea rows="5" formControlName="challenge"></textarea></label>
+          <label class="wide">Solution delivered<textarea rows="5" formControlName="solution"></textarea></label>
+          <label class="wide">Results<textarea rows="4" formControlName="results"></textarea></label>
+          <label>SEO title<input formControlName="seoTitle" /><small>Maximum 70 characters</small></label>
+          <label>Meta description<textarea rows="3" formControlName="metaDescription"></textarea><small>Maximum 170 characters</small></label>
+        </div>
+      </section>
+
+      <section formGroupName="fr">
+        <div class="section-heading"><span>03</span><div><h2>Contenu français</h2><p>Facultatif pour les brouillons; obligatoire avant la publication.</p></div></div>
+        <div class="field-grid">
+          <label class="wide">Titre du projet<input formControlName="title" /></label>
+          <label class="wide">Résumé<textarea rows="3" formControlName="summary"></textarea></label>
+          <label class="wide">Défi du client<textarea rows="5" formControlName="challenge"></textarea></label>
+          <label class="wide">Solution<textarea rows="5" formControlName="solution"></textarea></label>
+          <label class="wide">Résultats<textarea rows="4" formControlName="results"></textarea></label>
+          <label>Titre SEO<input formControlName="seoTitle" /></label>
+          <label>Méta-description<textarea rows="3" formControlName="metaDescription"></textarea></label>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading"><span>04</span><div><h2>Cover image</h2><p>External media URL and accessible descriptions.</p></div></div>
+        <div class="upload-panel">
+          @if (previewUrl()) {
+            <img [src]="previewUrl()" alt="Current project cover preview" />
+          }
+          <div>
+            <strong>{{ previewUrl() ? 'Replace cover image' : 'Upload a cover image' }}</strong>
+            <p>JPEG, PNG, WebP or AVIF. Maximum 10 MB.</p>
+            <label class="upload-button">
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/avif"
+                (change)="uploadImage($event)" [disabled]="uploading()" />
+              {{ uploading() ? 'Uploading…' : 'Choose image' }}
+            </label>
+            @if (uploadError()) {
+              <small class="upload-error" role="alert">{{ uploadError() }}</small>
+            }
+          </div>
+        </div>
+        <div class="field-grid">
+          <label class="wide">Image URL<input type="url" formControlName="coverUrl"
+            placeholder="https://…" (change)="previewUrl.set(form.controls.coverUrl.value)" /></label>
+          <label>English alt text<input formControlName="coverAltEn" /></label>
+          <label>French alt text<input formControlName="coverAltFr" /></label>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <a routerLink="/admin">Cancel</a>
+        <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save project' }}
+        </button>
+      </div>
+    </form>
+  }
+</main>

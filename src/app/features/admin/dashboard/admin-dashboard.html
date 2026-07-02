@@ -1,0 +1,45 @@
+<main class="admin-shell">
+  <aside>
+    <a class="brand" routerLink="/"><span>W</span><strong>WebInk</strong></a>
+    <nav aria-label="Admin navigation">
+      <a class="active" routerLink="/admin">Portfolio</a>
+      <a routerLink="/admin/clients">Clients &amp; discovery</a>
+      <a routerLink="/admin/leads">Inquiries</a>
+      <a routerLink="/">View website ↗</a>
+    </nav>
+    <button type="button" (click)="logout()">Sign out</button>
+  </aside>
+
+  <section class="admin-content">
+    <header>
+      <div><p>Portfolio</p><h1>Projects</h1></div>
+      <a class="btn btn-primary" routerLink="/admin/projects/new">New project <span>+</span></a>
+    </header>
+
+    <div class="stats">
+      <article><strong>{{ projects().length }}</strong><span>All projects</span></article>
+      <article><strong>{{ count('PUBLISHED') }}</strong><span>Published</span></article>
+      <article><strong>{{ count('DRAFT') }}</strong><span>Drafts</span></article>
+      <article><strong>{{ count('ARCHIVED') }}</strong><span>Archived</span></article>
+    </div>
+
+    <div class="project-table">
+      <div class="table-heading"><span>Project</span><span>Status</span><span>Updated</span></div>
+      @if (loading()) {
+        <p class="state">Loading projects…</p>
+      } @else if (error()) {
+        <p class="state error" role="alert">{{ error() }}</p>
+      } @else {
+        @for (project of projects(); track project.id) {
+          <a class="project-row" [routerLink]="['/admin/projects', project.slug]">
+            <div><strong>{{ title(project) }}</strong><span>{{ project.clientName || project.slug }}</span></div>
+            <span class="status" [class]="project.status.toLowerCase()">{{ project.status }}</span>
+            <time>{{ project.updatedAt.slice(0, 10) }}</time>
+          </a>
+        } @empty {
+          <p class="state">No portfolio projects yet. The project editor is the next implementation step.</p>
+        }
+      }
+    </div>
+  </section>
+</main>

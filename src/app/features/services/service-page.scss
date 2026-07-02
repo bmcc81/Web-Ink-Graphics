@@ -1,0 +1,35 @@
+:host { display: block; }
+.service-hero { padding: 12rem 0 7rem; background: var(--paper); }
+.eyebrow, .section-label {
+  margin-bottom: 2rem; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+}
+.eyebrow { display: flex; align-items: center; gap: .75rem; }
+.eyebrow span { width: 2rem; height: 2px; background: var(--violet); }
+h1, h2, h3 { font-family: var(--font-display); }
+h1 { margin: 0; font-size: clamp(3.7rem, 7vw, 7rem); font-weight: 700; letter-spacing: -.075em; line-height: .92; }
+h1 em, .next-step em { color: var(--violet); font-family: Georgia, serif; font-weight: 400; }
+.intro { margin-bottom: 1.75rem; color: var(--muted); font-size: 1.1rem; line-height: 1.7; }
+.deliverables { padding: 7rem 0; background: white; }
+.deliverables h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); font-weight: 600; letter-spacing: -.06em; }
+.deliverables ul { margin: 0; padding: 0; list-style: none; }
+.deliverables li {
+  display: grid; grid-template-columns: 4rem 1fr; padding: 1.5rem 0;
+  border-top: 1px solid var(--line); font: 600 1.25rem var(--font-display);
+}
+.deliverables li:last-child { border-bottom: 1px solid var(--line); }
+.deliverables li span { color: var(--violet); font: 700 .72rem var(--font-body); }
+.benefits { padding: 7rem 0; background: var(--ink); color: white; }
+.benefits .section-label { color: #a8aaad; }
+.benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #393b3f; }
+.benefit-grid article { min-height: 280px; padding: 2rem; background: var(--ink); }
+.benefit-grid i { display: grid; width: 2.7rem; height: 2.7rem; place-items: center; background: var(--lime); border-radius: 50%; color: var(--ink); font-style: normal; }
+.benefit-grid h3 { margin: 4rem 0 1rem; font-size: 1.5rem; }
+.benefit-grid p { margin: 0; color: #a8aaad; line-height: 1.6; }
+.next-step { padding: 7rem 0; background: var(--violet); color: white; text-align: center; }
+.next-step h2 { max-width: 850px; margin: 0 auto 2.5rem; font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 700; letter-spacing: -.07em; line-height: 1; }
+.next-step em { color: var(--lime); }
+@media (max-width: 767.98px) {
+  .service-hero { padding: 9rem 0 5rem; }
+  .deliverables, .benefits, .next-step { padding: 5rem 0; }
+  .benefit-grid { grid-template-columns: 1fr; }
+}

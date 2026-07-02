@@ -1,0 +1,81 @@
+<main class="admin-shell">
+  <aside>
+    <a class="brand" routerLink="/"><span>W</span><strong>WebInk</strong></a>
+    <nav aria-label="Admin navigation">
+      <a routerLink="/admin">Portfolio</a>
+      <a routerLink="/admin/clients">Clients &amp; discovery</a>
+      <a class="active" routerLink="/admin/leads">Inquiries</a>
+      <a routerLink="/">View website ↗</a>
+    </nav>
+    <button type="button" (click)="logout()">Sign out</button>
+  </aside>
+
+  <section class="admin-content">
+    <header>
+      <div><p>Lead management</p><h1>Inquiries</h1></div>
+      <button class="btn btn-primary" type="button" (click)="exportCsv()" [disabled]="exporting()">
+        {{ exporting() ? 'Exporting…' : 'Export CSV' }} <span>↓</span>
+      </button>
+    </header>
+
+    <div class="toolbar">
+      <div class="filters" aria-label="Filter inquiries">
+        <button type="button" [class.active]="status() === 'new'" (click)="filter('new')">New</button>
+        <button type="button" [class.active]="status() === 'contacted'" (click)="filter('contacted')">Contacted</button>
+        <button type="button" [class.active]="status() === 'all'" (click)="filter('all')">All</button>
+      </div>
+      <div class="search">
+        <input type="search" placeholder="Search name, company, email or message"
+          [value]="search()" (input)="searchChanged($event)" (keydown)="searchKey($event)" />
+        <button type="button" (click)="load()">Search</button>
+      </div>
+    </div>
+
+    @if (error()) {
+      <p class="page-error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="lead-list">
+      @if (loading()) {
+        <p class="state">Loading inquiries…</p>
+      } @else {
+        @for (lead of leads(); track lead.id) {
+          <article [class.contacted]="lead.contactedAt">
+            <div class="lead-top">
+              <div class="identity">
+                <span>{{ lead.name.slice(0, 1).toUpperCase() }}</span>
+                <div><h2>{{ lead.name }}</h2><p>{{ lead.company || lead.email }}</p></div>
+              </div>
+              <div class="meta">
+                <span class="service">{{ lead.service }}</span>
+                <time>{{ lead.createdAt.slice(0, 10) }}</time>
+              </div>
+            </div>
+            <div class="lead-details">
+              <dl>
+                <div><dt>Email</dt><dd><a [href]="'mailto:' + lead.email">{{ lead.email }}</a></dd></div>
+                <div><dt>Phone</dt><dd>{{ lead.phone || 'Not provided' }}</dd></div>
+                <div><dt>Budget</dt><dd>{{ lead.budget || 'Not provided' }}</dd></div>
+                <div><dt>Timing</dt><dd>{{ lead.launchDate || 'Flexible' }}</dd></div>
+                @if (lead.website) {
+                  <div><dt>Website</dt><dd><a [href]="lead.website" target="_blank" rel="noopener">{{ lead.website }}</a></dd></div>
+                }
+              </dl>
+              <div class="message"><h3>Project details</h3><p>{{ lead.message }}</p></div>
+            </div>
+            <footer>
+              <a [href]="'mailto:' + lead.email">Reply by email ↗</a>
+              @if (lead.contactedAt) {
+                <button type="button" (click)="setContacted(lead, false)">Mark as new</button>
+              } @else {
+                <button class="primary" type="button" (click)="setContacted(lead, true)">Mark contacted</button>
+              }
+            </footer>
+          </article>
+        } @empty {
+          <p class="state">No inquiries match this view.</p>
+        }
+      }
+    </div>
+  </section>
+</main>

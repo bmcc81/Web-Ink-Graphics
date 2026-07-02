@@ -1,0 +1,55 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import type { Response } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ContactService } from './contact.service';
+import { ContactQueryDto } from './dto/contact-query.dto';
+import { CreateContactDto } from './dto/create-contact.dto';
+import { UpdateContactStatusDto } from './dto/update-contact-status.dto';
+
+@Controller('contact')
+export class ContactController {
+  constructor(private readonly contact: ContactService) {}
+
+  @Post()
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  create(@Body() dto: CreateContactDto) {
+    return this.contact.create(dto);
+  }
+
+  @Get('admin/export')
+  @UseGuards(JwtAuthGuard)
+  async export(@Query() query: ContactQueryDto, @Res() response: Response) {
+    const date = new Date().toISOString().slice(0, 10);
+    response
+      .type('text/csv')
+      .attachment(`webink-leads-${date}.csv`)
+      .send(await this.contact.exportCsv(query));
+  }
+
+  @Get('admin')
+  @UseGuards(JwtAuthGuard)
+  findAll(@Query() query: ContactQueryDto) {
+    return this.contact.findAll(query);
+  }
+
+  @Patch('admin/:id/status')
+  @UseGuards(JwtAuthGuard)
+  updateStatus(
+    @Param('id') id: string,
+    @Body() status: UpdateContactStatusDto,
+  ) {
+    return this.contact.updateStatus(id, status.contacted);
+  }
+}

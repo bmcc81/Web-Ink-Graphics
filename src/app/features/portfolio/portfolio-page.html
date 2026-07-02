@@ -1,0 +1,51 @@
+<main>
+  <section class="portfolio-hero">
+    <div class="container">
+      <p class="eyebrow"><span></span>{{ i18n.french ? 'Réalisations choisies' : 'Selected work' }}</p>
+      <h1>{{ i18n.french ? 'Des idées rendues' : 'Ideas made' }}<br><em>{{ i18n.french ? 'visibles.' : 'visible.' }}</em></h1>
+      <p>{{ i18n.french ? 'Une sélection de produits numériques, d’identités et de projets de croissance conçus pour résoudre de vrais enjeux d’affaires.' : 'A selection of digital products, identities and growth work created to solve real business problems.' }}</p>
+    </div>
+  </section>
+  <section class="portfolio-content">
+    <div class="container">
+      <div class="filters" [attr.aria-label]="i18n.french ? 'Filtrer les projets par catégorie' : 'Filter projects by category'">
+        @for (category of categories(); track category.slug) {
+          <button type="button" [class.active]="activeCategory() === category.slug" (click)="activeCategory.set(category.slug)">
+            {{ category.name }}
+          </button>
+        }
+      </div>
+      <div class="project-grid">
+        @if (loading()) {
+          <p class="portfolio-state">{{ i18n.french ? 'Chargement des réalisations…' : 'Loading selected work…' }}</p>
+        } @else if (error()) {
+          <p class="portfolio-state error" role="alert">{{ error() }}</p>
+        } @else {
+        @for (project of visibleProjects(); track project.id; let index = $index) {
+          <article>
+            <a class="project-art" [routerLink]="[i18n.path('/portfolio'), project.slug]"
+              [style.--project-color]="color(index)">
+              @if (cover(project); as image) {
+                <img [src]="image.url" [alt]="i18n.french ? (image.altTextFr || image.altTextEn) : image.altTextEn" />
+              } @else {
+                <span>{{ monogram(project) }}</span>
+                <div>
+                  <small>{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || (i18n.french ? 'Réalisation' : 'Selected work') }}</small>
+                  <strong>{{ content(project).title }}</strong>
+                </div>
+              }
+            </a>
+            <div class="project-copy">
+              <p>{{ (i18n.french ? project.categories[0]?.nameFr : project.categories[0]?.nameEn) || 'Portfolio' }}</p>
+              <h2><a [routerLink]="[i18n.path('/portfolio'), project.slug]">{{ content(project).title }}</a></h2>
+              <span>{{ content(project).summary }}</span>
+            </div>
+          </article>
+        } @empty {
+          <p class="portfolio-state">{{ i18n.french ? 'Aucun projet publié dans cette catégorie pour le moment.' : 'No published projects in this category yet.' }}</p>
+        }
+        }
+      </div>
+    </div>
+  </section>
+</main>

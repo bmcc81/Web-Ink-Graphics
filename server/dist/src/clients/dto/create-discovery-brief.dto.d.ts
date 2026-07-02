@@ -1,0 +1,38 @@
+import { BriefStatus } from '@prisma/client';
+import { BriefQuestionDto } from './brief-question.dto';
+import { BriefRequirementDto } from './brief-requirement.dto';
+export declare class CreateDiscoveryBriefDto {
+    title: string;
+    status?: BriefStatus;
+    meetingAt?: string;
+    projectType: string;
+    projectSummary?: string;
+    motivation?: string;
+    currentProblems?: string;
+    successDefinition?: string;
+    targetLaunch?: string;
+    budget?: string;
+    decisionMakers?: string;
+    primaryAudience?: string;
+    secondaryAudiences?: string;
+    audienceProblems?: string;
+    commonObjections?: string;
+    desiredAction?: string;
+    designDirection?: string;
+    likedSites?: string;
+    dislikedSites?: string;
+    brandAssets?: string;
+    seoTargets?: string;
+    targetLocations?: string;
+    currentPlatform?: string;
+    integrations?: string;
+    hostingProvider?: string;
+    domainRegistrar?: string;
+    compliance?: string;
+    assumptions?: string;
+    outOfScope?: string;
+    rawNotes?: string;
+    approvedBy?: string;
+    requirements?: BriefRequirementDto[];
+    openQuestions?: BriefQuestionDto[];
+}
