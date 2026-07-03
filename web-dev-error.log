@@ -1,0 +1,42 @@
+12:56:35 PM [vite] http proxy error: /api/portfolio/admin/all
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+12:56:36 PM [vite] http proxy error: /api/portfolio/featured
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+2:33:35 PM [vite] http proxy error: /api/portfolio/featured
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+2:33:35 PM [vite] http proxy error: /api/portfolio/featured
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+X [ERROR] TS2488: Type 'Signal<Service[]>' must have a '[Symbol.iterator]()' method that returns an iterator. [plugin angular-compiler]
+
+    src/app/features/home/home-page.html:65:25:
+      65 │         @for (service of services; track service.number) {
+         ╵                          ~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/features/home/home-page.ts:20:15:
+      20 │   templateUrl: './home-page.html',
+         ╵                ~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2488: Type 'Signal<{ number: string; title: string; description: string; }[]>' must have a '[Symbol.iterator]()' method that returns an iterator. [plugin angular-compiler]
+
+    src/app/features/home/home-page.html:134:26:
+      134 │             @for (step of process; track step.number) {
+          ╵                           ~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/features/home/home-page.ts:20:15:
+      20 │   templateUrl: './home-page.html',
+         ╵                ~~~~~~~~~~~~~~~~~~
+
+

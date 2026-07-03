@@ -1,0 +1,765 @@
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m9:25:24 AM[0m] Starting compilation in watch mode...
+
+[[90m9:25:51 AM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [NestFactory] Starting Nest application...
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] PrismaModule dependencies initialized +55ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +13ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] AppModule dependencies initialized +5ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] HealthModule dependencies initialized +3ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] SeoModule dependencies initialized +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] PortfolioModule dependencies initialized +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] MediaModule dependencies initialized +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] ContactModule dependencies initialized +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] AppController {/api}: +15ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api, GET} route +6ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] ClientsController {/api/clients}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +0ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +2ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +1ms
+[Nest] 38396  - 07/02/2026, 9:25:58 AM     LOG [NestApplication] Nest application successfully started +50ms
+[2J[3J[H[[90m2:33:29 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:30 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:30 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:33 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:33 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:35 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:36 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:37 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:37 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:38 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:39 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:40 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:41 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:41 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:44 PM[0m] File change detected. Starting incremental compilation...
+
+[Nest] 33668  - 07/02/2026, 2:33:44 PM     LOG [NestFactory] Starting Nest application...
+[[90m2:33:45 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:45 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:45 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:46 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:33:47 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m2:33:49 PM[0m] File change detected. Starting incremental compilation...
+
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +37ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +11ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] AppModule dependencies initialized +3ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] HealthModule dependencies initialized +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] SeoModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] MediaModule dependencies initialized +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] ContactModule dependencies initialized +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] AppController {/api}: +11ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api, GET} route +5ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] MediaController {/api/media}: +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] ContactController {/api/contact}: +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +2ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] HealthController {/api/health}: +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +0ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +1ms
+[Nest] 3372  - 07/02/2026, 2:33:50 PM     LOG [NestApplication] Nest application successfully started +56ms
+[2J[3J[H[[90m2:33:55 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:34:00 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +33ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +9ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] AppModule dependencies initialized +3ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] HealthModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] SeoModule dependencies initialized +2ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] MediaModule dependencies initialized +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] ContactModule dependencies initialized +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] AppController {/api}: +11ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api, GET} route +4ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] MediaController {/api/media}: +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] ContactController {/api/contact}: +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +2ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 24832  - 07/02/2026, 2:34:04 PM     LOG [NestApplication] Nest application successfully started +43ms
+[2J[3J[H[[90m2:44:57 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:44:58 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +23ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +7ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] AppModule dependencies initialized +2ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] HealthModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] SeoModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] AppController {/api}: +7ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api, GET} route +4ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] AuthController {/api/auth}: +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] ContactController {/api/contact}: +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 16908  - 07/02/2026, 2:45:00 PM     LOG [NestApplication] Nest application successfully started +27ms
+[2J[3J[H[[90m2:46:01 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m2:46:01 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +35ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +10ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +3ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] AppModule dependencies initialized +6ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] HealthModule dependencies initialized +5ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] JwtModule dependencies initialized +3ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] SeoModule dependencies initialized +2ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] AppController {/api}: +9ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api, GET} route +5ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] AuthController {/api/auth}: +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] SeoController {/api}: +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +2ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 42532  - 07/02/2026, 2:46:04 PM     LOG [NestApplication] Nest application successfully started +31ms
+[2J[3J[H[[90m4:30:50 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:30:51 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m4:30:52 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:30:53 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m4:30:54 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:30:55 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +23ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +7ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] AppModule dependencies initialized +2ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] HealthModule dependencies initialized +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] SeoModule dependencies initialized +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] MediaModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] AppController {/api}: +6ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api, GET} route +4ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] AuthController {/api/auth}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] MediaController {/api/media}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] SeoController {/api}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 20564  - 07/02/2026, 4:30:57 PM     LOG [NestApplication] Nest application successfully started +20ms
+[2J[3J[H[[90m4:30:58 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:30:58 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +31ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +7ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] AppModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] HealthModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] SeoModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] AppController {/api}: +5ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api, GET} route +3ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] MediaController {/api/media}: +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] SeoController {/api}: +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] ContactController {/api/contact}: +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] HealthController {/api/health}: +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 45816  - 07/02/2026, 4:31:00 PM     LOG [NestApplication] Nest application successfully started +20ms
+[2J[3J[H[[90m4:33:22 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:33:23 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +28ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +9ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] AppModule dependencies initialized +3ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] HealthModule dependencies initialized +2ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] SeoModule dependencies initialized +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +2ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] AppController {/api}: +11ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api, GET} route +4ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] MediaController {/api/media}: +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] ContactController {/api/contact}: +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +2ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] HealthController {/api/health}: +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 21720  - 07/02/2026, 4:33:25 PM     LOG [NestApplication] Nest application successfully started +31ms
+[2J[3J[H[[90m4:54:10 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:54:11 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +20ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +6ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] AppModule dependencies initialized +2ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] HealthModule dependencies initialized +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] SeoModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] AppController {/api}: +6ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api, GET} route +3ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] AuthController {/api/auth}: +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] SeoController {/api}: +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +0ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +1ms
+[Nest] 32056  - 07/02/2026, 4:54:13 PM     LOG [NestApplication] Nest application successfully started +20ms
+[2J[3J[H[[90m5:03:03 PM[0m] File change detected. Starting incremental compilation...
+
+[2J[3J[H[[90m5:06:46 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m5:06:47 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m5:06:48 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m5:06:49 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +66ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +16ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] AppModule dependencies initialized +5ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] HealthModule dependencies initialized +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] SeoModule dependencies initialized +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] ContactModule dependencies initialized +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] AppController {/api}: +16ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api, GET} route +9ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] AuthController {/api/auth}: +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] SeoController {/api}: +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +3ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +2ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] HealthController {/api/health}: +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +0ms
+[Nest] 28100  - 07/02/2026, 5:06:54 PM     LOG [NestApplication] Nest application successfully started +70ms
+[2J[3J[H[[90m5:06:54 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m5:06:57 PM[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m5:07:02 PM[0m] File change detected. Starting incremental compilation...
+
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +59ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +18ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] AppModule dependencies initialized +5ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] HealthModule dependencies initialized +3ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] SeoModule dependencies initialized +3ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] ContactModule dependencies initialized +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] AppController {/api}: +17ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api, GET} route +9ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +3ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] HealthController {/api/health}: +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +2ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +0ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +1ms
+[Nest] 34204  - 07/02/2026, 5:07:03 PM     LOG [NestApplication] Nest application successfully started +57ms
+[[90m5:07:06 PM[0m] Found 0 errors. Watching for file changes.
+
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +46ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] PassportModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +12ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] AppModule dependencies initialized +4ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] HealthModule dependencies initialized +3ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] JwtModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] SeoModule dependencies initialized +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] PortfolioModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] MediaModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] ContactModule dependencies initialized +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] AppController {/api}: +20ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api, GET} route +8ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] AuthController {/api/auth}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} route +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] MediaController {/api/media}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/media/upload-url, POST} route +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] SeoController {/api}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/sitemap.xml, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/robots.txt, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] ContactController {/api/contact}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/contact, POST} route +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/export, GET} route +3ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/contact/admin, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/contact/admin/:id/status, PATCH} route +3ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] ClientsController {/api/clients}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients, GET} route +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients, POST} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, GET} route +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId, PATCH} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/generate-prompt, POST} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/briefs/:briefId/attachments, POST} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId/download, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/attachments/:attachmentId, DELETE} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/:id, PATCH} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/clients/:id/briefs, POST} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] HealthController {/api/health}: +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/health/live, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RoutesResolver] PortfolioController {/api/portfolio}: +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio, GET} route +2ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/featured, GET} route +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/all, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/categories, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/admin/:slug, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, GET} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio, POST} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, PATCH} route +0ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [RouterExplorer] Mapped {/api/portfolio/:slug, DELETE} route +1ms
+[Nest] 23144  - 07/02/2026, 5:07:11 PM     LOG [NestApplication] Nest application successfully started +62ms

@@ -1,0 +1,600 @@
+
+> webink-graphics@0.0.0 start
+> ng serve --proxy-config proxy.conf.json
+
+> Building...
+√ Building...
+Browser bundles     
+Initial chunk files  | Names            |  Raw size
+styles.css           | styles           | 274.30 kB | 
+main.js              | main             |  23.32 kB | 
+chunk-OSOUEYML.js    | -                |   1.70 kB | 
+chunk-GOMI4DH3.js    | -                |   1.37 kB | 
+
+                     | Initial total    | 300.69 kB
+
+Lazy chunk files     | Names            |  Raw size
+chunk-J6HRBYA2.js    | discovery-editor | 137.53 kB | 
+chunk-XMNWRTLB.js    | home-page        |  73.57 kB | 
+chunk-DUEDBWDH.js    | project-editor   |  42.71 kB | 
+chunk-VJ7IRKYY.js    | admin-leads      |  32.79 kB | 
+chunk-T5L6FIST.js    | case-study       |  26.44 kB | 
+chunk-5JWWCBEI.js    | admin-clients    |  25.75 kB | 
+chunk-W4NFSTB2.js    | admin-dashboard  |  20.38 kB | 
+chunk-WG3G4VPR.js    | portfolio-page   |  20.23 kB | 
+chunk-5QS7W474.js    | service-page     |  14.64 kB | 
+chunk-3UBLWI5V.js    | admin-login      |  12.71 kB | 
+chunk-YEJ2V2IG.js    | -                |   1.28 kB | 
+
+
+Server bundles      
+Initial chunk files  | Names            |  Raw size
+main.server.mjs      | main.server      |  24.85 kB | 
+server.mjs           | server           |   1.84 kB | 
+chunk-NHRYNOL3.mjs   | -                |   1.73 kB | 
+chunk-VYNEO3Q5.mjs   | -                |   1.41 kB | 
+polyfills.server.mjs | polyfills.server | 268 bytes | 
+
+Lazy chunk files     | Names            |  Raw size
+chunk-YHGUJF3H.mjs   | discovery-editor | 137.56 kB | 
+chunk-FIBN56E5.mjs   | home-page        |  73.61 kB | 
+chunk-XSLBJPSA.mjs   | project-editor   |  42.74 kB | 
+chunk-J6QZSCRY.mjs   | admin-leads      |  32.83 kB | 
+chunk-6RBKKPF2.mjs   | case-study       |  26.47 kB | 
+chunk-VCKVEDQB.mjs   | admin-clients    |  25.78 kB | 
+chunk-GYFHK6EF.mjs   | admin-dashboard  |  20.41 kB | 
+chunk-LDYQGE6G.mjs   | portfolio-page   |  20.26 kB | 
+chunk-5N6J7J35.mjs   | service-page     |  14.67 kB | 
+chunk-BB4SDFND.mjs   | admin-login      |  12.75 kB | 
+chunk-24EGYW7O.mjs   | -                |   1.31 kB | 
+
+Application bundle generation complete. [15.482 seconds] - 2026-07-02T13:25:41.887Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
+  ➜  press h + enter to show help
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names         | Raw size
+main.js             | main          | 23.32 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-RUBNL5HV.js   | admin-clients | 27.74 kB | 
+
+
+Server bundles     
+Initial chunk files | Names         | Raw size
+main.server.mjs     | main.server   | 24.85 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-QJRQBY3O.mjs  | admin-clients | 27.77 kB | 
+
+Application bundle generation complete. [3.487 seconds] - 2026-07-02T18:33:34.081Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names         | Raw size
+main.js             | main          | 23.32 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-WJ7ZHX2G.js   | admin-clients | 34.89 kB | 
+
+
+Server bundles     
+Initial chunk files | Names         | Raw size
+main.server.mjs     | main.server   | 24.85 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-7H24F3O4.mjs  | admin-clients | 34.92 kB | 
+
+Application bundle generation complete. [1.249 seconds] - 2026-07-02T18:33:35.468Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names         | Raw size
+main.js             | main          | 23.32 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-JYENMNVX.js   | admin-clients | 37.81 kB | 
+
+
+Server bundles     
+Initial chunk files | Names         | Raw size
+main.server.mjs     | main.server   | 24.85 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-GXKIJ7I5.mjs  | admin-clients | 37.85 kB | 
+
+Application bundle generation complete. [0.722 seconds] - 2026-07-02T18:33:36.272Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 29.85 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 31.39 kB | 
+
+Application bundle generation complete. [0.417 seconds] - 2026-07-02T18:40:39.736Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 31.85 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 33.37 kB | 
+
+Application bundle generation complete. [0.383 seconds] - 2026-07-02T18:40:45.011Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 31.87 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 33.39 kB | 
+
+Application bundle generation complete. [0.252 seconds] - 2026-07-02T18:40:51.024Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 34.78 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 36.30 kB | 
+
+Application bundle generation complete. [0.332 seconds] - 2026-07-02T18:41:10.196Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 34.97 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 36.50 kB | 
+
+Application bundle generation complete. [0.357 seconds] - 2026-07-02T18:41:11.475Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 34.97 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-JQ5DHV6K.js   | home-page      | 73.57 kB | 
+chunk-I5GIK2TA.js   | case-study     | 26.44 kB | 
+chunk-XIVYK3A7.js   | portfolio-page | 20.23 kB | 
+chunk-FYLQOT7U.js   | -              |  1.28 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 36.50 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-55LECJCC.mjs  | home-page      | 73.61 kB | 
+chunk-LOEYCUH3.mjs  | case-study     | 26.47 kB | 
+chunk-YTQROG6W.mjs  | portfolio-page | 20.26 kB | 
+chunk-47S6ZROE.mjs  | -              |  1.31 kB | 
+
+Application bundle generation complete. [0.376 seconds] - 2026-07-02T18:41:33.939Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.713 seconds] - 2026-07-02T18:41:35.565Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles     
+Initial chunk files  | Names            |  Raw size
+styles.css           | styles           | 274.30 kB | 
+main.js              | main             |  33.03 kB | 
+chunk-3X55FFX2.js    | -                |   1.86 kB | 
+chunk-OSOUEYML.js    | -                |   1.70 kB | 
+chunk-GOMI4DH3.js    | -                |   1.37 kB | 
+
+                     | Initial total    | 312.27 kB
+
+Lazy chunk files     | Names            |  Raw size
+chunk-J6HRBYA2.js    | discovery-editor | 137.53 kB | 
+chunk-HMNUVKNP.js    | home-page        |  83.34 kB | 
+chunk-DUEDBWDH.js    | project-editor   |  42.71 kB | 
+chunk-JYENMNVX.js    | admin-clients    |  37.81 kB | 
+chunk-VJ7IRKYY.js    | admin-leads      |  32.79 kB | 
+chunk-PEU5MFHY.js    | case-study       |  26.44 kB | 
+chunk-W4NFSTB2.js    | admin-dashboard  |  20.38 kB | 
+chunk-LTNI43W3.js    | portfolio-page   |  20.23 kB | 
+chunk-5QS7W474.js    | service-page     |  14.64 kB | 
+chunk-3UBLWI5V.js    | admin-login      |  12.71 kB | 
+chunk-OSJG7UOA.js    | -                |   1.48 kB | 
+
+
+Server bundles      
+Initial chunk files  | Names            |  Raw size
+main.server.mjs      | main.server      |  34.57 kB | 
+chunk-BX5RGX27.mjs   | -                |   1.90 kB | 
+server.mjs           | server           |   1.84 kB | 
+chunk-NHRYNOL3.mjs   | -                |   1.73 kB | 
+chunk-VYNEO3Q5.mjs   | -                |   1.41 kB | 
+polyfills.server.mjs | polyfills.server | 268 bytes | 
+
+Lazy chunk files     | Names            |  Raw size
+chunk-YHGUJF3H.mjs   | discovery-editor | 137.56 kB | 
+chunk-VHMGUFX2.mjs   | home-page        |  83.38 kB | 
+chunk-XSLBJPSA.mjs   | project-editor   |  42.74 kB | 
+chunk-GXKIJ7I5.mjs   | admin-clients    |  37.85 kB | 
+chunk-J6QZSCRY.mjs   | admin-leads      |  32.83 kB | 
+chunk-Y6HWZSSP.mjs   | case-study       |  26.47 kB | 
+chunk-GYFHK6EF.mjs   | admin-dashboard  |  20.41 kB | 
+chunk-DG5WXY3L.mjs   | portfolio-page   |  20.26 kB | 
+chunk-5N6J7J35.mjs   | service-page     |  14.67 kB | 
+chunk-BB4SDFND.mjs   | admin-login      |  12.75 kB | 
+chunk-YQRGLYFS.mjs   | -                |   1.52 kB | 
+
+Application bundle generation complete. [0.368 seconds] - 2026-07-02T18:42:21.939Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names        | Raw size
+main.js             | main         | 33.03 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-AVTZYGGE.js   | service-page | 14.73 kB | 
+
+
+Server bundles     
+Initial chunk files | Names        | Raw size
+main.server.mjs     | main.server  | 34.57 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-KZ3MAVUH.mjs  | service-page | 14.77 kB | 
+
+Application bundle generation complete. [0.571 seconds] - 2026-07-02T18:42:36.296Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names        | Raw size
+main.js             | main         | 33.03 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-RJ4F6TGQ.js   | service-page | 16.35 kB | 
+
+
+Server bundles     
+Initial chunk files | Names        | Raw size
+main.server.mjs     | main.server  | 34.57 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-VZ5FL4ZB.mjs  | service-page | 16.38 kB | 
+
+Application bundle generation complete. [0.214 seconds] - 2026-07-02T18:42:37.357Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.03 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-TBIAS6QS.js   | portfolio-page | 20.41 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.57 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-FX7PUU7O.mjs  | portfolio-page | 20.44 kB | 
+
+Application bundle generation complete. [0.389 seconds] - 2026-07-02T18:42:59.938Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.03 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-QMWOG2GJ.js   | portfolio-page | 22.67 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.57 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-ZDGRHULQ.mjs  | portfolio-page | 22.71 kB | 
+
+Application bundle generation complete. [0.387 seconds] - 2026-07-02T18:43:01.200Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.03 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-QOOXRYWC.js   | portfolio-page | 22.75 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.57 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-BORPHMPX.mjs  | portfolio-page | 22.79 kB | 
+
+Application bundle generation complete. [0.416 seconds] - 2026-07-02T18:43:37.425Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.03 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-3MZNOJUU.js   | home-page      | 83.34 kB | 
+chunk-LDV7NMRR.js   | case-study     | 27.17 kB | 
+chunk-HQ32TVFW.js   | portfolio-page | 22.75 kB | 
+chunk-LTB4BAG6.js   | -              |  1.47 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.57 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-CHSUZQEW.mjs  | home-page      | 83.38 kB | 
+chunk-APZHQSC6.mjs  | case-study     | 27.21 kB | 
+chunk-46LT5WFP.mjs  | portfolio-page | 22.79 kB | 
+chunk-CYSPSEP3.mjs  | -              |  1.50 kB | 
+
+Application bundle generation complete. [0.415 seconds] - 2026-07-02T18:43:38.772Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 33.03 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-HZ6GYC7C.js   | case-study  | 31.48 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.57 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-6LZEJL2R.mjs  | case-study  | 31.52 kB | 
+
+Application bundle generation complete. [0.410 seconds] - 2026-07-02T18:43:40.033Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 33.03 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-AAL4DO7P.js   | home-page   | 83.60 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.57 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-X72I5DHL.mjs  | home-page   | 83.64 kB | 
+
+Application bundle generation complete. [0.667 seconds] - 2026-07-02T18:44:15.891Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 33.03 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-4IW4U4VV.js   | home-page   | 89.42 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.57 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-KI3TOZS4.mjs  | home-page   | 89.45 kB | 
+
+Application bundle generation complete. [0.438 seconds] - 2026-07-02T18:44:16.987Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.77 kB | 
+
+Application bundle generation complete. [0.410 seconds] - 2026-07-02T18:44:49.433Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.03 kB | 
+chunk-AI2D46UA.js   | -              |  2.12 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-FAP6GKT3.js   | home-page      | 89.42 kB | 
+chunk-DWWOVGBG.js   | case-study     | 31.48 kB | 
+chunk-G7BXXP4I.js   | portfolio-page | 22.75 kB | 
+chunk-QQI5GY65.js   | service-page   | 16.35 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.77 kB | 
+chunk-MNEANLHT.mjs  | -              |  2.15 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-UMC5N3KM.mjs  | home-page      | 89.45 kB | 
+chunk-UEQPEGGI.mjs  | case-study     | 31.52 kB | 
+chunk-BTBX4U7R.mjs  | portfolio-page | 22.79 kB | 
+chunk-UX2SBN32.mjs  | service-page   | 16.38 kB | 
+
+Application bundle generation complete. [0.308 seconds] - 2026-07-02T19:33:11.634Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.83 kB | 
+
+Application bundle generation complete. [0.171 seconds] - 2026-07-02T20:30:42.838Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       | Raw size
+main.js             | main        | 33.08 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.88 kB | 
+
+Application bundle generation complete. [0.196 seconds] - 2026-07-02T20:33:05.209Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Server bundles     
+Initial chunk files | Names       | Raw size
+main.server.mjs     | main.server | 34.42 kB | 
+
+Application bundle generation complete. [0.141 seconds] - 2026-07-02T20:35:48.752Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Server bundles     
+Initial chunk files | Names  | Raw size
+server.mjs          | server |  1.96 kB | 
+
+Application bundle generation complete. [0.225 seconds] - 2026-07-02T20:39:01.371Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Server bundles     
+Initial chunk files | Names  | Raw size
+server.mjs          | server |  2.06 kB | 
+
+Application bundle generation complete. [0.215 seconds] - 2026-07-02T20:41:01.136Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.08 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-SCM7HHKU.js   | project-editor | 44.80 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.42 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-3DZOIP2Q.mjs  | project-editor | 44.83 kB | 
+
+Application bundle generation complete. [0.487 seconds] - 2026-07-02T20:54:07.255Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.08 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-K3TNL432.js   | project-editor | 50.13 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.42 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-AKOM7L7A.mjs  | project-editor | 50.16 kB | 
+
+Application bundle generation complete. [0.550 seconds] - 2026-07-02T20:54:08.533Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names          | Raw size
+main.js             | main           | 33.08 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-UNPSJXCQ.js   | project-editor | 51.92 kB | 
+
+
+Server bundles     
+Initial chunk files | Names          | Raw size
+main.server.mjs     | main.server    | 34.42 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-OCOC4Z4Z.mjs  | project-editor | 51.96 kB | 
+
+Application bundle generation complete. [0.503 seconds] - 2026-07-02T20:54:09.856Z
+
+Component update sent to client(s).
