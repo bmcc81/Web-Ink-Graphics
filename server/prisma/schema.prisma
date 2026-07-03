@@ -102,6 +102,7 @@ model User {
   name                    String
   role                    Role                     @default(CUSTOMER)
   organizationMemberships OrganizationMembership[]
+  invitationsSent         OrganizationInvitation[] @relation("InvitationSender")
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -111,11 +112,30 @@ model Organization {
   name        String
   slug        String                   @unique
   memberships OrganizationMembership[]
+  invitations OrganizationInvitation[]
   clients     Client[]
   createdAt   DateTime                 @default(now())
   updatedAt   DateTime                 @updatedAt
 
   @@index([name])
+}
+
+model OrganizationInvitation {
+  id             String           @id @default(cuid())
+  email          String
+  role           OrganizationRole
+  tokenHash      String           @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  revokedAt      DateTime?
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedById    String
+  invitedBy      User             @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Restrict)
+  createdAt      DateTime         @default(now())
+
+  @@index([organizationId, email, acceptedAt, revokedAt])
+  @@index([expiresAt])
 }
 
 model OrganizationMembership {

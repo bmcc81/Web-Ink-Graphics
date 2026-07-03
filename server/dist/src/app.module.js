@@ -23,6 +23,7 @@ const portfolio_module_1 = require("./portfolio/portfolio.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 const prisma_exception_filter_1 = require("./prisma/prisma-exception.filter");
 const seo_module_1 = require("./seo/seo.module");
+const organizations_module_1 = require("./organizations/organizations.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,6 +40,7 @@ exports.AppModule = AppModule = __decorate([
             clients_module_1.ClientsModule,
             health_module_1.HealthModule,
             portfolio_module_1.PortfolioModule,
+            organizations_module_1.OrganizationsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
