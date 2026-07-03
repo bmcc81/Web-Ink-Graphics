@@ -1,9 +1,10 @@
+import type { AuthUser } from '../auth/auth-user';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { MediaService } from './media.service';
 export declare class MediaController {
     private readonly media;
     constructor(media: MediaService);
-    createUpload(dto: CreateUploadDto): Promise<{
+    createUpload(user: AuthUser, dto: CreateUploadDto): Promise<{
         uploadUrl: string;
         publicUrl: string | undefined;
         key: string;

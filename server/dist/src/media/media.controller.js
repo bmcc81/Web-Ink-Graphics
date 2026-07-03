@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MediaController = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 const create_upload_dto_1 = require("./dto/create-upload.dto");
 const media_service_1 = require("./media.service");
 let MediaController = class MediaController {
@@ -22,16 +23,17 @@ let MediaController = class MediaController {
     constructor(media) {
         this.media = media;
     }
-    createUpload(dto) {
-        return this.media.createUpload(dto);
+    createUpload(user, dto) {
+        return this.media.createUpload(user, dto);
     }
 };
 exports.MediaController = MediaController;
 __decorate([
     (0, common_1.Post)('upload-url'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_upload_dto_1.CreateUploadDto]),
+    __metadata("design:paramtypes", [Object, create_upload_dto_1.CreateUploadDto]),
     __metadata("design:returntype", void 0)
 ], MediaController.prototype, "createUpload", null);
 exports.MediaController = MediaController = __decorate([

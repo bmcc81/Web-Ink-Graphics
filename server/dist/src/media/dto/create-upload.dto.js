@@ -26,6 +26,7 @@ class CreateUploadDto {
     contentType;
     fileSize;
     purpose;
+    briefId;
 }
 exports.CreateUploadDto = CreateUploadDto;
 __decorate([
@@ -48,4 +49,10 @@ __decorate([
     (0, class_validator_1.IsIn)(['PORTFOLIO', 'DISCOVERY']),
     __metadata("design:type", String)
 ], CreateUploadDto.prototype, "purpose", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(64),
+    __metadata("design:type", String)
+], CreateUploadDto.prototype, "briefId", void 0);
 //# sourceMappingURL=create-upload.dto.js.map

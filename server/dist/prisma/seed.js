@@ -11,10 +11,29 @@ async function main() {
         throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required; the password must contain at least 12 characters.');
     }
     const passwordHash = await (0, bcryptjs_1.hash)(password, 12);
-    await prisma.user.upsert({
+    const administrator = await prisma.user.upsert({
         where: { email },
         update: { name, role: client_1.Role.ADMIN, passwordHash },
         create: { email, name, role: client_1.Role.ADMIN, passwordHash },
+    });
+    const webInkOrganization = await prisma.organization.upsert({
+        where: { slug: 'webink-graphics' },
+        update: { name: 'WebInk Graphics' },
+        create: { name: 'WebInk Graphics', slug: 'webink-graphics' },
+    });
+    await prisma.organizationMembership.upsert({
+        where: {
+            userId_organizationId: {
+                userId: administrator.id,
+                organizationId: webInkOrganization.id,
+            },
+        },
+        update: { role: 'OWNER' },
+        create: {
+            userId: administrator.id,
+            organizationId: webInkOrganization.id,
+            role: 'OWNER',
+        },
     });
     const categories = [
         { slug: 'website', nameEn: 'Website', nameFr: 'Site Web' },

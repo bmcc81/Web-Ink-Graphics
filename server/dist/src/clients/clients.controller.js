@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientsController = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 const clients_service_1 = require("./clients.service");
 const create_client_dto_1 = require("./dto/create-client.dto");
 const create_discovery_brief_dto_1 = require("./dto/create-discovery-brief.dto");
@@ -27,120 +28,131 @@ let ClientsController = class ClientsController {
     constructor(clients) {
         this.clients = clients;
     }
-    findAll() {
-        return this.clients.findAll();
+    findAll(user) {
+        return this.clients.findAll(user);
     }
-    create(dto) {
-        return this.clients.create(dto);
+    create(user, dto) {
+        return this.clients.create(user, dto);
     }
-    findBrief(briefId) {
-        return this.clients.findBrief(briefId);
+    findBrief(user, briefId) {
+        return this.clients.findBrief(user, briefId);
     }
-    updateBrief(briefId, dto) {
-        return this.clients.updateBrief(briefId, dto);
+    updateBrief(user, briefId, dto) {
+        return this.clients.updateBrief(user, briefId, dto);
     }
-    generatePrompt(briefId, dto) {
-        return this.clients.generatePrompt(briefId, dto.outputType);
+    generatePrompt(user, briefId, dto) {
+        return this.clients.generatePrompt(user, briefId, dto.outputType);
     }
-    addAttachment(briefId, dto) {
-        return this.clients.addAttachment(briefId, dto);
+    addAttachment(user, briefId, dto) {
+        return this.clients.addAttachment(user, briefId, dto);
     }
-    attachmentDownload(attachmentId) {
-        return this.clients.attachmentDownload(attachmentId);
+    attachmentDownload(user, attachmentId) {
+        return this.clients.attachmentDownload(user, attachmentId);
     }
-    deleteAttachment(attachmentId) {
-        return this.clients.deleteAttachment(attachmentId);
+    deleteAttachment(user, attachmentId) {
+        return this.clients.deleteAttachment(user, attachmentId);
     }
-    findOne(id) {
-        return this.clients.findOne(id);
+    findOne(user, id) {
+        return this.clients.findOne(user, id);
     }
-    update(id, dto) {
-        return this.clients.update(id, dto);
+    update(user, id, dto) {
+        return this.clients.update(user, id, dto);
     }
-    createBrief(id, dto) {
-        return this.clients.createBrief(id, dto);
+    createBrief(user, id, dto) {
+        return this.clients.createBrief(user, id, dto);
     }
 };
 exports.ClientsController = ClientsController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_client_dto_1.CreateClientDto]),
+    __metadata("design:paramtypes", [Object, create_client_dto_1.CreateClientDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('briefs/:briefId'),
-    __param(0, (0, common_1.Param)('briefId')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('briefId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findBrief", null);
 __decorate([
     (0, common_1.Patch)('briefs/:briefId'),
-    __param(0, (0, common_1.Param)('briefId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('briefId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_discovery_brief_dto_1.UpdateDiscoveryBriefDto]),
+    __metadata("design:paramtypes", [Object, String, update_discovery_brief_dto_1.UpdateDiscoveryBriefDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "updateBrief", null);
 __decorate([
     (0, common_1.Post)('briefs/:briefId/generate-prompt'),
-    __param(0, (0, common_1.Param)('briefId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('briefId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, generate_prompt_dto_1.GeneratePromptDto]),
+    __metadata("design:paramtypes", [Object, String, generate_prompt_dto_1.GeneratePromptDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "generatePrompt", null);
 __decorate([
     (0, common_1.Post)('briefs/:briefId/attachments'),
-    __param(0, (0, common_1.Param)('briefId')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('briefId')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_brief_attachment_dto_1.CreateBriefAttachmentDto]),
+    __metadata("design:paramtypes", [Object, String, create_brief_attachment_dto_1.CreateBriefAttachmentDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "addAttachment", null);
 __decorate([
     (0, common_1.Get)('attachments/:attachmentId/download'),
-    __param(0, (0, common_1.Param)('attachmentId')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('attachmentId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "attachmentDownload", null);
 __decorate([
     (0, common_1.Delete)('attachments/:attachmentId'),
-    __param(0, (0, common_1.Param)('attachmentId')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('attachmentId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "deleteAttachment", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_client_dto_1.UpdateClientDto]),
+    __metadata("design:paramtypes", [Object, String, update_client_dto_1.UpdateClientDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "update", null);
 __decorate([
     (0, common_1.Post)(':id/briefs'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_discovery_brief_dto_1.CreateDiscoveryBriefDto]),
+    __metadata("design:paramtypes", [Object, String, create_discovery_brief_dto_1.CreateDiscoveryBriefDto]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "createBrief", null);
 exports.ClientsController = ClientsController = __decorate([

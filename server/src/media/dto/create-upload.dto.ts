@@ -35,4 +35,9 @@ export class CreateUploadDto {
   @IsOptional()
   @IsIn(['PORTFOLIO', 'DISCOVERY'])
   purpose?: 'PORTFOLIO' | 'DISCOVERY';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  briefId?: string;
 }

@@ -12,6 +12,25 @@ export declare class AuthService {
             email: string;
             name: string;
             role: import("@prisma/client").$Enums.Role;
+            organizations: {
+                id: string;
+                name: string;
+                slug: string;
+                role: import("@prisma/client").$Enums.OrganizationRole;
+            }[];
         };
     }>;
+    profile(userId: string): Promise<{
+        sub: string;
+        email: string;
+        name: string;
+        role: import("@prisma/client").$Enums.Role;
+        organizations: {
+            id: string;
+            name: string;
+            slug: string;
+            role: import("@prisma/client").$Enums.OrganizationRole;
+        }[];
+    }>;
+    private userProfile;
 }

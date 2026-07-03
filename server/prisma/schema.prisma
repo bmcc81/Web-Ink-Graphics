@@ -10,6 +10,15 @@ datasource db {
 enum Role {
   ADMIN
   EDITOR
+  CUSTOMER
+}
+
+enum OrganizationRole {
+  OWNER
+  MANAGER
+  CONTRIBUTOR
+  VIEWER
+  WEBINK_SPECIALIST
 }
 
 enum ProjectStatus {
@@ -87,13 +96,40 @@ enum AttachmentCategory {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  role         Role     @default(EDITOR)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  passwordHash            String
+  name                    String
+  role                    Role                     @default(CUSTOMER)
+  organizationMemberships OrganizationMembership[]
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+}
+
+model Organization {
+  id          String                   @id @default(cuid())
+  name        String
+  slug        String                   @unique
+  memberships OrganizationMembership[]
+  clients     Client[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+
+  @@index([name])
+}
+
+model OrganizationMembership {
+  id             String           @id @default(cuid())
+  role           OrganizationRole @default(VIEWER)
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
 }
 
 model Client {
@@ -107,11 +143,14 @@ model Client {
   contactEmail   String?
   contactPhone   String?
   generalNotes   String?
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   discoveryBriefs DiscoveryBrief[]
 
   @@index([status, companyName])
+  @@index([organizationId, status])
 }
 
 model DiscoveryBrief {

@@ -1,9 +1,12 @@
 import { ConfigService } from '@nestjs/config';
+import { AuthUser } from '../auth/auth-user';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUploadDto } from './dto/create-upload.dto';
 export declare class MediaService {
     private readonly config;
-    constructor(config: ConfigService);
-    createUpload(dto: CreateUploadDto): Promise<{
+    private readonly prisma;
+    constructor(config: ConfigService, prisma: PrismaService);
+    createUpload(user: AuthUser, dto: CreateUploadDto): Promise<{
         uploadUrl: string;
         publicUrl: string | undefined;
         key: string;
@@ -17,4 +20,7 @@ export declare class MediaService {
     deleteDiscoveryObject(objectKey: string): Promise<import("@aws-sdk/client-s3").DeleteObjectCommandOutput>;
     private client;
     private assertDiscoveryKey;
+    private portfolioFolder;
+    private discoveryFolder;
+    private isStaff;
 }

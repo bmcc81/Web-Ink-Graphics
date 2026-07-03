@@ -1,14 +1,32 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { OrganizationRole, Role } from '@prisma/client';
+import type { AuthUser } from '../auth/auth-user';
 import { ClientsService } from './clients.service';
 
 describe('ClientsService', () => {
+  const admin: AuthUser = {
+    id: 'admin-1',
+    email: 'admin@example.com',
+    name: 'Admin',
+    role: Role.ADMIN,
+  };
+  const customer: AuthUser = {
+    id: 'customer-1',
+    email: 'customer@example.com',
+    name: 'Customer',
+    role: Role.CUSTOMER,
+  };
   const prisma = {
     client: {
-      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      findMany: jest.fn(),
       update: jest.fn(),
     },
+    organization: {
+      create: jest.fn(),
+    },
     discoveryBrief: {
-      findUnique: jest.fn(),
+      findFirst: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
     },
@@ -17,7 +35,7 @@ describe('ClientsService', () => {
     },
     briefAttachment: {
       create: jest.fn(),
-      findUnique: jest.fn(),
+      findFirst: jest.fn(),
       delete: jest.fn(),
     },
   };
@@ -34,19 +52,19 @@ describe('ClientsService', () => {
   });
 
   it('returns a clear not-found error before updating a missing client', async () => {
-    prisma.client.findUnique.mockResolvedValue(null);
+    prisma.client.findFirst.mockResolvedValue(null);
 
     await expect(
-      service.update('missing', { companyName: 'Updated client' }),
+      service.update(admin, 'missing', { companyName: 'Updated client' }),
     ).rejects.toBeInstanceOf(NotFoundException);
     expect(prisma.client.update).not.toHaveBeenCalled();
   });
 
   it('returns a clear not-found error before adding a brief to a missing client', async () => {
-    prisma.client.findUnique.mockResolvedValue(null);
+    prisma.client.findFirst.mockResolvedValue(null);
 
     await expect(
-      service.createBrief('missing', {
+      service.createBrief(admin, 'missing', {
         title: 'Website discovery',
         projectType: 'New website',
       }),
@@ -55,7 +73,7 @@ describe('ClientsService', () => {
   });
 
   it('generates a structured prompt and excludes answered questions', async () => {
-    prisma.discoveryBrief.findUnique.mockResolvedValue({
+    prisma.discoveryBrief.findFirst.mockResolvedValue({
       id: 'brief-1',
       client: { companyName: 'Acme Inc.', industry: 'Manufacturing' },
       requirements: [
@@ -112,7 +130,7 @@ describe('ClientsService', () => {
       Promise.resolve({ id: 'prompt-1', ...data }),
     );
 
-    const prompt = await service.generatePrompt('brief-1');
+    const prompt = await service.generatePrompt(admin, 'brief-1');
 
     expect(prompt.content).toContain('Acme Inc. — Manufacturing');
     expect(prompt.content).toContain('[MUST] [FUNCTIONAL] Quote request form');
@@ -124,7 +142,7 @@ describe('ClientsService', () => {
   });
 
   it('adapts prompt instructions to the requested output', async () => {
-    prisma.discoveryBrief.findUnique.mockResolvedValue({
+    prisma.discoveryBrief.findFirst.mockResolvedValue({
       id: 'brief-2',
       client: { companyName: 'Acme Inc.', industry: null },
       requirements: [],
@@ -162,7 +180,7 @@ describe('ClientsService', () => {
       Promise.resolve({ id: 'prompt-2', ...data }),
     );
 
-    const prompt = await service.generatePrompt('brief-2', 'PROPOSAL');
+    const prompt = await service.generatePrompt(admin, 'brief-2', 'PROPOSAL');
 
     expect(prompt.content).toContain('# Client Proposal Brief');
     expect(prompt.content).toContain(
@@ -172,13 +190,15 @@ describe('ClientsService', () => {
   });
 
   it('preserves requirement identities when updating a brief', async () => {
-    prisma.discoveryBrief.findUnique.mockResolvedValue({
+    prisma.discoveryBrief.findFirst.mockResolvedValue({
       id: 'brief-3',
       approvedAt: null,
+      status: 'DRAFT',
+      clientId: 'client-1',
     });
     prisma.discoveryBrief.update.mockResolvedValue({ id: 'brief-3' });
 
-    await service.updateBrief('brief-3', {
+    await service.updateBrief(admin, 'brief-3', {
       requirements: [
         {
           id: 'requirement-1',
@@ -220,5 +240,43 @@ describe('ClientsService', () => {
       referenceCode: 'REQ-002',
       status: 'PLANNED',
     });
+  });
+
+  it('scopes customer client lists through verified memberships', async () => {
+    prisma.client.findMany.mockResolvedValue([]);
+
+    await service.findAll(customer);
+
+    expect(prisma.client.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          organization: {
+            memberships: {
+              some: {
+                userId: customer.id,
+                role: {
+                  in: Object.values(OrganizationRole),
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not let a contributor approve a brief', async () => {
+    prisma.discoveryBrief.findFirst.mockResolvedValue({
+      id: 'brief-4',
+      approvedAt: null,
+      status: 'DRAFT',
+      clientId: 'client-1',
+    });
+    prisma.client.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.updateBrief(customer, 'brief-4', { status: 'APPROVED' }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.discoveryBrief.update).not.toHaveBeenCalled();
   });
 });

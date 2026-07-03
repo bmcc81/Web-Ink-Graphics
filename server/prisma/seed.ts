@@ -15,10 +15,30 @@ async function main() {
   }
 
   const passwordHash = await hash(password, 12);
-  await prisma.user.upsert({
+  const administrator = await prisma.user.upsert({
     where: { email },
     update: { name, role: Role.ADMIN, passwordHash },
     create: { email, name, role: Role.ADMIN, passwordHash },
+  });
+
+  const webInkOrganization = await prisma.organization.upsert({
+    where: { slug: 'webink-graphics' },
+    update: { name: 'WebInk Graphics' },
+    create: { name: 'WebInk Graphics', slug: 'webink-graphics' },
+  });
+  await prisma.organizationMembership.upsert({
+    where: {
+      userId_organizationId: {
+        userId: administrator.id,
+        organizationId: webInkOrganization.id,
+      },
+    },
+    update: { role: 'OWNER' },
+    create: {
+      userId: administrator.id,
+      organizationId: webInkOrganization.id,
+      role: 'OWNER',
+    },
   });
 
   const categories = [

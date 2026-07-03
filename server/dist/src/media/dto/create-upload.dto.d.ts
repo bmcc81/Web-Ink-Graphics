@@ -4,5 +4,6 @@ export declare class CreateUploadDto {
     contentType: (typeof contentTypes)[number];
     fileSize: number;
     purpose?: 'PORTFOLIO' | 'DISCOVERY';
+    briefId?: string;
 }
 export {};

@@ -71,7 +71,8 @@ __decorate([
 ], PortfolioController.prototype, "findFeatured", null);
 __decorate([
     (0, common_1.Get)('admin/all'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [portfolio_query_dto_1.PortfolioQueryDto]),
@@ -79,14 +80,16 @@ __decorate([
 ], PortfolioController.prototype, "findAllForAdmin", null);
 __decorate([
     (0, common_1.Get)('admin/categories'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findCategories", null);
 __decorate([
     (0, common_1.Get)('admin/:slug'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Param)('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -101,7 +104,8 @@ __decorate([
 ], PortfolioController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_portfolio_project_dto_1.CreatePortfolioProjectDto]),
@@ -109,7 +113,8 @@ __decorate([
 ], PortfolioController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':slug'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Param)('slug')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

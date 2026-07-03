@@ -458,6 +458,7 @@ export class DiscoveryEditor {
       contentType: file.type,
       fileSize: file.size,
       purpose: 'DISCOVERY',
+      briefId: this.briefId,
     }).subscribe({
       next: (upload) => {
         this.http.put(upload.uploadUrl, file, {

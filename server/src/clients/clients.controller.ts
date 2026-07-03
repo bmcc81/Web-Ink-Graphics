@@ -9,6 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import type { AuthUser } from '../auth/auth-user';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
@@ -23,66 +25,83 @@ export class ClientsController {
   constructor(private readonly clients: ClientsService) {}
 
   @Get()
-  findAll() {
-    return this.clients.findAll();
+  findAll(@CurrentUser() user: AuthUser) {
+    return this.clients.findAll(user);
   }
 
   @Post()
-  create(@Body() dto: CreateClientDto) {
-    return this.clients.create(dto);
+  create(@CurrentUser() user: AuthUser, @Body() dto: CreateClientDto) {
+    return this.clients.create(user, dto);
   }
 
   @Get('briefs/:briefId')
-  findBrief(@Param('briefId') briefId: string) {
-    return this.clients.findBrief(briefId);
+  findBrief(@CurrentUser() user: AuthUser, @Param('briefId') briefId: string) {
+    return this.clients.findBrief(user, briefId);
   }
 
   @Patch('briefs/:briefId')
   updateBrief(
+    @CurrentUser() user: AuthUser,
     @Param('briefId') briefId: string,
     @Body() dto: UpdateDiscoveryBriefDto,
   ) {
-    return this.clients.updateBrief(briefId, dto);
+    return this.clients.updateBrief(user, briefId, dto);
   }
 
   @Post('briefs/:briefId/generate-prompt')
   generatePrompt(
+    @CurrentUser() user: AuthUser,
     @Param('briefId') briefId: string,
     @Body() dto: GeneratePromptDto,
   ) {
-    return this.clients.generatePrompt(briefId, dto.outputType);
+    return this.clients.generatePrompt(user, briefId, dto.outputType);
   }
 
   @Post('briefs/:briefId/attachments')
   addAttachment(
+    @CurrentUser() user: AuthUser,
     @Param('briefId') briefId: string,
     @Body() dto: CreateBriefAttachmentDto,
   ) {
-    return this.clients.addAttachment(briefId, dto);
+    return this.clients.addAttachment(user, briefId, dto);
   }
 
   @Get('attachments/:attachmentId/download')
-  attachmentDownload(@Param('attachmentId') attachmentId: string) {
-    return this.clients.attachmentDownload(attachmentId);
+  attachmentDownload(
+    @CurrentUser() user: AuthUser,
+    @Param('attachmentId') attachmentId: string,
+  ) {
+    return this.clients.attachmentDownload(user, attachmentId);
   }
 
   @Delete('attachments/:attachmentId')
-  deleteAttachment(@Param('attachmentId') attachmentId: string) {
-    return this.clients.deleteAttachment(attachmentId);
+  deleteAttachment(
+    @CurrentUser() user: AuthUser,
+    @Param('attachmentId') attachmentId: string,
+  ) {
+    return this.clients.deleteAttachment(user, attachmentId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clients.findOne(id);
+  findOne(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.clients.findOne(user, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateClientDto) {
-    return this.clients.update(id, dto);
+  update(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateClientDto,
+  ) {
+    return this.clients.update(user, id, dto);
   }
 
   @Post(':id/briefs')
-  createBrief(@Param('id') id: string, @Body() dto: CreateDiscoveryBriefDto) {
-    return this.clients.createBrief(id, dto);
+  createBrief(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: CreateDiscoveryBriefDto,
+  ) {
+    return this.clients.createBrief(user, id, dto);
   }
 }

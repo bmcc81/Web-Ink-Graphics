@@ -1,3 +1,4 @@
+import type { AuthUser } from '../auth/auth-user';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
@@ -8,7 +9,10 @@ import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto';
 export declare class ClientsController {
     private readonly clients;
     constructor(clients: ClientsService);
-    findAll(): import("@prisma/client").Prisma.PrismaPromise<({
+    findAll(user: AuthUser): import("@prisma/client").Prisma.PrismaPromise<({
+        _count: {
+            discoveryBriefs: number;
+        };
         discoveryBriefs: {
             id: string;
             updatedAt: Date;
@@ -22,13 +26,11 @@ export declare class ClientsController {
                 requirements: number;
             };
         }[];
-        _count: {
-            discoveryBriefs: number;
-        };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         website: string | null;
         status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
@@ -39,10 +41,11 @@ export declare class ClientsController {
         contactPhone: string | null;
         generalNotes: string | null;
     })[]>;
-    create(dto: CreateClientDto): import("@prisma/client").Prisma.Prisma__ClientClient<{
+    create(user: AuthUser, dto: CreateClientDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         website: string | null;
         status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
@@ -52,12 +55,13 @@ export declare class ClientsController {
         contactEmail: string | null;
         contactPhone: string | null;
         generalNotes: string | null;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    findBrief(briefId: string): Promise<{
+    }>;
+    findBrief(user: AuthUser, briefId: string): Promise<{
         client: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
             website: string | null;
             status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
@@ -75,8 +79,8 @@ export declare class ClientsController {
             fileName: string;
             contentType: string;
             fileSize: number;
-            objectKey: string;
             briefId: string;
+            objectKey: string;
         }[];
         requirements: {
             id: string;
@@ -146,11 +150,12 @@ export declare class ClientsController {
         approvedAt: Date | null;
         clientId: string;
     }>;
-    updateBrief(briefId: string, dto: UpdateDiscoveryBriefDto): Promise<{
+    updateBrief(user: AuthUser, briefId: string, dto: UpdateDiscoveryBriefDto): Promise<{
         client: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
             website: string | null;
             status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
@@ -168,8 +173,8 @@ export declare class ClientsController {
             fileName: string;
             contentType: string;
             fileSize: number;
-            objectKey: string;
             briefId: string;
+            objectKey: string;
         }[];
         requirements: {
             id: string;
@@ -239,30 +244,30 @@ export declare class ClientsController {
         approvedAt: Date | null;
         clientId: string;
     }>;
-    generatePrompt(briefId: string, dto: GeneratePromptDto): Promise<{
+    generatePrompt(user: AuthUser, briefId: string, dto: GeneratePromptDto): Promise<{
         id: string;
         createdAt: Date;
         briefId: string;
         content: string;
     }>;
-    addAttachment(briefId: string, dto: CreateBriefAttachmentDto): Promise<{
+    addAttachment(user: AuthUser, briefId: string, dto: CreateBriefAttachmentDto): Promise<{
         id: string;
         createdAt: Date;
         category: import("@prisma/client").$Enums.AttachmentCategory;
         fileName: string;
         contentType: string;
         fileSize: number;
-        objectKey: string;
         briefId: string;
+        objectKey: string;
     }>;
-    attachmentDownload(attachmentId: string): Promise<{
+    attachmentDownload(user: AuthUser, attachmentId: string): Promise<{
         downloadUrl: string;
         expiresIn: number;
     }>;
-    deleteAttachment(attachmentId: string): Promise<{
+    deleteAttachment(user: AuthUser, attachmentId: string): Promise<{
         deleted: boolean;
     }>;
-    findOne(id: string): Promise<{
+    findOne(user: AuthUser, id: string): Promise<{
         discoveryBriefs: {
             id: string;
             createdAt: Date;
@@ -305,6 +310,7 @@ export declare class ClientsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         website: string | null;
         status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
@@ -315,10 +321,11 @@ export declare class ClientsController {
         contactPhone: string | null;
         generalNotes: string | null;
     }>;
-    update(id: string, dto: UpdateClientDto): Promise<{
+    update(user: AuthUser, id: string, dto: UpdateClientDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         website: string | null;
         status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
@@ -329,11 +336,12 @@ export declare class ClientsController {
         contactPhone: string | null;
         generalNotes: string | null;
     }>;
-    createBrief(id: string, dto: CreateDiscoveryBriefDto): Promise<{
+    createBrief(user: AuthUser, id: string, dto: CreateDiscoveryBriefDto): Promise<{
         client: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
             website: string | null;
             status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
@@ -351,8 +359,8 @@ export declare class ClientsController {
             fileName: string;
             contentType: string;
             fileSize: number;
-            objectKey: string;
             briefId: string;
+            objectKey: string;
         }[];
         requirements: {
             id: string;

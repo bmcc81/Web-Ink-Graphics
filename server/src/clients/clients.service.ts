@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { OrganizationRole, Prisma, Role } from '@prisma/client';
+import { randomUUID } from 'crypto';
+import { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
@@ -24,8 +31,9 @@ export class ClientsService {
     private readonly media: MediaService,
   ) {}
 
-  findAll() {
+  findAll(user: AuthUser) {
     return this.prisma.client.findMany({
+      where: this.clientAccessWhere(user),
       include: {
         _count: { select: { discoveryBriefs: true } },
         discoveryBriefs: {
@@ -48,32 +56,49 @@ export class ClientsService {
     });
   }
 
-  async findOne(id: string) {
-    const client = await this.prisma.client.findUnique({
-      where: { id },
+  async findOne(user: AuthUser, id: string, write = false) {
+    const client = await this.prisma.client.findFirst({
+      where: { id, ...this.clientAccessWhere(user, write) },
       include: { discoveryBriefs: { orderBy: { updatedAt: 'desc' } } },
     });
     if (!client) throw new NotFoundException('Client not found');
     return client;
   }
 
-  create(dto: CreateClientDto) {
-    return this.prisma.client.create({ data: this.clean(dto) });
+  async create(user: AuthUser, dto: CreateClientDto) {
+    this.assertStaff(user);
+    const organization = await this.prisma.organization.create({
+      data: {
+        name: dto.companyName,
+        slug: this.organizationSlug(dto.companyName),
+        clients: { create: this.clean(dto) },
+      },
+      include: { clients: true },
+    });
+    return organization.clients[0];
   }
 
-  async update(id: string, dto: UpdateClientDto) {
-    await this.findOne(id);
+  async update(user: AuthUser, id: string, dto: UpdateClientDto) {
+    await this.findOne(user, id, true);
     return this.prisma.client.update({ where: { id }, data: this.clean(dto) });
   }
 
-  async createBrief(clientId: string, dto: CreateDiscoveryBriefDto) {
-    await this.findOne(clientId);
+  async createBrief(
+    user: AuthUser,
+    clientId: string,
+    dto: CreateDiscoveryBriefDto,
+  ) {
+    await this.findOne(user, clientId, true);
+    if (dto.status === 'APPROVED') {
+      await this.assertCanApprove(user, clientId);
+    }
     const { requirements, openQuestions, meetingAt, ...brief } = dto;
     return this.prisma.discoveryBrief.create({
       data: {
         ...this.clean(brief),
         meetingAt: meetingAt ? new Date(meetingAt) : undefined,
         approvedAt: brief.status === 'APPROVED' ? new Date() : undefined,
+        approvedBy: brief.status === 'APPROVED' ? user.name : undefined,
         client: { connect: { id: clientId } },
         requirements: requirements
           ? {
@@ -101,17 +126,29 @@ export class ClientsService {
     });
   }
 
-  async findBrief(id: string) {
-    const brief = await this.prisma.discoveryBrief.findUnique({
-      where: { id },
+  async findBrief(user: AuthUser, id: string, write = false) {
+    const brief = await this.prisma.discoveryBrief.findFirst({
+      where: {
+        id,
+        client: this.clientAccessWhere(user, write),
+      },
       include: briefInclude,
     });
     if (!brief) throw new NotFoundException('Discovery brief not found');
     return brief;
   }
 
-  async updateBrief(id: string, dto: UpdateDiscoveryBriefDto) {
-    const existing = await this.findBrief(id);
+  async updateBrief(user: AuthUser, id: string, dto: UpdateDiscoveryBriefDto) {
+    const existing = await this.findBrief(user, id, true);
+    const approving =
+      dto.status === 'APPROVED' && existing.status !== 'APPROVED';
+    const revokingApproval =
+      existing.status === 'APPROVED' &&
+      dto.status !== undefined &&
+      dto.status !== 'APPROVED';
+    if (approving || revokingApproval) {
+      await this.assertCanApprove(user, existing.clientId);
+    }
     const { requirements, openQuestions, meetingAt, ...brief } = dto;
     const existingRequirements =
       requirements?.filter((item): item is typeof item & { id: string } =>
@@ -133,9 +170,12 @@ export class ClientsService {
             ? null
             : undefined,
         approvedAt:
-          dto.status === 'APPROVED' && !existing.approvedAt
+          approving && !existing.approvedAt
             ? new Date()
-            : undefined,
+            : revokingApproval
+              ? null
+              : undefined,
+        approvedBy: approving ? user.name : revokingApproval ? null : undefined,
         requirements: requirements
           ? {
               deleteMany: {
@@ -189,10 +229,11 @@ export class ClientsService {
   }
 
   async generatePrompt(
+    user: AuthUser,
     id: string,
     outputType: PromptOutputType = 'IMPLEMENTATION',
   ) {
-    const brief = await this.findBrief(id);
+    const brief = await this.findBrief(user, id, true);
     const content = this.buildPrompt(brief, outputType);
     const saved = await this.prisma.generatedPrompt.create({
       data: { briefId: id, content },
@@ -200,16 +241,31 @@ export class ClientsService {
     return saved;
   }
 
-  async addAttachment(id: string, dto: CreateBriefAttachmentDto) {
-    await this.findBrief(id);
+  async addAttachment(
+    user: AuthUser,
+    id: string,
+    dto: CreateBriefAttachmentDto,
+  ) {
+    const brief = await this.findBrief(user, id, true);
+    if (
+      !this.isStaff(user) &&
+      !dto.objectKey.startsWith(`discovery/${brief.client.organizationId}/`)
+    ) {
+      throw new ForbiddenException(
+        'The uploaded file does not belong to this organization',
+      );
+    }
     return this.prisma.briefAttachment.create({
       data: { ...dto, briefId: id },
     });
   }
 
-  async attachmentDownload(id: string) {
-    const attachment = await this.prisma.briefAttachment.findUnique({
-      where: { id },
+  async attachmentDownload(user: AuthUser, id: string) {
+    const attachment = await this.prisma.briefAttachment.findFirst({
+      where: {
+        id,
+        brief: { client: this.clientAccessWhere(user) },
+      },
     });
     if (!attachment) throw new NotFoundException('Attachment not found');
     return {
@@ -221,9 +277,12 @@ export class ClientsService {
     };
   }
 
-  async deleteAttachment(id: string) {
-    const attachment = await this.prisma.briefAttachment.findUnique({
-      where: { id },
+  async deleteAttachment(user: AuthUser, id: string) {
+    const attachment = await this.prisma.briefAttachment.findFirst({
+      where: {
+        id,
+        brief: { client: this.clientAccessWhere(user, true) },
+      },
     });
     if (!attachment) throw new NotFoundException('Attachment not found');
     await this.media.deleteDiscoveryObject(attachment.objectKey);
@@ -418,6 +477,81 @@ export class ClientsService {
         item === '' ? undefined : item,
       ]),
     ) as T;
+  }
+
+  private clientAccessWhere(
+    user: AuthUser,
+    write = false,
+    approve = false,
+  ): Prisma.ClientWhereInput {
+    if (this.isStaff(user)) {
+      return {};
+    }
+
+    const roles = approve
+      ? [OrganizationRole.OWNER, OrganizationRole.MANAGER]
+      : write
+        ? [
+            OrganizationRole.OWNER,
+            OrganizationRole.MANAGER,
+            OrganizationRole.CONTRIBUTOR,
+            OrganizationRole.WEBINK_SPECIALIST,
+          ]
+        : Object.values(OrganizationRole);
+
+    return {
+      organization: {
+        memberships: {
+          some: {
+            userId: user.id,
+            role: { in: roles },
+          },
+        },
+      },
+    };
+  }
+
+  private async assertCanApprove(user: AuthUser, clientId: string) {
+    if (this.isStaff(user)) {
+      return;
+    }
+
+    const client = await this.prisma.client.findFirst({
+      where: {
+        id: clientId,
+        ...this.clientAccessWhere(user, false, true),
+      },
+      select: { id: true },
+    });
+    if (!client) {
+      throw new ForbiddenException(
+        'Only an organization owner or manager can change approval status',
+      );
+    }
+  }
+
+  private assertStaff(user: AuthUser) {
+    if (!this.isStaff(user)) {
+      throw new ForbiddenException(
+        'Only WebInk staff can create customer companies',
+      );
+    }
+  }
+
+  private isStaff(user: AuthUser) {
+    return user.role === Role.ADMIN || user.role === Role.EDITOR;
+  }
+
+  private organizationSlug(companyName: string) {
+    const base =
+      companyName
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 60) || 'company';
+    return `${base}-${randomUUID().slice(0, 8)}`;
   }
 
   private requirementCode(sortOrder: number) {

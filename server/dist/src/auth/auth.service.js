@@ -23,7 +23,15 @@ let AuthService = class AuthService {
     }
     async login(credentials) {
         const email = credentials.email.trim().toLowerCase();
-        const user = await this.prisma.user.findUnique({ where: { email } });
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+            include: {
+                organizationMemberships: {
+                    include: { organization: true },
+                    orderBy: { organization: { name: 'asc' } },
+                },
+            },
+        });
         if (!user || !(await (0, bcryptjs_1.compare)(credentials.password, user.passwordHash))) {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
@@ -35,7 +43,36 @@ let AuthService = class AuthService {
         };
         return {
             accessToken: await this.jwt.signAsync(payload),
-            user: payload,
+            user: this.userProfile(user),
+        };
+    }
+    async profile(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                organizationMemberships: {
+                    include: { organization: true },
+                    orderBy: { organization: { name: 'asc' } },
+                },
+            },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('User no longer exists');
+        }
+        return this.userProfile(user);
+    }
+    userProfile(user) {
+        return {
+            sub: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            organizations: user.organizationMemberships.map((membership) => ({
+                id: membership.organization.id,
+                name: membership.organization.name,
+                slug: membership.organization.slug,
+                role: membership.role,
+            })),
         };
     }
 };

@@ -33,19 +33,22 @@ export class PortfolioController {
   }
 
   @Get('admin/all')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   findAllForAdmin(@Query() query: PortfolioQueryDto) {
     return this.portfolio.findAll(query, true);
   }
 
   @Get('admin/categories')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   findCategories() {
     return this.portfolio.findCategories();
   }
 
   @Get('admin/:slug')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   findOneForAdmin(@Param('slug') slug: string) {
     return this.portfolio.findOne(slug);
   }
@@ -56,13 +59,15 @@ export class PortfolioController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   create(@Body() dto: CreatePortfolioProjectDto) {
     return this.portfolio.create(dto);
   }
 
   @Patch(':slug')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   update(@Param('slug') slug: string, @Body() dto: UpdatePortfolioProjectDto) {
     return this.portfolio.update(slug, dto);
   }

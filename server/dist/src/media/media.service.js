@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MediaService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const client_1 = require("@prisma/client");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
 const crypto_1 = require("crypto");
+const prisma_service_1 = require("../prisma/prisma.service");
 const extensions = {
     'image/jpeg': 'jpg',
     'image/png': 'png',
@@ -27,13 +29,17 @@ const extensions = {
 };
 let MediaService = class MediaService {
     config;
-    constructor(config) {
+    prisma;
+    constructor(config, prisma) {
         this.config = config;
+        this.prisma = prisma;
     }
-    async createUpload(dto) {
-        const bucket = this.config.getOrThrow('S3_BUCKET');
+    async createUpload(user, dto) {
         const purpose = dto.purpose ?? 'PORTFOLIO';
-        const folder = purpose === 'DISCOVERY' ? 'discovery' : 'portfolio';
+        const folder = purpose === 'DISCOVERY'
+            ? await this.discoveryFolder(user, dto.briefId)
+            : this.portfolioFolder(user);
+        const bucket = this.config.getOrThrow('S3_BUCKET');
         const key = `${folder}/${new Date().toISOString().slice(0, 7)}/${(0, crypto_1.randomUUID)()}.${extensions[dto.contentType]}`;
         const client = this.client();
         const isPublic = purpose === 'PORTFOLIO';
@@ -93,10 +99,56 @@ let MediaService = class MediaService {
             throw new Error('Invalid discovery object key');
         }
     }
+    portfolioFolder(user) {
+        if (!this.isStaff(user)) {
+            throw new common_1.ForbiddenException('Only WebInk staff can upload public portfolio media');
+        }
+        return 'portfolio';
+    }
+    async discoveryFolder(user, briefId) {
+        if (!briefId) {
+            throw new common_1.BadRequestException('briefId is required for a discovery upload');
+        }
+        const brief = await this.prisma.discoveryBrief.findFirst({
+            where: {
+                id: briefId,
+                ...(this.isStaff(user)
+                    ? {}
+                    : {
+                        client: {
+                            organization: {
+                                memberships: {
+                                    some: {
+                                        userId: user.id,
+                                        role: {
+                                            in: [
+                                                client_1.OrganizationRole.OWNER,
+                                                client_1.OrganizationRole.MANAGER,
+                                                client_1.OrganizationRole.CONTRIBUTOR,
+                                                client_1.OrganizationRole.WEBINK_SPECIALIST,
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+            },
+            select: { client: { select: { organizationId: true } } },
+        });
+        if (!brief) {
+            throw new common_1.NotFoundException('Discovery brief not found');
+        }
+        return `discovery/${brief.client.organizationId}`;
+    }
+    isStaff(user) {
+        return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+    }
 };
 exports.MediaService = MediaService;
 exports.MediaService = MediaService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        prisma_service_1.PrismaService])
 ], MediaService);
 //# sourceMappingURL=media.service.js.map

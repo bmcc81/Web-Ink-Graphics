@@ -15,7 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContactController = void 0;
 const common_1 = require("@nestjs/common");
 const throttler_1 = require("@nestjs/throttler");
+const client_1 = require("@prisma/client");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const roles_decorator_1 = require("../auth/roles.decorator");
+const roles_guard_1 = require("../auth/roles.guard");
 const contact_service_1 = require("./contact.service");
 const contact_query_dto_1 = require("./dto/contact-query.dto");
 const create_contact_dto_1 = require("./dto/create-contact.dto");
@@ -54,7 +57,8 @@ __decorate([
 ], ContactController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('admin/export'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -63,7 +67,8 @@ __decorate([
 ], ContactController.prototype, "export", null);
 __decorate([
     (0, common_1.Get)('admin'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [contact_query_dto_1.ContactQueryDto]),
@@ -71,7 +76,8 @@ __decorate([
 ], ContactController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Patch)('admin/:id/status'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

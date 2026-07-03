@@ -81,6 +81,24 @@ session storage and expire after 30 minutes.
 The project editor supports bilingual case-study content, SEO metadata, publishing state,
 categories, display ordering, featured projects, and external cover-image metadata.
 
+## Customer workspaces and authorization
+
+Customer data is separated by organization. A user can belong to one or more organizations
+with an `OWNER`, `MANAGER`, `CONTRIBUTOR`, `VIEWER`, or `WEBINK_SPECIALIST` membership.
+Customer accounts only receive clients, discovery briefs, attachments, and generated prompts
+belonging to their verified memberships. WebInk `ADMIN` and `EDITOR` accounts retain staff
+access across customer organizations.
+
+Login responses include the user's organization memberships. `GET /api/auth/me` returns the
+current profile and refreshed membership list. Only owners and managers can approve or revoke
+approval of a discovery brief; the API records the authenticated approver rather than trusting
+an approver name submitted by the browser.
+
+New clients created by WebInk staff automatically receive a customer organization. Existing
+clients are assigned organizations by the organization-tenancy migration. Discovery uploads
+require an accessible brief and use an organization-specific private storage prefix. Public
+portfolio uploads and lead/portfolio administration remain restricted to WebInk staff.
+
 ## Client discovery briefs
 
 Client discovery is available at `/admin/clients`. Create a client, start a discovery brief,

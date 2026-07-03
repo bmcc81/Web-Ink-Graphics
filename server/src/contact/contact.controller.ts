@@ -10,8 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Role } from '@prisma/client';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import { ContactService } from './contact.service';
 import { ContactQueryDto } from './dto/contact-query.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -29,7 +32,8 @@ export class ContactController {
   }
 
   @Get('admin/export')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   async export(@Query() query: ContactQueryDto, @Res() response: Response) {
     const date = new Date().toISOString().slice(0, 10);
     response
@@ -39,13 +43,15 @@ export class ContactController {
   }
 
   @Get('admin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   findAll(@Query() query: ContactQueryDto) {
     return this.contact.findAll(query);
   }
 
   @Patch('admin/:id/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
   updateStatus(
     @Param('id') id: string,
     @Body() status: UpdateContactStatusDto,
