@@ -15,6 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PrismaExceptionFilter } from './prisma/prisma-exception.filter';
 import { SeoModule } from './seo/seo.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
     HealthModule,
     PortfolioModule,
     OrganizationsModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [

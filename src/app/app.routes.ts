@@ -228,6 +228,24 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/projects',
+    title: 'Projects | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/projects/portal-projects-list').then(
+        (module) => module.PortalProjectsList,
+      ),
+  },
+  {
+    path: 'portal/:organizationId/projects/:projectId',
+    title: 'Project | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/projects/portal-project-detail').then(
+        (module) => module.PortalProjectDetail,
+      ),
+  },
+  {
     path: 'admin/login',
     title: 'Admin Login | WebInk Graphics',
     loadComponent: () =>

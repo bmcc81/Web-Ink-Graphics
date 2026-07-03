@@ -1,0 +1,218 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a [routerLink]="['/portal', organizationId, 'projects']">Back to projects</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading project…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Project unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else if (project(); as current) {
+    <section class="welcome">
+      <p class="eyebrow">Project</p>
+      <h1>{{ current.name }}</h1>
+      @if (current.description) {
+        <p>{{ current.description }}</p>
+      }
+    </section>
+
+    @if (actionError()) {
+      <p class="error" role="alert">{{ actionError() }}</p>
+    }
+
+    <section class="project-meta" aria-label="Project status">
+      <div class="status-control">
+        <span class="label">Status</span>
+        @if (canContribute()) {
+          <select (change)="updateProjectStatus($any($event.target).value)">
+            @for (status of projectStatuses; track status) {
+              <option [value]="status" [selected]="status === current.status">
+                {{ status.replaceAll('_', ' ') }}
+              </option>
+            }
+          </select>
+        } @else {
+          <span class="status-badge" [attr.data-status]="current.status">
+            {{ current.status.replaceAll('_', ' ') }}
+          </span>
+        }
+      </div>
+      @if (canManage()) {
+        <button type="button" class="danger" (click)="deleteProject()">Delete project</button>
+      }
+    </section>
+
+    <section class="milestones" aria-label="Milestones">
+      <h2>Milestones</h2>
+      @if (current.milestones.length) {
+        <ul class="milestone-list">
+          @for (milestone of current.milestones; track milestone.id) {
+            <li>
+              <div class="milestone-header">
+                <span class="milestone-name">{{ milestone.name }}</span>
+                @if (milestone.dueDate) {
+                  <span class="due-date">Due {{ milestone.dueDate | date: 'mediumDate' }}</span>
+                }
+                @if (canContribute()) {
+                  <select
+                    (change)="updateMilestoneStatus(milestone, $any($event.target).value)"
+                  >
+                    @for (status of milestoneStatuses; track status) {
+                      <option [value]="status" [selected]="status === milestone.status">
+                        {{ status.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                  <button type="button" class="danger" (click)="deleteMilestone(milestone)">
+                    Delete
+                  </button>
+                } @else {
+                  <span class="status-badge">{{ milestone.status.replaceAll('_', ' ') }}</span>
+                }
+              </div>
+
+              <ul class="task-list">
+                @for (task of tasksForMilestone(milestone.id); track task.id) {
+                  <li>
+                    <span class="task-title">{{ task.title }}</span>
+                    @if (task.dueDate) {
+                      <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+                    }
+                    @if (canContribute()) {
+                      <select (change)="reassignTask(task, $any($event.target).value)">
+                        <option value="" [selected]="!task.assignee">Unassigned</option>
+                        @for (member of members(); track member.id) {
+                          <option
+                            [value]="member.user.id"
+                            [selected]="member.user.id === task.assignee?.id"
+                          >
+                            {{ member.user.name }}
+                          </option>
+                        }
+                      </select>
+                      <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                        @for (status of taskStatuses; track status) {
+                          <option [value]="status" [selected]="status === task.status">
+                            {{ status.replaceAll('_', ' ') }}
+                          </option>
+                        }
+                      </select>
+                      <button type="button" class="danger" (click)="deleteTask(task)">
+                        Delete
+                      </button>
+                    } @else {
+                      <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                      @if (task.assignee) {
+                        <span class="assignee">{{ task.assignee.name }}</span>
+                      }
+                    }
+                  </li>
+                } @empty {
+                  <li class="empty">No tasks yet.</li>
+                }
+              </ul>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No milestones yet.</p>
+      }
+    </section>
+
+    @if (unassignedTasks().length) {
+      <section class="tasks" aria-label="Tasks without a milestone">
+        <h2>Tasks without a milestone</h2>
+        <ul class="task-list">
+          @for (task of unassignedTasks(); track task.id) {
+            <li>
+              <span class="task-title">{{ task.title }}</span>
+              @if (task.dueDate) {
+                <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+              }
+              @if (canContribute()) {
+                <select (change)="reassignTask(task, $any($event.target).value)">
+                  <option value="" [selected]="!task.assignee">Unassigned</option>
+                  @for (member of members(); track member.id) {
+                    <option
+                      [value]="member.user.id"
+                      [selected]="member.user.id === task.assignee?.id"
+                    >
+                      {{ member.user.name }}
+                    </option>
+                  }
+                </select>
+                <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                  @for (status of taskStatuses; track status) {
+                    <option [value]="status" [selected]="status === task.status">
+                      {{ status.replaceAll('_', ' ') }}
+                    </option>
+                  }
+                </select>
+                <button type="button" class="danger" (click)="deleteTask(task)">Delete</button>
+              } @else {
+                <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                @if (task.assignee) {
+                  <span class="assignee">{{ task.assignee.name }}</span>
+                }
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (canContribute()) {
+      <section class="new-milestone" aria-label="Add a milestone">
+        <h2>Add a milestone</h2>
+        <form [formGroup]="milestoneForm" (ngSubmit)="createMilestone()">
+          <label>
+            Name
+            <input formControlName="name" />
+          </label>
+          <label>
+            Due date
+            <input formControlName="dueDate" type="date" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add milestone</button>
+        </form>
+      </section>
+
+      <section class="new-task" aria-label="Add a task">
+        <h2>Add a task</h2>
+        <form [formGroup]="taskForm" (ngSubmit)="createTask()">
+          <label>
+            Title
+            <input formControlName="title" />
+          </label>
+          <label>
+            Milestone
+            <select formControlName="milestoneId">
+              <option value="">No milestone</option>
+              @for (milestone of current.milestones; track milestone.id) {
+                <option [value]="milestone.id">{{ milestone.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Assignee
+            <select formControlName="assigneeId">
+              <option value="">Unassigned</option>
+              @for (member of members(); track member.id) {
+                <option [value]="member.user.id">{{ member.user.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Due date
+            <input formControlName="dueDate" type="date" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add task</button>
+        </form>
+      </section>
+    }
+  }
+</main>

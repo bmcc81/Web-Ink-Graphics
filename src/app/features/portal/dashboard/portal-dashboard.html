@@ -21,11 +21,18 @@
           <p>
             Planning, projects, budgets, and design reviews will live here.
           </p>
-          <a
-            class="btn btn-primary enter-workspace"
-            [routerLink]="['/portal', organization.id, 'members']"
-            >Manage team</a
-          >
+          <div class="actions">
+            <a
+              class="btn btn-primary enter-workspace"
+              [routerLink]="['/portal', organization.id, 'projects']"
+              >View projects</a
+            >
+            <a
+              class="enter-workspace secondary"
+              [routerLink]="['/portal', organization.id, 'members']"
+              >Manage team</a
+            >
+          </div>
         </article>
       } @empty {
         <article>

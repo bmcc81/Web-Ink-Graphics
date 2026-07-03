@@ -1,0 +1,76 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a routerLink="/portal">Back to companies</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading projects…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Projects unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else {
+    <section class="welcome">
+      <p class="eyebrow">Planning</p>
+      <h1>Projects</h1>
+    </section>
+
+    @if (actionError()) {
+      <p class="error" role="alert">{{ actionError() }}</p>
+    }
+
+    @if (canContribute()) {
+      <section class="create-project" aria-label="Create a project">
+        <h2>New project</h2>
+        <form [formGroup]="createForm" (ngSubmit)="create()">
+          <label>
+            Name
+            <input formControlName="name" />
+          </label>
+          <label>
+            Target launch
+            <input formControlName="targetLaunch" type="date" />
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="creating()">
+            {{ creating() ? 'Creating…' : 'Create project' }}
+          </button>
+        </form>
+      </section>
+    }
+
+    <section class="projects-list" aria-label="Projects">
+      @if (projects().length) {
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Target launch</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (project of projects(); track project.id) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/portal', organizationId, 'projects', project.id]">
+                    {{ project.name }}
+                  </a>
+                </td>
+                <td>
+                  <span class="status-badge" [attr.data-status]="project.status">
+                    {{ project.status.replaceAll('_', ' ') }}
+                  </span>
+                </td>
+                <td>{{ project.targetLaunch ? (project.targetLaunch | date: 'mediumDate') : '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p>No projects yet.</p>
+      }
+    </section>
+  }
+</main>

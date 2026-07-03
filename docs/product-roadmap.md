@@ -6,10 +6,10 @@ a stronger dependency or opportunity.
 
 ## 1. Customer access and workspace foundation
 
-**Status:** Foundation complete; member administration is the next refinement
+**Status:** Complete — customer access and workspace administration are fully in place
 
 - Organization invitations and account activation — implemented
-- Membership and role management
+- Membership and role management — implemented
 - Customer-safe authentication and tenant isolation — implemented
 - Customer dashboard shell — implemented
 
