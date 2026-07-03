@@ -3,6 +3,7 @@ import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 export declare class OrganizationsService {
     private readonly prisma;
     private readonly config;
@@ -65,6 +66,20 @@ export declare class OrganizationsService {
         };
         userId: string;
     }>;
+    updateMemberRole(user: AuthUser, organizationId: string, membershipId: string, dto: UpdateMemberRoleDto): Promise<{
+        id: string;
+        role: import("@prisma/client").$Enums.OrganizationRole;
+        user: {
+            id: string;
+            email: string;
+            name: string;
+        };
+    }>;
+    removeMember(user: AuthUser, organizationId: string, membershipId: string): Promise<{
+        removed: boolean;
+    }>;
+    private assertManagerScope;
+    private assertRemainingOwner;
     private assertCanView;
     private assertCanManage;
     private tokenHash;

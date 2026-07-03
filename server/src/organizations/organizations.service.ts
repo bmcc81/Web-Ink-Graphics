@@ -14,6 +14,7 @@ import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -228,6 +229,114 @@ export class OrganizationsService {
       organization: invitation.organization,
       userId: result.id,
     };
+  }
+
+  async updateMemberRole(
+    user: AuthUser,
+    organizationId: string,
+    membershipId: string,
+    dto: UpdateMemberRoleDto,
+  ) {
+    const actingRole = await this.assertCanManage(user, organizationId);
+    return this.prisma.$transaction(async (transaction) => {
+      const target = await transaction.organizationMembership.findFirst({
+        where: { id: membershipId, organizationId },
+        select: { id: true, role: true },
+      });
+      if (!target) throw new NotFoundException('Membership not found');
+
+      this.assertManagerScope(actingRole, target.role, dto.role);
+      await this.assertRemainingOwner(
+        transaction,
+        organizationId,
+        membershipId,
+        target.role,
+        dto.role,
+      );
+
+      return transaction.organizationMembership.update({
+        where: { id: membershipId },
+        data: { role: dto.role },
+        select: {
+          id: true,
+          role: true,
+          user: { select: { id: true, name: true, email: true } },
+        },
+      });
+    });
+  }
+
+  async removeMember(
+    user: AuthUser,
+    organizationId: string,
+    membershipId: string,
+  ) {
+    const actingRole = await this.assertCanManage(user, organizationId);
+    return this.prisma.$transaction(async (transaction) => {
+      const target = await transaction.organizationMembership.findFirst({
+        where: { id: membershipId, organizationId },
+        select: { id: true, role: true },
+      });
+      if (!target) throw new NotFoundException('Membership not found');
+
+      this.assertManagerScope(actingRole, target.role);
+      await this.assertRemainingOwner(
+        transaction,
+        organizationId,
+        membershipId,
+        target.role,
+        undefined,
+      );
+
+      await transaction.organizationMembership.delete({
+        where: { id: membershipId },
+      });
+      return { removed: true };
+    });
+  }
+
+  private assertManagerScope(
+    actingRole: OrganizationRole | Role,
+    ...rolesInvolved: OrganizationRole[]
+  ) {
+    if (actingRole !== OrganizationRole.MANAGER) return;
+    const restricted = new Set<OrganizationRole>([
+      OrganizationRole.OWNER,
+      OrganizationRole.MANAGER,
+      OrganizationRole.WEBINK_SPECIALIST,
+    ]);
+    if (rolesInvolved.some((role) => restricted.has(role))) {
+      throw new ForbiddenException(
+        'Managers can only manage contributor and viewer memberships',
+      );
+    }
+  }
+
+  private async assertRemainingOwner(
+    transaction: Pick<PrismaService, 'organizationMembership'>,
+    organizationId: string,
+    membershipId: string,
+    currentRole: OrganizationRole,
+    nextRole: OrganizationRole | undefined,
+  ) {
+    if (
+      currentRole !== OrganizationRole.OWNER ||
+      nextRole === OrganizationRole.OWNER
+    ) {
+      return;
+    }
+    const remainingOwners = await transaction.organizationMembership.count({
+      where: {
+        organizationId,
+        role: OrganizationRole.OWNER,
+        id: { not: membershipId },
+      },
+    });
+    if (remainingOwners === 0) {
+      throw new BadRequestException(
+        'Organizations must keep at least one owner',
+      );
+    }
   }
 
   private async assertCanView(user: AuthUser, organizationId: string) {

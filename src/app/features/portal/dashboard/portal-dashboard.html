@@ -21,7 +21,11 @@
           <p>
             Planning, projects, budgets, and design reviews will live here.
           </p>
-          <button type="button" disabled>Workspace coming next</button>
+          <a
+            class="btn btn-primary enter-workspace"
+            [routerLink]="['/portal', organization.id, 'members']"
+            >Manage team</a
+          >
         </article>
       } @empty {
         <article>

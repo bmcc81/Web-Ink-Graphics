@@ -1,0 +1,113 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a routerLink="/portal">Back to companies</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading team…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Team unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else {
+    <section class="welcome">
+      <p class="eyebrow">Team</p>
+      <h1>Manage members</h1>
+    </section>
+
+    @if (actionError()) {
+      <p class="error" role="alert">{{ actionError() }}</p>
+    }
+
+    <section class="members-list" aria-label="Members">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            @if (canManage()) {
+              <th></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (member of members(); track member.id) {
+            <tr>
+              <td>{{ member.user.name }}</td>
+              <td>{{ member.user.email }}</td>
+              <td>
+                @if (canModify(member)) {
+                  <select
+                    (change)="changeRole(member, $any($event.target).value)"
+                  >
+                    @for (role of assignableRoles(); track role) {
+                      <option [value]="role" [selected]="role === member.role">
+                        {{ role.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                } @else {
+                  {{ member.role.replaceAll('_', ' ') }}
+                }
+              </td>
+              @if (canManage()) {
+                <td>
+                  <button
+                    type="button"
+                    [disabled]="!canModify(member)"
+                    [title]="isLastOwner(member) ? 'An organization must keep at least one owner' : ''"
+                    (click)="removeMember(member)"
+                  >
+                    Remove
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    @if (canManage()) {
+      <section class="invite" aria-label="Invite a member">
+        <h2>Invite a member</h2>
+        <form [formGroup]="inviteForm" (ngSubmit)="invite()">
+          <label>
+            Email
+            <input formControlName="email" type="email" autocomplete="email" />
+          </label>
+          <label>
+            Role
+            <select formControlName="role">
+              @for (role of assignableRoles(); track role) {
+                <option [value]="role">{{ role.replaceAll('_', ' ') }}</option>
+              }
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="inviting()">
+            {{ inviting() ? 'Sending…' : 'Send invitation' }}
+          </button>
+        </form>
+      </section>
+
+      <section class="pending-invitations" aria-label="Pending invitations">
+        <h2>Pending invitations</h2>
+        @if (pendingInvitations().length) {
+          <ul>
+            @for (invitation of pendingInvitations(); track invitation.id) {
+              <li>
+                <span>{{ invitation.email }} — {{ invitation.role.replaceAll('_', ' ') }}</span>
+                <button type="button" (click)="revokeInvitation(invitation)">Revoke</button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>No pending invitations.</p>
+        }
+      </section>
+    }
+  }
+</main>
