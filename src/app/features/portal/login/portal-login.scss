@@ -1,0 +1,8 @@
+@use '../portal-auth';
+
+.success {
+  margin: 1.5rem 0 0;
+  padding: .85rem 1rem;
+  border-radius: .75rem;
+  background: rgba(223, 255, 79, .35);
+}

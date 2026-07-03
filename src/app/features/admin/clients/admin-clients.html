@@ -36,6 +36,40 @@
 
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
 
+    @if (inviteClient(); as client) {
+      <form class="invitation-form" [formGroup]="invitationForm" (ngSubmit)="createInvitation()">
+        <div>
+          <p>Customer access</p>
+          <h2>Invite someone to {{ client.companyName }}</h2>
+        </div>
+        <div class="invite-fields">
+          <label>Email<input type="email" formControlName="email" /></label>
+          <label>
+            Role
+            <select formControlName="role">
+              <option value="OWNER">Owner</option>
+              <option value="MANAGER">Manager</option>
+              <option value="CONTRIBUTOR">Contributor</option>
+              <option value="VIEWER">Viewer</option>
+            </select>
+          </label>
+        </div>
+        @if (inviteUrl()) {
+          <div class="invite-result">
+            <input readonly [value]="inviteUrl()" aria-label="Invitation URL" />
+            <button type="button" (click)="copyInvitation()">Copy link</button>
+          </div>
+        } @else {
+          <div class="invite-actions">
+            <button class="btn btn-dark" type="submit" [disabled]="inviting()">
+              {{ inviting() ? 'Creating…' : 'Create invitation' }}
+            </button>
+            <button type="button" (click)="inviteClient.set(null)">Cancel</button>
+          </div>
+        }
+      </form>
+    }
+
     <div class="summary" aria-label="Client discovery summary">
       <article><strong>{{ clients().length }}</strong><span>Total clients</span></article>
       <article><strong>{{ activeBriefs() }}</strong><span>Active briefs</span></article>
@@ -72,6 +106,9 @@
                 Continue: {{ brief.title }} <span>→</span>
               </a>
             }
+            <button class="invite-button" type="button" (click)="openInvitation(client)">
+              Invite customer
+            </button>
             <a class="new-brief" [routerLink]="['/admin/clients', client.id, 'discovery', 'new']">+ New discovery brief</a>
           </article>
         } @empty {

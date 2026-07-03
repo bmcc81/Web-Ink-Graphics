@@ -1,0 +1,34 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <button type="button" (click)="logout()">Sign out</button>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading your workspace…</p></section>
+  } @else if (user(); as account) {
+    <section class="welcome">
+      <p class="eyebrow">Customer workspace</p>
+      <h1>Hello, {{ account.name }}.</h1>
+      <p>Select a company to continue.</p>
+    </section>
+
+    <section class="company-grid" aria-label="Your companies">
+      @for (organization of account.organizations; track organization.id) {
+        <article>
+          <span>{{ organization.role.replaceAll('_', ' ') }}</span>
+          <h2>{{ organization.name }}</h2>
+          <p>
+            Planning, projects, budgets, and design reviews will live here.
+          </p>
+          <button type="button" disabled>Workspace coming next</button>
+        </article>
+      } @empty {
+        <article>
+          <h2>No company memberships yet</h2>
+          <p>Ask a company owner or WebInk specialist for an invitation.</p>
+        </article>
+      }
+    </section>
+  }
+</main>

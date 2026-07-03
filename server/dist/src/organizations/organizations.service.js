@@ -13,6 +13,7 @@ exports.OrganizationsService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const client_1 = require("@prisma/client");
+const bcryptjs_1 = require("bcryptjs");
 const crypto_1 = require("crypto");
 const prisma_service_1 = require("../prisma/prisma.service");
 let OrganizationsService = class OrganizationsService {
@@ -117,6 +118,86 @@ let OrganizationsService = class OrganizationsService {
         }
         return { revoked: true };
     }
+    async inspectInvitation(token) {
+        const invitation = await this.activeInvitation(token);
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: invitation.email },
+            select: { id: true },
+        });
+        return {
+            email: invitation.email,
+            role: invitation.role,
+            expiresAt: invitation.expiresAt,
+            organization: invitation.organization,
+            existingAccount: Boolean(existingUser),
+        };
+    }
+    async acceptInvitation(token, dto) {
+        const invitation = await this.activeInvitation(token);
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: invitation.email },
+            select: {
+                id: true,
+                passwordHash: true,
+            },
+        });
+        if (existingUser &&
+            !(await (0, bcryptjs_1.compare)(dto.password, existingUser.passwordHash))) {
+            throw new common_1.UnauthorizedException('Use the password for the existing account associated with this email');
+        }
+        const name = dto.name?.trim();
+        if (!existingUser && (!name || name.length < 2)) {
+            throw new common_1.BadRequestException('A name is required when creating a new account');
+        }
+        const passwordHash = existingUser
+            ? undefined
+            : await (0, bcryptjs_1.hash)(dto.password, 12);
+        const result = await this.prisma.$transaction(async (transaction) => {
+            const accepted = await transaction.organizationInvitation.updateMany({
+                where: {
+                    id: invitation.id,
+                    acceptedAt: null,
+                    revokedAt: null,
+                    expiresAt: { gt: new Date() },
+                },
+                data: { acceptedAt: new Date() },
+            });
+            if (!accepted.count) {
+                throw new common_1.ConflictException('This invitation is no longer active');
+            }
+            const account = existingUser ??
+                (await transaction.user.create({
+                    data: {
+                        email: invitation.email,
+                        name: name,
+                        passwordHash: passwordHash,
+                        role: client_1.Role.CUSTOMER,
+                    },
+                    select: { id: true },
+                }));
+            await transaction.organizationMembership.upsert({
+                where: {
+                    userId_organizationId: {
+                        userId: account.id,
+                        organizationId: invitation.organizationId,
+                    },
+                },
+                update: { role: invitation.role },
+                create: {
+                    userId: account.id,
+                    organizationId: invitation.organizationId,
+                    role: invitation.role,
+                },
+            });
+            return account;
+        });
+        return {
+            accepted: true,
+            email: invitation.email,
+            organization: invitation.organization,
+            userId: result.id,
+        };
+    }
     async assertCanView(user, organizationId) {
         if (this.isStaff(user))
             return;
@@ -135,21 +216,49 @@ let OrganizationsService = class OrganizationsService {
             select: { role: true },
         });
         if (!membership ||
-            ![client_1.OrganizationRole.OWNER, client_1.OrganizationRole.MANAGER].includes(membership.role)) {
+            !new Set([
+                client_1.OrganizationRole.OWNER,
+                client_1.OrganizationRole.MANAGER,
+            ]).has(membership.role)) {
             throw new common_1.ForbiddenException('Only organization owners and managers can manage invitations');
         }
         if (membership.role === client_1.OrganizationRole.MANAGER &&
             invitationRole &&
-            ![
+            !new Set([
                 client_1.OrganizationRole.CONTRIBUTOR,
                 client_1.OrganizationRole.VIEWER,
-            ].includes(invitationRole)) {
+            ]).has(invitationRole)) {
             throw new common_1.ForbiddenException('Managers can only invite contributors and viewers');
         }
         return membership.role;
     }
     tokenHash(token) {
         return (0, crypto_1.createHash)('sha256').update(token).digest('hex');
+    }
+    async activeInvitation(token) {
+        if (!token || token.length < 32 || token.length > 256) {
+            throw new common_1.NotFoundException('Invitation not found');
+        }
+        const invitation = await this.prisma.organizationInvitation.findUnique({
+            where: { tokenHash: this.tokenHash(token) },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                expiresAt: true,
+                acceptedAt: true,
+                revokedAt: true,
+                organizationId: true,
+                organization: { select: { id: true, name: true, slug: true } },
+            },
+        });
+        if (!invitation ||
+            invitation.acceptedAt ||
+            invitation.revokedAt ||
+            invitation.expiresAt <= new Date()) {
+            throw new common_1.NotFoundException('Invitation not found or no longer active');
+        }
+        return invitation;
     }
     isStaff(user) {
         return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;

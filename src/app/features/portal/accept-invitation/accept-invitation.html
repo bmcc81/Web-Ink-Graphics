@@ -1,0 +1,51 @@
+<main class="portal-auth">
+  <section class="auth-card">
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+
+    @if (loading()) {
+      <p class="eyebrow">Checking invitation</p>
+      <h1>One moment…</h1>
+    } @else if (invitation(); as invite) {
+      <p class="eyebrow">Company invitation</p>
+      <h1>Join {{ invite.organization.name }}</h1>
+      <p class="intro">
+        {{ invite.email }} was invited as
+        <strong>{{ invite.role.replaceAll('_', ' ').toLowerCase() }}</strong>.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        @if (!invite.existingAccount) {
+          <label>
+            Your name
+            <input formControlName="name" autocomplete="name" />
+          </label>
+        } @else {
+          <p class="account-note">
+            You already have a WebInk account. Enter its current password to
+            add this company.
+          </p>
+        }
+        <label>
+          {{ invite.existingAccount ? 'Current password' : 'Create a password' }}
+          <input
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+          />
+          <small>At least 12 characters.</small>
+        </label>
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+        <button class="btn btn-primary" type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Joining…' : 'Join company' }}
+        </button>
+      </form>
+    } @else {
+      <p class="eyebrow">Invitation unavailable</p>
+      <h1>This link can’t be used.</h1>
+      <p class="intro">{{ error() }}</p>
+      <a class="btn btn-primary" routerLink="/">Return to WebInk</a>
+    }
+  </section>
+</main>

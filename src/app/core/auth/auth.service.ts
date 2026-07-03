@@ -3,16 +3,24 @@ import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { tap } from 'rxjs';
 
-interface AdminUser {
+export interface OrganizationMembershipSummary {
+  id: string;
+  name: string;
+  slug: string;
+  role: 'OWNER' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'WEBINK_SPECIALIST';
+}
+
+export interface AuthenticatedUser {
   sub: string;
   email: string;
   name: string;
-  role: 'ADMIN' | 'EDITOR';
+  role: 'ADMIN' | 'EDITOR' | 'CUSTOMER';
+  organizations: OrganizationMembershipSummary[];
 }
 
 interface LoginResponse {
   accessToken: string;
-  user: AdminUser;
+  user: AuthenticatedUser;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +29,7 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly storageKey = 'webink_admin_token';
   readonly token = signal<string | null>(this.readToken());
+  readonly user = signal<AuthenticatedUser | null>(null);
 
   get authenticated() {
     return Boolean(this.token());
@@ -30,8 +39,9 @@ export class AuthService {
     return this.http
       .post<LoginResponse>('/api/auth/login', { email, password })
       .pipe(
-        tap(({ accessToken }) => {
+        tap(({ accessToken, user }) => {
           this.token.set(accessToken);
+          this.user.set(user);
           if (isPlatformBrowser(this.platformId)) {
             sessionStorage.setItem(this.storageKey, accessToken);
           }
@@ -39,8 +49,15 @@ export class AuthService {
       );
   }
 
+  profile() {
+    return this.http
+      .get<AuthenticatedUser>('/api/auth/me')
+      .pipe(tap((user) => this.user.set(user)));
+  }
+
   logout() {
     this.token.set(null);
+    this.user.set(null);
     if (isPlatformBrowser(this.platformId)) {
       sessionStorage.removeItem(this.storageKey);
     }

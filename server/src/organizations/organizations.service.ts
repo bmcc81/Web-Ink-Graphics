@@ -1,14 +1,18 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OrganizationRole, Role } from '@prisma/client';
+import { compare, hash } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
 import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 
 @Injectable()
@@ -132,6 +136,100 @@ export class OrganizationsService {
     return { revoked: true };
   }
 
+  async inspectInvitation(token: string) {
+    const invitation = await this.activeInvitation(token);
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: invitation.email },
+      select: { id: true },
+    });
+    return {
+      email: invitation.email,
+      role: invitation.role,
+      expiresAt: invitation.expiresAt,
+      organization: invitation.organization,
+      existingAccount: Boolean(existingUser),
+    };
+  }
+
+  async acceptInvitation(token: string, dto: AcceptInvitationDto) {
+    const invitation = await this.activeInvitation(token);
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: invitation.email },
+      select: {
+        id: true,
+        passwordHash: true,
+      },
+    });
+
+    if (
+      existingUser &&
+      !(await compare(dto.password, existingUser.passwordHash))
+    ) {
+      throw new UnauthorizedException(
+        'Use the password for the existing account associated with this email',
+      );
+    }
+    const name = dto.name?.trim();
+    if (!existingUser && (!name || name.length < 2)) {
+      throw new BadRequestException(
+        'A name is required when creating a new account',
+      );
+    }
+
+    const passwordHash = existingUser
+      ? undefined
+      : await hash(dto.password, 12);
+    const result = await this.prisma.$transaction(async (transaction) => {
+      const accepted = await transaction.organizationInvitation.updateMany({
+        where: {
+          id: invitation.id,
+          acceptedAt: null,
+          revokedAt: null,
+          expiresAt: { gt: new Date() },
+        },
+        data: { acceptedAt: new Date() },
+      });
+      if (!accepted.count) {
+        throw new ConflictException('This invitation is no longer active');
+      }
+
+      const account =
+        existingUser ??
+        (await transaction.user.create({
+          data: {
+            email: invitation.email,
+            name: name!,
+            passwordHash: passwordHash!,
+            role: Role.CUSTOMER,
+          },
+          select: { id: true },
+        }));
+
+      await transaction.organizationMembership.upsert({
+        where: {
+          userId_organizationId: {
+            userId: account.id,
+            organizationId: invitation.organizationId,
+          },
+        },
+        update: { role: invitation.role },
+        create: {
+          userId: account.id,
+          organizationId: invitation.organizationId,
+          role: invitation.role,
+        },
+      });
+      return account;
+    });
+
+    return {
+      accepted: true,
+      email: invitation.email,
+      organization: invitation.organization,
+      userId: result.id,
+    };
+  }
+
   private async assertCanView(user: AuthUser, organizationId: string) {
     if (this.isStaff(user)) return;
     const membership = await this.prisma.organizationMembership.findUnique({
@@ -153,9 +251,10 @@ export class OrganizationsService {
     });
     if (
       !membership ||
-      ![OrganizationRole.OWNER, OrganizationRole.MANAGER].includes(
-        membership.role,
-      )
+      !new Set<OrganizationRole>([
+        OrganizationRole.OWNER,
+        OrganizationRole.MANAGER,
+      ]).has(membership.role)
     ) {
       throw new ForbiddenException(
         'Only organization owners and managers can manage invitations',
@@ -164,10 +263,10 @@ export class OrganizationsService {
     if (
       membership.role === OrganizationRole.MANAGER &&
       invitationRole &&
-      ![
+      !new Set<OrganizationRole>([
         OrganizationRole.CONTRIBUTOR,
         OrganizationRole.VIEWER,
-      ].includes(invitationRole)
+      ]).has(invitationRole)
     ) {
       throw new ForbiddenException(
         'Managers can only invite contributors and viewers',
@@ -178,6 +277,34 @@ export class OrganizationsService {
 
   private tokenHash(token: string) {
     return createHash('sha256').update(token).digest('hex');
+  }
+
+  private async activeInvitation(token: string) {
+    if (!token || token.length < 32 || token.length > 256) {
+      throw new NotFoundException('Invitation not found');
+    }
+    const invitation = await this.prisma.organizationInvitation.findUnique({
+      where: { tokenHash: this.tokenHash(token) },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        expiresAt: true,
+        acceptedAt: true,
+        revokedAt: true,
+        organizationId: true,
+        organization: { select: { id: true, name: true, slug: true } },
+      },
+    });
+    if (
+      !invitation ||
+      invitation.acceptedAt ||
+      invitation.revokedAt ||
+      invitation.expiresAt <= new Date()
+    ) {
+      throw new NotFoundException('Invitation not found or no longer active');
+    }
+    return invitation;
   }
 
   private isStaff(user: AuthUser) {

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
+import { portalAuthGuard } from './core/auth/portal-auth.guard';
 
 export const routes: Routes = [
   {
@@ -191,6 +192,31 @@ export const routes: Routes = [
         loadComponent: () => import('./features/portfolio/case-study/case-study').then((module) => module.CaseStudy),
       },
     ],
+  },
+  {
+    path: 'accept-invitation',
+    title: 'Accept Company Invitation | WebInk Graphics',
+    loadComponent: () =>
+      import('./features/portal/accept-invitation/accept-invitation').then(
+        (module) => module.AcceptInvitation,
+      ),
+  },
+  {
+    path: 'portal/login',
+    title: 'Customer Login | WebInk Graphics',
+    loadComponent: () =>
+      import('./features/portal/login/portal-login').then(
+        (module) => module.PortalLogin,
+      ),
+  },
+  {
+    path: 'portal',
+    title: 'Customer Workspace | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/dashboard/portal-dashboard').then(
+        (module) => module.PortalDashboard,
+      ),
   },
   {
     path: 'admin/login',

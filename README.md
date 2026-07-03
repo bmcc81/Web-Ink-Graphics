@@ -2,6 +2,9 @@
 
 Lead-generation website and portfolio administration platform for WebInk Graphics.
 
+Product direction and implementation priorities are tracked in
+[`docs/product-roadmap.md`](docs/product-roadmap.md).
+
 ## Applications
 
 - `src/` — Angular 21 public website with SSR and prerendering
@@ -93,6 +96,19 @@ Login responses include the user's organization memberships. `GET /api/auth/me` 
 current profile and refreshed membership list. Only owners and managers can approve or revoke
 approval of a discovery brief; the API records the authenticated approver rather than trusting
 an approver name submitted by the browser.
+
+WebInk staff and permitted organization managers can create company invitations from the
+client administration screen. Invitation links support both new account activation and adding
+a company to an existing account:
+
+- `GET /api/invitations/:token` — inspect an active invitation
+- `POST /api/invitations/:token/accept` — create or verify the account and add membership
+- `GET /api/organizations/:organizationId/members` — list company members
+- `GET|POST /api/organizations/:organizationId/invitations` — list or create invitations
+- `DELETE /api/organizations/:organizationId/invitations/:invitationId` — revoke an invite
+
+Customer activation is available at `/accept-invitation`; customer sign-in and the initial
+workspace selector are available at `/portal/login` and `/portal`.
 
 New clients created by WebInk staff automatically receive a customer organization. Existing
 clients are assigned organizations by the organization-tenancy migration. Discovery uploads

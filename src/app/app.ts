@@ -12,14 +12,22 @@ import { LanguageService } from './core/i18n/language.service';
 export class App {
   readonly i18n = inject(LanguageService);
   readonly menuOpen = signal(false);
-  readonly adminArea = signal(false);
+  readonly applicationArea = signal(false);
   readonly currentYear = new Date().getFullYear();
 
   constructor(router: Router) {
-    this.adminArea.set(router.url.startsWith('/admin'));
+    this.applicationArea.set(this.isApplicationArea(router.url));
     router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
       this.menuOpen.set(false);
-      this.adminArea.set(event.urlAfterRedirects.startsWith('/admin'));
+      this.applicationArea.set(this.isApplicationArea(event.urlAfterRedirects));
     });
+  }
+
+  private isApplicationArea(url: string) {
+    return (
+      url.startsWith('/admin') ||
+      url.startsWith('/portal') ||
+      url.startsWith('/accept-invitation')
+    );
   }
 }

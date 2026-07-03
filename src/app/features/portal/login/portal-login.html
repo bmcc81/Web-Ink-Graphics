@@ -1,0 +1,31 @@
+<main class="portal-auth">
+  <section class="auth-card">
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <p class="eyebrow">Customer workspace</p>
+    <h1>Welcome back.</h1>
+    <p class="intro">Sign in to see your companies, plans, and active work.</p>
+    @if (invitationAccepted) {
+      <p class="success">Your invitation was accepted. You can sign in now.</p>
+    }
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        Email
+        <input formControlName="email" type="email" autocomplete="email" />
+      </label>
+      <label>
+        Password
+        <input
+          formControlName="password"
+          type="password"
+          autocomplete="current-password"
+        />
+      </label>
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+      <button class="btn btn-primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+  </section>
+</main>

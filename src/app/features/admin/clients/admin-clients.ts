@@ -6,6 +6,7 @@ import { finalize } from 'rxjs';
 
 interface ClientSummary {
   id: string;
+  organizationId: string;
   companyName: string;
   industry?: string;
   status: string;
@@ -36,6 +37,9 @@ export class AdminClients {
   readonly creating = signal(false);
   readonly showForm = signal(false);
   readonly error = signal('');
+  readonly inviteClient = signal<ClientSummary | null>(null);
+  readonly inviting = signal(false);
+  readonly inviteUrl = signal('');
   readonly search = signal('');
   readonly statusFilter = signal('ALL');
   readonly today = new Date().toISOString().slice(0, 10);
@@ -85,6 +89,10 @@ export class AdminClients {
     contactPhone: [''],
     website: [''],
     serviceArea: [''],
+  });
+  readonly invitationForm = this.formBuilder.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    role: ['VIEWER', Validators.required],
   });
 
   constructor() {
@@ -137,5 +145,41 @@ export class AdminClients {
         (question) => question.dueDate && question.dueDate.slice(0, 10) < this.today,
       ).length || 0
     );
+  }
+
+  openInvitation(client: ClientSummary) {
+    this.inviteClient.set(client);
+    this.inviteUrl.set('');
+    this.invitationForm.reset({
+      email: client.contactEmail ?? '',
+      role: 'VIEWER',
+    });
+  }
+
+  createInvitation() {
+    const client = this.inviteClient();
+    if (!client || this.invitationForm.invalid || this.inviting()) {
+      this.invitationForm.markAllAsTouched();
+      return;
+    }
+    this.inviting.set(true);
+    this.http
+      .post<{ inviteUrl: string }>(
+        `/api/organizations/${client.organizationId}/invitations`,
+        this.invitationForm.getRawValue(),
+      )
+      .pipe(finalize(() => this.inviting.set(false)))
+      .subscribe({
+        next: ({ inviteUrl }) => this.inviteUrl.set(inviteUrl),
+        error: () =>
+          this.error.set('The company invitation could not be created.'),
+      });
+  }
+
+  copyInvitation() {
+    const url = this.inviteUrl();
+    if (url && globalThis.navigator?.clipboard) {
+      void globalThis.navigator.clipboard.writeText(url);
+    }
   }
 }
