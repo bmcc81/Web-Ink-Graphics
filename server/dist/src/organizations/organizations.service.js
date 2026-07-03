@@ -198,6 +198,73 @@ let OrganizationsService = class OrganizationsService {
             userId: result.id,
         };
     }
+    async updateMemberRole(user, organizationId, membershipId, dto) {
+        const actingRole = await this.assertCanManage(user, organizationId);
+        return this.prisma.$transaction(async (transaction) => {
+            const target = await transaction.organizationMembership.findFirst({
+                where: { id: membershipId, organizationId },
+                select: { id: true, role: true },
+            });
+            if (!target)
+                throw new common_1.NotFoundException('Membership not found');
+            this.assertManagerScope(actingRole, target.role, dto.role);
+            await this.assertRemainingOwner(transaction, organizationId, membershipId, target.role, dto.role);
+            return transaction.organizationMembership.update({
+                where: { id: membershipId },
+                data: { role: dto.role },
+                select: {
+                    id: true,
+                    role: true,
+                    user: { select: { id: true, name: true, email: true } },
+                },
+            });
+        });
+    }
+    async removeMember(user, organizationId, membershipId) {
+        const actingRole = await this.assertCanManage(user, organizationId);
+        return this.prisma.$transaction(async (transaction) => {
+            const target = await transaction.organizationMembership.findFirst({
+                where: { id: membershipId, organizationId },
+                select: { id: true, role: true },
+            });
+            if (!target)
+                throw new common_1.NotFoundException('Membership not found');
+            this.assertManagerScope(actingRole, target.role);
+            await this.assertRemainingOwner(transaction, organizationId, membershipId, target.role, undefined);
+            await transaction.organizationMembership.delete({
+                where: { id: membershipId },
+            });
+            return { removed: true };
+        });
+    }
+    assertManagerScope(actingRole, ...rolesInvolved) {
+        if (actingRole !== client_1.OrganizationRole.MANAGER)
+            return;
+        const restricted = new Set([
+            client_1.OrganizationRole.OWNER,
+            client_1.OrganizationRole.MANAGER,
+            client_1.OrganizationRole.WEBINK_SPECIALIST,
+        ]);
+        if (rolesInvolved.some((role) => restricted.has(role))) {
+            throw new common_1.ForbiddenException('Managers can only manage contributor and viewer memberships');
+        }
+    }
+    async assertRemainingOwner(transaction, organizationId, membershipId, currentRole, nextRole) {
+        if (currentRole !== client_1.OrganizationRole.OWNER ||
+            nextRole === client_1.OrganizationRole.OWNER) {
+            return;
+        }
+        const remainingOwners = await transaction.organizationMembership.count({
+            where: {
+                organizationId,
+                role: client_1.OrganizationRole.OWNER,
+                id: { not: membershipId },
+            },
+        });
+        if (remainingOwners === 0) {
+            throw new common_1.BadRequestException('Organizations must keep at least one owner');
+        }
+    }
     async assertCanView(user, organizationId) {
         if (this.isStaff(user))
             return;

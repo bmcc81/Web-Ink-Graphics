@@ -1,6 +1,12 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { OrganizationRole } from '@prisma/client';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { OrganizationRole, Role } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import type { AuthUser } from '../auth/auth-user';
 import { OrganizationsService } from './organizations.service';
 
 describe('OrganizationsService invitation acceptance', () => {
@@ -26,6 +32,11 @@ describe('OrganizationsService invitation acceptance', () => {
     },
     organizationMembership: {
       upsert: jest.fn(),
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
     },
     user: {
       findUnique: jest.fn(),
@@ -129,5 +140,274 @@ describe('OrganizationsService invitation acceptance', () => {
     await expect(service.inspectInvitation(token)).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+});
+
+describe('OrganizationsService member management', () => {
+  const organizationId = 'organization-1';
+  const owner: AuthUser = {
+    id: 'user-owner',
+    email: 'owner@example.com',
+    name: 'Owner',
+    role: Role.CUSTOMER,
+  };
+  const manager: AuthUser = {
+    id: 'user-manager',
+    email: 'manager@example.com',
+    name: 'Manager',
+    role: Role.CUSTOMER,
+  };
+  const staff: AuthUser = {
+    id: 'user-staff',
+    email: 'staff@example.com',
+    name: 'Staff',
+    role: Role.ADMIN,
+  };
+  const outsider: AuthUser = {
+    id: 'user-outsider',
+    email: 'outsider@example.com',
+    name: 'Outsider',
+    role: Role.CUSTOMER,
+  };
+
+  const prisma = {
+    organizationMembership: {
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  };
+  const config = { getOrThrow: jest.fn() };
+  let service: OrganizationsService;
+
+  function actorMembership(role: OrganizationRole) {
+    prisma.organizationMembership.findUnique.mockResolvedValue({ role });
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    prisma.$transaction.mockImplementation(
+      (operation: (transaction: typeof prisma) => unknown) => operation(prisma),
+    );
+    service = new OrganizationsService(prisma as never, config as never);
+  });
+
+  describe('updateMemberRole', () => {
+    it('lets an owner promote a contributor to manager', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.CONTRIBUTOR,
+      });
+      prisma.organizationMembership.update.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.MANAGER,
+        user: { id: 'user-2', name: 'Target', email: 'target@example.com' },
+      });
+
+      const result = await service.updateMemberRole(
+        owner,
+        organizationId,
+        'membership-target',
+        { role: OrganizationRole.MANAGER },
+      );
+
+      expect(result.role).toBe(OrganizationRole.MANAGER);
+      expect(prisma.organizationMembership.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'membership-target' },
+          data: { role: OrganizationRole.MANAGER },
+        }),
+      );
+    });
+
+    it('lets a manager change a contributor to viewer', async () => {
+      actorMembership(OrganizationRole.MANAGER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.CONTRIBUTOR,
+      });
+      prisma.organizationMembership.update.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.VIEWER,
+        user: { id: 'user-2', name: 'Target', email: 'target@example.com' },
+      });
+
+      await expect(
+        service.updateMemberRole(manager, organizationId, 'membership-target', {
+          role: OrganizationRole.VIEWER,
+        }),
+      ).resolves.toMatchObject({ role: OrganizationRole.VIEWER });
+    });
+
+    it('blocks a manager from changing another manager', async () => {
+      actorMembership(OrganizationRole.MANAGER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.MANAGER,
+      });
+
+      await expect(
+        service.updateMemberRole(manager, organizationId, 'membership-target', {
+          role: OrganizationRole.VIEWER,
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.organizationMembership.update).not.toHaveBeenCalled();
+    });
+
+    it('blocks a manager from promoting a contributor to manager', async () => {
+      actorMembership(OrganizationRole.MANAGER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.CONTRIBUTOR,
+      });
+
+      await expect(
+        service.updateMemberRole(manager, organizationId, 'membership-target', {
+          role: OrganizationRole.MANAGER,
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.organizationMembership.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects demoting the sole remaining owner', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.OWNER,
+      });
+      prisma.organizationMembership.count.mockResolvedValue(0);
+
+      await expect(
+        service.updateMemberRole(owner, organizationId, 'membership-target', {
+          role: OrganizationRole.MANAGER,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.organizationMembership.update).not.toHaveBeenCalled();
+    });
+
+    it('allows demoting an owner when another owner remains', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.OWNER,
+      });
+      prisma.organizationMembership.count.mockResolvedValue(1);
+      prisma.organizationMembership.update.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.MANAGER,
+        user: { id: 'user-2', name: 'Target', email: 'target@example.com' },
+      });
+
+      await expect(
+        service.updateMemberRole(owner, organizationId, 'membership-target', {
+          role: OrganizationRole.MANAGER,
+        }),
+      ).resolves.toMatchObject({ role: OrganizationRole.MANAGER });
+    });
+
+    it('throws when the membership does not belong to the organization', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.updateMemberRole(owner, organizationId, 'missing', {
+          role: OrganizationRole.VIEWER,
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('rejects a caller who is not an owner or manager', async () => {
+      prisma.organizationMembership.findUnique.mockResolvedValue({
+        role: OrganizationRole.VIEWER,
+      });
+
+      await expect(
+        service.updateMemberRole(
+          outsider,
+          organizationId,
+          'membership-target',
+          {
+            role: OrganizationRole.CONTRIBUTOR,
+          },
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.organizationMembership.findFirst).not.toHaveBeenCalled();
+    });
+
+    it('lets staff update roles regardless of org membership', async () => {
+      prisma.organizationMembership.findUnique.mockResolvedValue(null);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.CONTRIBUTOR,
+      });
+      prisma.organizationMembership.update.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.MANAGER,
+        user: { id: 'user-2', name: 'Target', email: 'target@example.com' },
+      });
+
+      await expect(
+        service.updateMemberRole(staff, organizationId, 'membership-target', {
+          role: OrganizationRole.MANAGER,
+        }),
+      ).resolves.toMatchObject({ role: OrganizationRole.MANAGER });
+    });
+  });
+
+  describe('removeMember', () => {
+    it('lets an owner remove a viewer', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.VIEWER,
+      });
+
+      await expect(
+        service.removeMember(owner, organizationId, 'membership-target'),
+      ).resolves.toEqual({ removed: true });
+      expect(prisma.organizationMembership.delete).toHaveBeenCalledWith({
+        where: { id: 'membership-target' },
+      });
+    });
+
+    it('blocks a manager from removing a webink specialist', async () => {
+      actorMembership(OrganizationRole.MANAGER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.WEBINK_SPECIALIST,
+      });
+
+      await expect(
+        service.removeMember(manager, organizationId, 'membership-target'),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.organizationMembership.delete).not.toHaveBeenCalled();
+    });
+
+    it('rejects removing the sole remaining owner', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-target',
+        role: OrganizationRole.OWNER,
+      });
+      prisma.organizationMembership.count.mockResolvedValue(0);
+
+      await expect(
+        service.removeMember(owner, organizationId, 'membership-target'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.organizationMembership.delete).not.toHaveBeenCalled();
+    });
+
+    it('throws when the membership does not belong to the organization', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.organizationMembership.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.removeMember(owner, organizationId, 'missing'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
   });
 });

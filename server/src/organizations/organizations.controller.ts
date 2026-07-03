@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import type { AuthUser } from '../auth/auth-user';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { OrganizationsService } from './organizations.service';
 
 @Controller('organizations')
@@ -41,6 +43,30 @@ export class OrganizationsController {
     @Body() dto: CreateInvitationDto,
   ) {
     return this.organizations.createInvitation(user, organizationId, dto);
+  }
+
+  @Patch(':organizationId/members/:membershipId')
+  updateMemberRole(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('membershipId') membershipId: string,
+    @Body() dto: UpdateMemberRoleDto,
+  ) {
+    return this.organizations.updateMemberRole(
+      user,
+      organizationId,
+      membershipId,
+      dto,
+    );
+  }
+
+  @Delete(':organizationId/members/:membershipId')
+  removeMember(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('membershipId') membershipId: string,
+  ) {
+    return this.organizations.removeMember(user, organizationId, membershipId);
   }
 
   @Delete(':organizationId/invitations/:invitationId')

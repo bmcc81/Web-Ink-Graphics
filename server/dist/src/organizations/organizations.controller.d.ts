@@ -1,5 +1,6 @@
 import type { AuthUser } from '../auth/auth-user';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { OrganizationsService } from './organizations.service';
 export declare class OrganizationsController {
     private readonly organizations;
@@ -37,6 +38,18 @@ export declare class OrganizationsController {
             name: string;
         };
         expiresAt: Date;
+    }>;
+    updateMemberRole(user: AuthUser, organizationId: string, membershipId: string, dto: UpdateMemberRoleDto): Promise<{
+        id: string;
+        role: import("@prisma/client").$Enums.OrganizationRole;
+        user: {
+            id: string;
+            email: string;
+            name: string;
+        };
+    }>;
+    removeMember(user: AuthUser, organizationId: string, membershipId: string): Promise<{
+        removed: boolean;
     }>;
     revokeInvitation(user: AuthUser, organizationId: string, invitationId: string): Promise<{
         revoked: boolean;

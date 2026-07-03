@@ -10,6 +10,8 @@ export interface OrganizationMembershipSummary {
   role: 'OWNER' | 'MANAGER' | 'CONTRIBUTOR' | 'VIEWER' | 'WEBINK_SPECIALIST';
 }
 
+export type OrganizationRole = OrganizationMembershipSummary['role'];
+
 export interface AuthenticatedUser {
   sub: string;
   email: string;

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const current_user_decorator_1 = require("../auth/current-user.decorator");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_invitation_dto_1 = require("./dto/create-invitation.dto");
+const update_member_role_dto_1 = require("./dto/update-member-role.dto");
 const organizations_service_1 = require("./organizations.service");
 let OrganizationsController = class OrganizationsController {
     organizations;
@@ -31,6 +32,12 @@ let OrganizationsController = class OrganizationsController {
     }
     createInvitation(user, organizationId, dto) {
         return this.organizations.createInvitation(user, organizationId, dto);
+    }
+    updateMemberRole(user, organizationId, membershipId, dto) {
+        return this.organizations.updateMemberRole(user, organizationId, membershipId, dto);
+    }
+    removeMember(user, organizationId, membershipId) {
+        return this.organizations.removeMember(user, organizationId, membershipId);
     }
     revokeInvitation(user, organizationId, invitationId) {
         return this.organizations.revokeInvitation(user, organizationId, invitationId);
@@ -62,6 +69,25 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, create_invitation_dto_1.CreateInvitationDto]),
     __metadata("design:returntype", void 0)
 ], OrganizationsController.prototype, "createInvitation", null);
+__decorate([
+    (0, common_1.Patch)(':organizationId/members/:membershipId'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('membershipId')),
+    __param(3, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, update_member_role_dto_1.UpdateMemberRoleDto]),
+    __metadata("design:returntype", void 0)
+], OrganizationsController.prototype, "updateMemberRole", null);
+__decorate([
+    (0, common_1.Delete)(':organizationId/members/:membershipId'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('membershipId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", void 0)
+], OrganizationsController.prototype, "removeMember", null);
 __decorate([
     (0, common_1.Delete)(':organizationId/invitations/:invitationId'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),

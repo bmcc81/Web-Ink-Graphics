@@ -219,6 +219,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/members',
+    title: 'Team Members | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/members/portal-members').then(
+        (module) => module.PortalMembers,
+      ),
+  },
+  {
     path: 'admin/login',
     title: 'Admin Login | WebInk Graphics',
     loadComponent: () =>
