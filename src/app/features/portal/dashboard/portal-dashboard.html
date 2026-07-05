@@ -29,6 +29,11 @@
             >
             <a
               class="enter-workspace secondary"
+              [routerLink]="['/portal', organization.id, 'goals']"
+              >View goals</a
+            >
+            <a
+              class="enter-workspace secondary"
               [routerLink]="['/portal', organization.id, 'members']"
               >Manage team</a
             >

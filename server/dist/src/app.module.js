@@ -25,6 +25,7 @@ const prisma_exception_filter_1 = require("./prisma/prisma-exception.filter");
 const seo_module_1 = require("./seo/seo.module");
 const organizations_module_1 = require("./organizations/organizations.module");
 const projects_module_1 = require("./projects/projects.module");
+const goals_module_1 = require("./goals/goals.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +44,7 @@ exports.AppModule = AppModule = __decorate([
             portfolio_module_1.PortfolioModule,
             organizations_module_1.OrganizationsModule,
             projects_module_1.ProjectsModule,
+            goals_module_1.GoalsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

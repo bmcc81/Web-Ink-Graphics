@@ -31,6 +31,7 @@ interface Task {
   dueDate: string | null;
   milestoneId: string | null;
   assignee: Assignee | null;
+  _count: { comments: number };
 }
 
 interface ProjectDetail {
@@ -40,6 +41,7 @@ interface ProjectDetail {
   status: ProjectWorkflowStatus;
   startDate: string | null;
   targetLaunch: string | null;
+  goal: { id: string; title: string; period: string; year: number } | null;
   milestones: Milestone[];
   tasks: Task[];
 }
@@ -369,6 +371,10 @@ export class PortalProjectDetail {
 
   commentsFor(task: Task) {
     return this.taskComments()[task.id] ?? [];
+  }
+
+  commentCount(task: Task) {
+    return this.taskComments()[task.id]?.length ?? task._count.comments;
   }
 
   isCommentsOpen(task: Task) {

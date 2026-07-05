@@ -1,0 +1,98 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a routerLink="/portal">Back to companies</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading goals…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Goals unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else {
+    <section class="welcome">
+      <p class="eyebrow">Planning</p>
+      <h1>Goals</h1>
+    </section>
+
+    @if (actionError()) {
+      <p class="error" role="alert">{{ actionError() }}</p>
+    }
+
+    @if (canContribute()) {
+      <section class="create-goal" aria-label="Create a goal">
+        <h2>New goal</h2>
+        <form [formGroup]="createForm" (ngSubmit)="create()">
+          <label>
+            Title
+            <input formControlName="title" />
+          </label>
+          <label>
+            Period
+            <select formControlName="period">
+              @for (period of goalPeriods; track period) {
+                <option [value]="period">{{ period }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Year
+            <input formControlName="year" type="number" min="2000" max="2100" />
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="creating()">
+            {{ creating() ? 'Creating…' : 'Create goal' }}
+          </button>
+        </form>
+      </section>
+    }
+
+    <section class="goals-list" aria-label="Goals">
+      @if (goals().length) {
+        <ul>
+          @for (goal of goals(); track goal.id) {
+            <li>
+              <div class="goal-header">
+                <span class="goal-period">{{ goal.period }} {{ goal.year }}</span>
+                <span class="goal-title">{{ goal.title }}</span>
+                @if (canContribute()) {
+                  <select (change)="updateStatus(goal, $any($event.target).value)">
+                    @for (status of goalStatuses; track status) {
+                      <option [value]="status" [selected]="status === goal.status">
+                        {{ status.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                  <button type="button" class="danger" (click)="deleteGoal(goal)">
+                    Delete
+                  </button>
+                } @else {
+                  <span class="status-badge">{{ goal.status.replaceAll('_', ' ') }}</span>
+                }
+              </div>
+              @if (goal.description) {
+                <p class="goal-description">{{ goal.description }}</p>
+              }
+              @if (goal.projects.length) {
+                <ul class="linked-projects">
+                  @for (project of goal.projects; track project.id) {
+                    <li>
+                      <a [routerLink]="['/portal', organizationId, 'projects', project.id]">
+                        {{ project.name }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="empty">No projects linked yet.</p>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No goals yet.</p>
+      }
+    </section>
+  }
+</main>

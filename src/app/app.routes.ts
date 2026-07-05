@@ -228,6 +228,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/goals',
+    title: 'Goals | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/goals/portal-goals').then(
+        (module) => module.PortalGoals,
+      ),
+  },
+  {
     path: 'portal/:organizationId/projects',
     title: 'Projects | WebInk Graphics',
     canActivate: [portalAuthGuard],

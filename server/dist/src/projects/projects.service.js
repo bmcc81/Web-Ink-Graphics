@@ -15,6 +15,7 @@ const organization_access_1 = require("../organizations/organization-access");
 const prisma_service_1 = require("../prisma/prisma.service");
 const taskInclude = {
     assignee: { select: { id: true, name: true } },
+    _count: { select: { comments: true } },
 };
 let ProjectsService = class ProjectsService {
     prisma;
@@ -31,6 +32,7 @@ let ProjectsService = class ProjectsService {
     async findOne(user, organizationId, projectId) {
         await this.assertCanView(user, organizationId);
         return this.findProjectOrThrow(organizationId, projectId, {
+            goal: { select: { id: true, title: true, period: true, year: true } },
             milestones: { orderBy: { sortOrder: 'asc' } },
             tasks: {
                 orderBy: { sortOrder: 'asc' },
@@ -40,6 +42,9 @@ let ProjectsService = class ProjectsService {
     }
     async create(user, organizationId, dto) {
         await this.assertCanContribute(user, organizationId);
+        if (dto.goalId) {
+            await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
+        }
         return this.prisma.project.create({
             data: {
                 name: dto.name,
@@ -48,12 +53,16 @@ let ProjectsService = class ProjectsService {
                 startDate: dto.startDate ? new Date(dto.startDate) : undefined,
                 targetLaunch: dto.targetLaunch ? new Date(dto.targetLaunch) : undefined,
                 organizationId,
+                goalId: dto.goalId ?? undefined,
             },
         });
     }
     async update(user, organizationId, projectId, dto) {
         await this.assertCanContribute(user, organizationId);
         await this.findProjectOrThrow(organizationId, projectId);
+        if (dto.goalId) {
+            await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
+        }
         return this.prisma.project.update({
             where: { id: projectId },
             data: {
@@ -62,6 +71,7 @@ let ProjectsService = class ProjectsService {
                 status: dto.status,
                 startDate: dto.startDate ? new Date(dto.startDate) : undefined,
                 targetLaunch: dto.targetLaunch ? new Date(dto.targetLaunch) : undefined,
+                goalId: dto.goalId === null ? null : (dto.goalId ?? undefined),
             },
         });
     }
@@ -238,6 +248,14 @@ let ProjectsService = class ProjectsService {
         });
         if (!milestone)
             throw new common_1.NotFoundException('Milestone not found');
+    }
+    async assertGoalBelongsToOrganization(organizationId, goalId) {
+        const goal = await this.prisma.goal.findFirst({
+            where: { id: goalId, organizationId },
+            select: { id: true },
+        });
+        if (!goal)
+            throw new common_1.NotFoundException('Goal not found');
     }
     async assertTaskBelongsToProject(projectId, taskId) {
         const task = await this.prisma.task.findFirst({

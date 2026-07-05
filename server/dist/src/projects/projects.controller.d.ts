@@ -20,6 +20,7 @@ export declare class ProjectsController {
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
+        goalId: string | null;
     }[]>;
     create(user: AuthUser, organizationId: string, dto: CreateProjectDto): Promise<{
         id: string;
@@ -31,6 +32,7 @@ export declare class ProjectsController {
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
+        goalId: string | null;
     }>;
     findOne(user: AuthUser, organizationId: string, projectId: string): Promise<{
         id: string;
@@ -42,6 +44,7 @@ export declare class ProjectsController {
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
+        goalId: string | null;
     }>;
     update(user: AuthUser, organizationId: string, projectId: string, dto: UpdateProjectDto): Promise<{
         id: string;
@@ -53,6 +56,7 @@ export declare class ProjectsController {
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
+        goalId: string | null;
     }>;
     remove(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
@@ -83,6 +87,9 @@ export declare class ProjectsController {
         removed: boolean;
     }>;
     createTask(user: AuthUser, organizationId: string, projectId: string, dto: CreateTaskDto): Promise<{
+        _count: {
+            comments: number;
+        };
         assignee: {
             id: string;
             name: string;
@@ -101,6 +108,9 @@ export declare class ProjectsController {
         assigneeId: string | null;
     }>;
     updateTask(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: UpdateTaskDto): Promise<{
+        _count: {
+            comments: number;
+        };
         assignee: {
             id: string;
             name: string;

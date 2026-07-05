@@ -68,6 +68,9 @@ describe('ProjectsService', () => {
       create: jest.fn(),
       delete: jest.fn(),
     },
+    goal: {
+      findFirst: jest.fn(),
+    },
     organizationMembership: {
       findUnique: jest.fn(),
       findFirst: jest.fn(),
@@ -319,6 +322,37 @@ describe('ProjectsService', () => {
       >;
       expect(calls[0][0].data.startDate).toBeInstanceOf(Date);
       expect(calls[0][0].data.targetLaunch).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('goal-scope validation', () => {
+    it('rejects a goalId belonging to a different organization when creating a project', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.goal.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.create(contributor, organizationId, {
+          name: 'New project',
+          goalId: 'goal-from-another-org',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(prisma.project.create).not.toHaveBeenCalled();
+    });
+
+    it('links a project to a goal in the same organization', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.goal.findFirst.mockResolvedValue({ id: 'goal-1' });
+      prisma.project.create.mockResolvedValue({ id: 'project-1' });
+
+      await service.create(contributor, organizationId, {
+        name: 'New project',
+        goalId: 'goal-1',
+      });
+
+      const calls = prisma.project.create.mock.calls as unknown as Array<
+        [{ data: { goalId: string } }]
+      >;
+      expect(calls[0][0].data.goalId).toBe('goal-1');
     });
   });
 

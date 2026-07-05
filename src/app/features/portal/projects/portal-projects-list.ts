@@ -22,6 +22,13 @@ export interface ProjectSummary {
   updatedAt: string;
 }
 
+interface GoalOption {
+  id: string;
+  title: string;
+  period: string;
+  year: number;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 
 @Component({
@@ -38,6 +45,7 @@ export class PortalProjectsList {
 
   readonly organizationId = this.route.snapshot.paramMap.get('organizationId')!;
   readonly projects = signal<ProjectSummary[]>([]);
+  readonly goals = signal<GoalOption[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly actionError = signal('');
@@ -56,6 +64,7 @@ export class PortalProjectsList {
   readonly createForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     targetLaunch: [''],
+    goalId: [''],
   });
 
   constructor() {
@@ -76,9 +85,18 @@ export class PortalProjectsList {
       .get<ProjectSummary[]>(`/api/organizations/${this.organizationId}/projects`)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (projects) => this.projects.set(projects),
+        next: (projects) => {
+          this.projects.set(projects);
+          if (this.canContribute()) this.loadGoals();
+        },
         error: () => this.error.set('This workspace could not be loaded.'),
       });
+  }
+
+  private loadGoals() {
+    this.http
+      .get<GoalOption[]>(`/api/organizations/${this.organizationId}/goals`)
+      .subscribe({ next: (goals) => this.goals.set(goals) });
   }
 
   create() {
@@ -88,17 +106,18 @@ export class PortalProjectsList {
     }
     this.actionError.set('');
     this.creating.set(true);
-    const { name, targetLaunch } = this.createForm.getRawValue();
+    const { name, targetLaunch, goalId } = this.createForm.getRawValue();
     this.http
       .post<ProjectSummary>(`/api/organizations/${this.organizationId}/projects`, {
         name,
         targetLaunch: targetLaunch || undefined,
+        goalId: goalId || undefined,
       })
       .pipe(finalize(() => this.creating.set(false)))
       .subscribe({
         next: (project) => {
           this.projects.update((list) => [project, ...list]);
-          this.createForm.reset({ name: '', targetLaunch: '' });
+          this.createForm.reset({ name: '', targetLaunch: '', goalId: '' });
         },
         error: () => this.actionError.set('The project could not be created.'),
       });

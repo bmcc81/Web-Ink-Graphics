@@ -5,4 +5,5 @@ export declare class CreateProjectDto {
     status?: ProjectWorkflowStatus;
     startDate?: string;
     targetLaunch?: string;
+    goalId?: string | null;
 }

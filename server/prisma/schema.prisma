@@ -116,6 +116,21 @@ enum TaskStatus {
   DONE
 }
 
+enum GoalPeriod {
+  Q1
+  Q2
+  Q3
+  Q4
+  ANNUAL
+}
+
+enum GoalStatus {
+  ON_TRACK
+  AT_RISK
+  OFF_TRACK
+  ACHIEVED
+}
+
 model User {
   id                      String                   @id @default(cuid())
   email                   String                   @unique
@@ -138,6 +153,7 @@ model Organization {
   invitations OrganizationInvitation[]
   clients     Client[]
   projects    Project[]
+  goals       Goal[]
   createdAt   DateTime                 @default(now())
   updatedAt   DateTime                 @updatedAt
 
@@ -388,6 +404,8 @@ model Project {
   targetLaunch   DateTime?
   organizationId String
   organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  goalId         String?
+  goal           Goal?                 @relation(fields: [goalId], references: [id], onDelete: SetNull)
   milestones     Milestone[]
   tasks          Task[]
   createdAt      DateTime              @default(now())
@@ -395,6 +413,23 @@ model Project {
 
   @@index([organizationId, status])
   @@index([organizationId, updatedAt])
+  @@index([goalId])
+}
+
+model Goal {
+  id             String       @id @default(cuid())
+  title          String
+  description    String?
+  period         GoalPeriod
+  year           Int
+  status         GoalStatus   @default(ON_TRACK)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  projects       Project[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId, year, period])
 }
 
 model Milestone {

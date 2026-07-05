@@ -33,6 +33,15 @@
             Target launch
             <input formControlName="targetLaunch" type="date" />
           </label>
+          <label>
+            Goal
+            <select formControlName="goalId">
+              <option value="">No goal</option>
+              @for (goal of goals(); track goal.id) {
+                <option [value]="goal.id">{{ goal.period }} {{ goal.year }} — {{ goal.title }}</option>
+              }
+            </select>
+          </label>
           <button class="btn btn-primary" type="submit" [disabled]="creating()">
             {{ creating() ? 'Creating…' : 'Create project' }}
           </button>

@@ -9,47 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateProjectDto = void 0;
+exports.CreateGoalDto = void 0;
 const client_1 = require("@prisma/client");
 const class_validator_1 = require("class-validator");
-class CreateProjectDto {
-    name;
+class CreateGoalDto {
+    title;
     description;
+    period;
+    year;
     status;
-    startDate;
-    targetLaunch;
-    goalId;
 }
-exports.CreateProjectDto = CreateProjectDto;
+exports.CreateGoalDto = CreateGoalDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(2, 160),
     __metadata("design:type", String)
-], CreateProjectDto.prototype, "name", void 0);
+], CreateGoalDto.prototype, "title", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MaxLength)(4000),
     __metadata("design:type", String)
-], CreateProjectDto.prototype, "description", void 0);
+], CreateGoalDto.prototype, "description", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(client_1.ProjectWorkflowStatus),
+    (0, class_validator_1.IsEnum)(client_1.GoalPeriod),
     __metadata("design:type", String)
-], CreateProjectDto.prototype, "status", void 0);
+], CreateGoalDto.prototype, "period", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(2000),
+    (0, class_validator_1.Max)(2100),
+    __metadata("design:type", Number)
+], CreateGoalDto.prototype, "year", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsEnum)(client_1.GoalStatus),
     __metadata("design:type", String)
-], CreateProjectDto.prototype, "startDate", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", String)
-], CreateProjectDto.prototype, "targetLaunch", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", Object)
-], CreateProjectDto.prototype, "goalId", void 0);
-//# sourceMappingURL=create-project.dto.js.map
+], CreateGoalDto.prototype, "status", void 0);
+//# sourceMappingURL=create-goal.dto.js.map

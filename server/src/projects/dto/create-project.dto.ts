@@ -29,4 +29,8 @@ export class CreateProjectDto {
   @IsOptional()
   @IsDateString()
   targetLaunch?: string;
+
+  @IsOptional()
+  @IsString()
+  goalId?: string | null;
 }

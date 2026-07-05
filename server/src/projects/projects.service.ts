@@ -21,6 +21,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 
 const taskInclude = {
   assignee: { select: { id: true, name: true } },
+  _count: { select: { comments: true } },
 };
 
 @Injectable()
@@ -38,6 +39,7 @@ export class ProjectsService {
   async findOne(user: AuthUser, organizationId: string, projectId: string) {
     await this.assertCanView(user, organizationId);
     return this.findProjectOrThrow(organizationId, projectId, {
+      goal: { select: { id: true, title: true, period: true, year: true } },
       milestones: { orderBy: { sortOrder: 'asc' as const } },
       tasks: {
         orderBy: { sortOrder: 'asc' as const },
@@ -48,6 +50,9 @@ export class ProjectsService {
 
   async create(user: AuthUser, organizationId: string, dto: CreateProjectDto) {
     await this.assertCanContribute(user, organizationId);
+    if (dto.goalId) {
+      await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
+    }
     return this.prisma.project.create({
       data: {
         name: dto.name,
@@ -56,6 +61,7 @@ export class ProjectsService {
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         targetLaunch: dto.targetLaunch ? new Date(dto.targetLaunch) : undefined,
         organizationId,
+        goalId: dto.goalId ?? undefined,
       },
     });
   }
@@ -68,6 +74,9 @@ export class ProjectsService {
   ) {
     await this.assertCanContribute(user, organizationId);
     await this.findProjectOrThrow(organizationId, projectId);
+    if (dto.goalId) {
+      await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
+    }
     return this.prisma.project.update({
       where: { id: projectId },
       data: {
@@ -76,6 +85,7 @@ export class ProjectsService {
         status: dto.status,
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         targetLaunch: dto.targetLaunch ? new Date(dto.targetLaunch) : undefined,
+        goalId: dto.goalId === null ? null : (dto.goalId ?? undefined),
       },
     });
   }
@@ -340,6 +350,17 @@ export class ProjectsService {
       select: { id: true },
     });
     if (!milestone) throw new NotFoundException('Milestone not found');
+  }
+
+  private async assertGoalBelongsToOrganization(
+    organizationId: string,
+    goalId: string,
+  ) {
+    const goal = await this.prisma.goal.findFirst({
+      where: { id: goalId, organizationId },
+      select: { id: true },
+    });
+    if (!goal) throw new NotFoundException('Goal not found');
   }
 
   private async assertTaskBelongsToProject(projectId: string, taskId: string) {

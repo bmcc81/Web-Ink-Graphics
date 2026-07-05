@@ -33,6 +33,13 @@ h2 {
   font: 700 1.25rem/1.2 var(--font-display);
   letter-spacing: -.02em;
 }
+.goal-link {
+  margin: .5rem 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+.goal-link a { color: var(--violet); font-weight: 600; text-decoration: none; }
+.goal-link a:hover { text-decoration: underline; }
 .error {
   padding: .75rem 1rem;
   border-radius: .75rem;

@@ -15,6 +15,14 @@
     <section class="welcome">
       <p class="eyebrow">Project</p>
       <h1>{{ current.name }}</h1>
+      @if (current.goal) {
+        <p class="goal-link">
+          Supports goal:
+          <a [routerLink]="['/portal', organizationId, 'goals']">
+            {{ current.goal.period }} {{ current.goal.year }} — {{ current.goal.title }}
+          </a>
+        </p>
+      }
       @if (current.description) {
         <p>{{ current.description }}</p>
       }
@@ -112,7 +120,7 @@
                         }
                       }
                       <button type="button" class="comments-toggle" (click)="toggleComments(task)">
-                        Comments ({{ commentsFor(task).length }})
+                        Comments ({{ commentCount(task) }})
                       </button>
                     </div>
                     @if (isCommentsOpen(task)) {
@@ -169,7 +177,7 @@
                   }
                 }
                 <button type="button" class="comments-toggle" (click)="toggleComments(task)">
-                  Comments ({{ commentsFor(task).length }})
+                  Comments ({{ commentCount(task) }})
                 </button>
               </div>
               @if (isCommentsOpen(task)) {
