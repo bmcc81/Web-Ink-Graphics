@@ -71,12 +71,24 @@ describe('ProjectsService', () => {
     goal: {
       findFirst: jest.fn(),
     },
+    budget: {
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
+      delete: jest.fn(),
+    },
+    user: {
+      findUnique: jest.fn(),
+    },
     organizationMembership: {
       findUnique: jest.fn(),
       findFirst: jest.fn(),
     },
   };
   const activityLog = { record: jest.fn() };
+  const notifications = {
+    notifyTaskAssigned: jest.fn(),
+    notifyNewComment: jest.fn(),
+  };
   let service: ProjectsService;
 
   function actorMembership(role: OrganizationRole | null) {
@@ -87,7 +99,11 @@ describe('ProjectsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new ProjectsService(prisma as never, activityLog as never);
+    service = new ProjectsService(
+      prisma as never,
+      activityLog as never,
+      notifications as never,
+    );
   });
 
   describe('view permission', () => {
@@ -378,6 +394,95 @@ describe('ProjectsService', () => {
     });
   });
 
+  describe('budget', () => {
+    it('lets any member view a budget', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.budget.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.getBudget(viewer, organizationId, 'project-1'),
+      ).resolves.toBeNull();
+    });
+
+    it('blocks a viewer from creating a budget', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+
+      await expect(
+        service.upsertBudget(viewer, organizationId, 'project-1', {
+          plannedAmount: 1000,
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.budget.upsert).not.toHaveBeenCalled();
+    });
+
+    it('lets a contributor create a budget and logs it as CREATED', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.budget.findUnique.mockResolvedValue(null);
+      prisma.budget.upsert.mockResolvedValue({
+        id: 'budget-1',
+        projectId: 'project-1',
+      });
+
+      await expect(
+        service.upsertBudget(contributor, organizationId, 'project-1', {
+          plannedAmount: 1000,
+        }),
+      ).resolves.toEqual({ id: 'budget-1', projectId: 'project-1' });
+    });
+
+    it('lets a contributor update an existing budget and logs it as UPDATED', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.budget.findUnique.mockResolvedValue({
+        id: 'budget-1',
+        projectId: 'project-1',
+      });
+      prisma.budget.upsert.mockResolvedValue({
+        id: 'budget-1',
+        projectId: 'project-1',
+        approvedAmount: 900,
+      });
+
+      await service.upsertBudget(contributor, organizationId, 'project-1', {
+        approvedAmount: 900,
+      });
+
+      const calls = activityLog.record.mock.calls as unknown as Array<
+        [{ action: string }]
+      >;
+      expect(calls[0][0].action).toBe('UPDATED');
+    });
+
+    it('lets a contributor delete a budget', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.budget.findUnique.mockResolvedValue({
+        id: 'budget-1',
+        projectId: 'project-1',
+      });
+
+      await expect(
+        service.removeBudget(contributor, organizationId, 'project-1'),
+      ).resolves.toEqual({ removed: true });
+      expect(prisma.budget.delete).toHaveBeenCalledWith({
+        where: { projectId: 'project-1' },
+      });
+    });
+
+    it('throws when deleting a budget that does not exist', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.budget.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.removeBudget(contributor, organizationId, 'project-1'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
   describe('task comments', () => {
     it('lets any member view comments', async () => {
       actorMembership(OrganizationRole.VIEWER);
@@ -500,6 +605,176 @@ describe('ProjectsService', () => {
           'comment-1',
         ),
       ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('notifications', () => {
+    it('notifies a newly assigned member when a task is created', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-1',
+      });
+      prisma.task.count.mockResolvedValue(0);
+      prisma.task.create.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+      });
+      prisma.user.findUnique.mockResolvedValue({
+        name: 'Viewer',
+        email: 'viewer@example.com',
+      });
+
+      await service.createTask(contributor, organizationId, 'project-1', {
+        title: 'Review copy',
+        assigneeId: 'user-viewer',
+      });
+
+      expect(notifications.notifyTaskAssigned).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: 'viewer@example.com',
+          assigneeName: 'Viewer',
+          taskTitle: 'Review copy',
+          projectName: 'Launch',
+        }),
+      );
+    });
+
+    it('does not notify when a member assigns a task to themselves', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-1',
+      });
+      prisma.task.count.mockResolvedValue(0);
+      prisma.task.create.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+      });
+
+      await service.createTask(contributor, organizationId, 'project-1', {
+        title: 'Review copy',
+        assigneeId: contributor.id,
+      });
+
+      expect(notifications.notifyTaskAssigned).not.toHaveBeenCalled();
+    });
+
+    it('notifies only when the assignee actually changes on update', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+      prisma.task.findFirst.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+        status: 'TODO',
+        assigneeId: 'user-viewer',
+      });
+      prisma.organizationMembership.findFirst.mockResolvedValue({
+        id: 'membership-1',
+      });
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+        status: 'TODO',
+      });
+
+      await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        {
+          assigneeId: 'user-viewer',
+        },
+      );
+
+      expect(notifications.notifyTaskAssigned).not.toHaveBeenCalled();
+
+      prisma.user.findUnique.mockResolvedValue({
+        name: 'Owner',
+        email: 'owner@example.com',
+      });
+      await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        {
+          assigneeId: 'user-owner',
+        },
+      );
+
+      expect(notifications.notifyTaskAssigned).toHaveBeenCalledWith(
+        expect.objectContaining({ to: 'owner@example.com' }),
+      );
+    });
+
+    it('notifies the assignee when someone else comments on their task', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+      prisma.task.findFirst.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+        assigneeId: 'user-owner',
+      });
+      prisma.taskComment.create.mockResolvedValue({ id: 'comment-1' });
+      prisma.user.findUnique.mockResolvedValue({
+        name: 'Owner',
+        email: 'owner@example.com',
+      });
+
+      await service.createComment(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { body: 'Looks good' },
+      );
+
+      expect(notifications.notifyNewComment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: 'owner@example.com',
+          taskTitle: 'Review copy',
+          projectName: 'Launch',
+          body: 'Looks good',
+        }),
+      );
+    });
+
+    it('does not notify when the comment author is the assignee', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+      prisma.task.findFirst.mockResolvedValue({
+        id: 'task-1',
+        title: 'Review copy',
+        assigneeId: contributor.id,
+      });
+      prisma.taskComment.create.mockResolvedValue({ id: 'comment-1' });
+
+      await service.createComment(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { body: 'On it' },
+      );
+
+      expect(notifications.notifyNewComment).not.toHaveBeenCalled();
     });
   });
 });

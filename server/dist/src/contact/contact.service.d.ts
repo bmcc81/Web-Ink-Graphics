@@ -17,10 +17,10 @@ export declare class ContactService {
         name: string;
         createdAt: Date;
         website: string | null;
+        budget: string | null;
         company: string | null;
         phone: string | null;
         service: string;
-        budget: string | null;
         launchDate: string | null;
         message: string;
         source: string | null;
@@ -32,10 +32,10 @@ export declare class ContactService {
         name: string;
         createdAt: Date;
         website: string | null;
+        budget: string | null;
         company: string | null;
         phone: string | null;
         service: string;
-        budget: string | null;
         launchDate: string | null;
         message: string;
         source: string | null;

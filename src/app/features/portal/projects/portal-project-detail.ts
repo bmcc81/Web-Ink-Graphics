@@ -58,6 +58,16 @@ interface TaskComment {
   author: { id: string; name: string };
 }
 
+interface Budget {
+  id: string;
+  currency: string;
+  plannedAmount: string | null;
+  approvedAmount: string | null;
+  committedAmount: string | null;
+  actualAmount: string | null;
+  notes: string | null;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -113,6 +123,19 @@ export class PortalProjectDetail {
   readonly commentDraft = signal('');
   readonly commentError = signal('');
 
+  readonly budget = signal<Budget | null>(null);
+  readonly budgetError = signal('');
+  readonly editingBudget = signal(false);
+
+  readonly budgetForm = this.formBuilder.nonNullable.group({
+    currency: ['USD'],
+    plannedAmount: [''],
+    approvedAmount: [''],
+    committedAmount: [''],
+    actualAmount: [''],
+    notes: [''],
+  });
+
   readonly milestoneForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     dueDate: [''],
@@ -164,6 +187,7 @@ export class PortalProjectDetail {
         next: (project) => {
           this.project.set(project);
           if (this.canContribute()) this.loadMembers();
+          this.loadBudget();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -173,6 +197,93 @@ export class PortalProjectDetail {
     this.http
       .get<Member[]>(`/api/organizations/${this.organizationId}/members`)
       .subscribe({ next: (members) => this.members.set(members) });
+  }
+
+  private loadBudget() {
+    this.http
+      .get<Budget | null>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/budget`,
+      )
+      .subscribe({
+        next: (budget) => {
+          this.budget.set(budget);
+          if (budget) {
+            this.budgetForm.reset({
+              currency: budget.currency,
+              plannedAmount: budget.plannedAmount ?? '',
+              approvedAmount: budget.approvedAmount ?? '',
+              committedAmount: budget.committedAmount ?? '',
+              actualAmount: budget.actualAmount ?? '',
+              notes: budget.notes ?? '',
+            });
+          }
+        },
+        error: () => this.budgetError.set('The budget could not be loaded.'),
+      });
+  }
+
+  startEditingBudget() {
+    this.budgetError.set('');
+    this.editingBudget.set(true);
+  }
+
+  cancelEditingBudget() {
+    const budget = this.budget();
+    if (budget) {
+      this.budgetForm.reset({
+        currency: budget.currency,
+        plannedAmount: budget.plannedAmount ?? '',
+        approvedAmount: budget.approvedAmount ?? '',
+        committedAmount: budget.committedAmount ?? '',
+        actualAmount: budget.actualAmount ?? '',
+        notes: budget.notes ?? '',
+      });
+    } else {
+      this.budgetForm.reset({ currency: 'USD' });
+    }
+    this.editingBudget.set(false);
+  }
+
+  saveBudget() {
+    this.budgetError.set('');
+    const raw = this.budgetForm.getRawValue();
+    const toNumber = (value: string) =>
+      value === '' ? undefined : Number(value);
+    this.http
+      .put<Budget>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/budget`,
+        {
+          currency: raw.currency || undefined,
+          plannedAmount: toNumber(raw.plannedAmount),
+          approvedAmount: toNumber(raw.approvedAmount),
+          committedAmount: toNumber(raw.committedAmount),
+          actualAmount: toNumber(raw.actualAmount),
+          notes: raw.notes || undefined,
+        },
+      )
+      .subscribe({
+        next: (budget) => {
+          this.budget.set(budget);
+          this.editingBudget.set(false);
+        },
+        error: () => this.budgetError.set('The budget could not be saved.'),
+      });
+  }
+
+  deleteBudget() {
+    if (!confirm('Delete this budget?')) return;
+    this.budgetError.set('');
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/budget`,
+      )
+      .subscribe({
+        next: () => {
+          this.budget.set(null);
+          this.budgetForm.reset({ currency: 'USD' });
+        },
+        error: () => this.budgetError.set('The budget could not be deleted.'),
+      });
   }
 
   updateProjectStatus(status: ProjectWorkflowStatus) {

@@ -1,5 +1,6 @@
 import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -8,10 +9,12 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto';
 export declare class ProjectsService {
     private readonly prisma;
     private readonly activityLog;
-    constructor(prisma: PrismaService, activityLog: ActivityLogService);
+    private readonly notifications;
+    constructor(prisma: PrismaService, activityLog: ActivityLogService, notifications: NotificationsService);
     list(user: AuthUser, organizationId: string): Promise<{
         id: string;
         name: string;
@@ -133,6 +136,33 @@ export declare class ProjectsService {
     removeTask(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<{
         removed: boolean;
     }>;
+    getBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        projectId: string;
+        currency: string;
+        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        notes: string | null;
+    } | null>;
+    upsertBudget(user: AuthUser, organizationId: string, projectId: string, dto: UpsertBudgetDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        projectId: string;
+        currency: string;
+        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        notes: string | null;
+    }>;
+    removeBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
+        removed: boolean;
+    }>;
     listComments(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<({
         author: {
             id: string;
@@ -170,4 +200,5 @@ export declare class ProjectsService {
     private assertGoalBelongsToOrganization;
     private assertTaskBelongsToProject;
     private assertAssigneeIsMember;
+    private notifyAssignee;
 }

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProjectsService = void 0;
 const common_1 = require("@nestjs/common");
 const activity_log_service_1 = require("../activity/activity-log.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 const organization_access_1 = require("../organizations/organization-access");
 const prisma_service_1 = require("../prisma/prisma.service");
 const taskInclude = {
@@ -21,9 +22,11 @@ const taskInclude = {
 let ProjectsService = class ProjectsService {
     prisma;
     activityLog;
-    constructor(prisma, activityLog) {
+    notifications;
+    constructor(prisma, activityLog, notifications) {
         this.prisma = prisma;
         this.activityLog = activityLog;
+        this.notifications = notifications;
     }
     async list(user, organizationId) {
         await this.assertCanView(user, organizationId);
@@ -182,7 +185,7 @@ let ProjectsService = class ProjectsService {
     }
     async createTask(user, organizationId, projectId, dto) {
         await this.assertCanContribute(user, organizationId);
-        await this.findProjectOrThrow(organizationId, projectId);
+        const project = await this.findProjectOrThrow(organizationId, projectId);
         if (dto.milestoneId) {
             await this.assertMilestoneBelongsToProject(projectId, dto.milestoneId);
         }
@@ -211,11 +214,14 @@ let ProjectsService = class ProjectsService {
             summary: `Task "${task.title}" created`,
             actorId: user.id,
         });
+        if (dto.assigneeId) {
+            await this.notifyAssignee(dto.assigneeId, user, project.name, task.title);
+        }
         return task;
     }
     async updateTask(user, organizationId, projectId, taskId, dto) {
         await this.assertCanContribute(user, organizationId);
-        await this.findProjectOrThrow(organizationId, projectId);
+        const project = await this.findProjectOrThrow(organizationId, projectId);
         const existing = await this.assertTaskBelongsToProject(projectId, taskId);
         if (dto.milestoneId) {
             await this.assertMilestoneBelongsToProject(projectId, dto.milestoneId);
@@ -246,6 +252,9 @@ let ProjectsService = class ProjectsService {
                 : `Task "${updated.title}" updated`,
             actorId: user.id,
         });
+        if (dto.assigneeId && dto.assigneeId !== existing.assigneeId) {
+            await this.notifyAssignee(dto.assigneeId, user, project.name, updated.title);
+        }
         return updated;
     }
     async removeTask(user, organizationId, projectId, taskId) {
@@ -263,6 +272,59 @@ let ProjectsService = class ProjectsService {
         });
         return { removed: true };
     }
+    async getBudget(user, organizationId, projectId) {
+        await this.assertCanView(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        return this.prisma.budget.findUnique({ where: { projectId } });
+    }
+    async upsertBudget(user, organizationId, projectId, dto) {
+        await this.assertCanContribute(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        const existing = await this.prisma.budget.findUnique({
+            where: { projectId },
+        });
+        const data = {
+            currency: dto.currency,
+            plannedAmount: dto.plannedAmount,
+            approvedAmount: dto.approvedAmount,
+            committedAmount: dto.committedAmount,
+            actualAmount: dto.actualAmount,
+            notes: dto.notes,
+        };
+        const budget = await this.prisma.budget.upsert({
+            where: { projectId },
+            create: { projectId, ...data },
+            update: data,
+        });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'BUDGET',
+            entityId: budget.id,
+            action: existing ? 'UPDATED' : 'CREATED',
+            summary: existing ? 'Budget updated' : 'Budget created',
+            actorId: user.id,
+        });
+        return budget;
+    }
+    async removeBudget(user, organizationId, projectId) {
+        await this.assertCanContribute(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        const budget = await this.prisma.budget.findUnique({
+            where: { projectId },
+        });
+        if (!budget)
+            throw new common_1.NotFoundException('Budget not found');
+        await this.prisma.budget.delete({ where: { projectId } });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'BUDGET',
+            entityId: budget.id,
+            action: 'DELETED',
+            summary: 'Budget deleted',
+            actorId: user.id,
+        });
+        return { removed: true };
+    }
     async listComments(user, organizationId, projectId, taskId) {
         await this.assertCanView(user, organizationId);
         await this.findProjectOrThrow(organizationId, projectId);
@@ -275,12 +337,29 @@ let ProjectsService = class ProjectsService {
     }
     async createComment(user, organizationId, projectId, taskId, dto) {
         await this.assertCanContribute(user, organizationId);
-        await this.findProjectOrThrow(organizationId, projectId);
-        await this.assertTaskBelongsToProject(projectId, taskId);
-        return this.prisma.taskComment.create({
+        const project = await this.findProjectOrThrow(organizationId, projectId);
+        const task = await this.assertTaskBelongsToProject(projectId, taskId);
+        const comment = await this.prisma.taskComment.create({
             data: { body: dto.body, taskId, authorId: user.id },
             include: { author: { select: { id: true, name: true } } },
         });
+        if (task.assigneeId && task.assigneeId !== user.id) {
+            const assignee = await this.prisma.user.findUnique({
+                where: { id: task.assigneeId },
+                select: { name: true, email: true },
+            });
+            if (assignee) {
+                await this.notifications.notifyNewComment({
+                    to: assignee.email,
+                    assigneeName: assignee.name,
+                    commenterName: user.name,
+                    taskTitle: task.title,
+                    projectName: project.name,
+                    body: dto.body,
+                });
+            }
+        }
+        return comment;
     }
     async removeComment(user, organizationId, projectId, taskId, commentId) {
         const role = await this.assertCanContribute(user, organizationId);
@@ -351,7 +430,7 @@ let ProjectsService = class ProjectsService {
     async assertTaskBelongsToProject(projectId, taskId) {
         const task = await this.prisma.task.findFirst({
             where: { id: taskId, projectId },
-            select: { id: true, title: true, status: true },
+            select: { id: true, title: true, status: true, assigneeId: true },
         });
         if (!task)
             throw new common_1.NotFoundException('Task not found');
@@ -366,11 +445,27 @@ let ProjectsService = class ProjectsService {
             throw new common_1.BadRequestException('The assignee must be a member of this organization');
         }
     }
+    async notifyAssignee(assigneeId, actor, projectName, taskTitle) {
+        const assignee = await this.prisma.user.findUnique({
+            where: { id: assigneeId },
+            select: { name: true, email: true },
+        });
+        if (!assignee || assigneeId === actor.id)
+            return;
+        await this.notifications.notifyTaskAssigned({
+            to: assignee.email,
+            assigneeName: assignee.name,
+            actorName: actor.name,
+            taskTitle,
+            projectName,
+        });
+    }
 };
 exports.ProjectsService = ProjectsService;
 exports.ProjectsService = ProjectsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService])
+        activity_log_service_1.ActivityLogService,
+        notifications_service_1.NotificationsService])
 ], ProjectsService);
 //# sourceMappingURL=projects.service.js.map

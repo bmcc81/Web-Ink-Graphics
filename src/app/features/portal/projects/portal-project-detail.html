@@ -54,6 +54,78 @@
       }
     </section>
 
+    <section class="budget" aria-label="Budget">
+      <h2>Budget</h2>
+      @if (budgetError()) {
+        <p class="error" role="alert">{{ budgetError() }}</p>
+      }
+      @if (editingBudget()) {
+        <form class="budget-form" [formGroup]="budgetForm" (ngSubmit)="saveBudget()">
+          <label>
+            Currency
+            <input formControlName="currency" maxlength="3" />
+          </label>
+          <label>
+            Planned
+            <input formControlName="plannedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Approved
+            <input formControlName="approvedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Committed
+            <input formControlName="committedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Actual
+            <input formControlName="actualAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label class="notes">
+            Notes
+            <input formControlName="notes" />
+          </label>
+          <div class="budget-form-actions">
+            <button class="btn btn-primary" type="submit">Save budget</button>
+            <button type="button" (click)="cancelEditingBudget()">Cancel</button>
+          </div>
+        </form>
+      } @else if (budget(); as currentBudget) {
+        <dl class="budget-summary">
+          <div>
+            <dt>Planned</dt>
+            <dd>{{ currentBudget.plannedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Approved</dt>
+            <dd>{{ currentBudget.approvedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Committed</dt>
+            <dd>{{ currentBudget.committedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Actual</dt>
+            <dd>{{ currentBudget.actualAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+        </dl>
+        @if (currentBudget.notes) {
+          <p class="budget-notes">{{ currentBudget.notes }}</p>
+        }
+        @if (canContribute()) {
+          <div class="budget-actions">
+            <button type="button" (click)="startEditingBudget()">Edit budget</button>
+            <button type="button" class="danger" (click)="deleteBudget()">Delete budget</button>
+          </div>
+        }
+      } @else if (canContribute()) {
+        <p>No budget set yet.</p>
+        <button type="button" (click)="startEditingBudget()">Add budget</button>
+      } @else {
+        <p>No budget set yet.</p>
+      }
+    </section>
+
     <section class="milestones" aria-label="Milestones">
       <h2>Milestones</h2>
       @if (current.milestones.length) {

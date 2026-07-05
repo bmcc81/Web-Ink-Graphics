@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth-user';
@@ -18,6 +19,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('organizations/:organizationId/projects')
@@ -147,6 +149,34 @@ export class ProjectsController {
     @Param('taskId') taskId: string,
   ) {
     return this.projects.removeTask(user, organizationId, projectId, taskId);
+  }
+
+  @Get(':projectId/budget')
+  getBudget(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.projects.getBudget(user, organizationId, projectId);
+  }
+
+  @Put(':projectId/budget')
+  upsertBudget(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+    @Body() dto: UpsertBudgetDto,
+  ) {
+    return this.projects.upsertBudget(user, organizationId, projectId, dto);
+  }
+
+  @Delete(':projectId/budget')
+  removeBudget(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.projects.removeBudget(user, organizationId, projectId);
   }
 
   @Get(':projectId/tasks/:taskId/comments')

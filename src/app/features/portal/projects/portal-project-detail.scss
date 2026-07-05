@@ -97,6 +97,75 @@ button.danger {
   font-weight: 600;
 }
 
+.budget {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+.budget-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+.budget-summary dt {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.budget-summary dd {
+  margin: .25rem 0 0;
+  font: 700 1.25rem/1.2 var(--font-display);
+}
+.budget-notes { margin-top: 1rem; color: var(--muted); }
+.budget-actions {
+  display: flex;
+  gap: .75rem;
+  margin-top: 1rem;
+}
+.budget-actions button {
+  padding: .4rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-weight: 600;
+}
+.budget-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.budget-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.budget-form label.notes { flex: 1 1 100%; }
+.budget-form input {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+.budget-form-actions {
+  flex: 1 1 100%;
+  display: flex;
+  gap: .75rem;
+}
+.budget-form-actions button:not(.btn) {
+  padding: .6rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-weight: 600;
+}
+
 .milestone-list,
 .task-list {
   list-style: none;

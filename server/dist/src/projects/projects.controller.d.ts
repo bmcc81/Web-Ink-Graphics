@@ -6,6 +6,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto';
 import { ProjectsService } from './projects.service';
 export declare class ProjectsController {
     private readonly projects;
@@ -129,6 +130,33 @@ export declare class ProjectsController {
         assigneeId: string | null;
     }>;
     removeTask(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<{
+        removed: boolean;
+    }>;
+    getBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        projectId: string;
+        currency: string;
+        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        notes: string | null;
+    } | null>;
+    upsertBudget(user: AuthUser, organizationId: string, projectId: string, dto: UpsertBudgetDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        projectId: string;
+        currency: string;
+        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
+        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        notes: string | null;
+    }>;
+    removeBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
     }>;
     listComments(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<({

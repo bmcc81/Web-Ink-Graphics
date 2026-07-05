@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   CONTRIBUTE_ROLES,
   MANAGE_ROLES,
@@ -19,6 +20,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto';
 
 const taskInclude = {
   assignee: { select: { id: true, name: true } },
@@ -30,6 +32,7 @@ export class ProjectsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activityLog: ActivityLogService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async list(user: AuthUser, organizationId: string) {
@@ -229,7 +232,7 @@ export class ProjectsService {
     dto: CreateTaskDto,
   ) {
     await this.assertCanContribute(user, organizationId);
-    await this.findProjectOrThrow(organizationId, projectId);
+    const project = await this.findProjectOrThrow(organizationId, projectId);
     if (dto.milestoneId) {
       await this.assertMilestoneBelongsToProject(projectId, dto.milestoneId);
     }
@@ -258,6 +261,9 @@ export class ProjectsService {
       summary: `Task "${task.title}" created`,
       actorId: user.id,
     });
+    if (dto.assigneeId) {
+      await this.notifyAssignee(dto.assigneeId, user, project.name, task.title);
+    }
     return task;
   }
 
@@ -269,7 +275,7 @@ export class ProjectsService {
     dto: UpdateTaskDto,
   ) {
     await this.assertCanContribute(user, organizationId);
-    await this.findProjectOrThrow(organizationId, projectId);
+    const project = await this.findProjectOrThrow(organizationId, projectId);
     const existing = await this.assertTaskBelongsToProject(projectId, taskId);
     if (dto.milestoneId) {
       await this.assertMilestoneBelongsToProject(projectId, dto.milestoneId);
@@ -302,6 +308,14 @@ export class ProjectsService {
         : `Task "${updated.title}" updated`,
       actorId: user.id,
     });
+    if (dto.assigneeId && dto.assigneeId !== existing.assigneeId) {
+      await this.notifyAssignee(
+        dto.assigneeId,
+        user,
+        project.name,
+        updated.title,
+      );
+    }
     return updated;
   }
 
@@ -321,6 +335,70 @@ export class ProjectsService {
       entityId: taskId,
       action: 'DELETED',
       summary: `Task "${existing.title}" deleted`,
+      actorId: user.id,
+    });
+    return { removed: true };
+  }
+
+  async getBudget(user: AuthUser, organizationId: string, projectId: string) {
+    await this.assertCanView(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    return this.prisma.budget.findUnique({ where: { projectId } });
+  }
+
+  async upsertBudget(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    dto: UpsertBudgetDto,
+  ) {
+    await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    const existing = await this.prisma.budget.findUnique({
+      where: { projectId },
+    });
+    const data = {
+      currency: dto.currency,
+      plannedAmount: dto.plannedAmount,
+      approvedAmount: dto.approvedAmount,
+      committedAmount: dto.committedAmount,
+      actualAmount: dto.actualAmount,
+      notes: dto.notes,
+    };
+    const budget = await this.prisma.budget.upsert({
+      where: { projectId },
+      create: { projectId, ...data },
+      update: data,
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'BUDGET',
+      entityId: budget.id,
+      action: existing ? 'UPDATED' : 'CREATED',
+      summary: existing ? 'Budget updated' : 'Budget created',
+      actorId: user.id,
+    });
+    return budget;
+  }
+
+  async removeBudget(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+  ) {
+    await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    const budget = await this.prisma.budget.findUnique({
+      where: { projectId },
+    });
+    if (!budget) throw new NotFoundException('Budget not found');
+    await this.prisma.budget.delete({ where: { projectId } });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'BUDGET',
+      entityId: budget.id,
+      action: 'DELETED',
+      summary: 'Budget deleted',
       actorId: user.id,
     });
     return { removed: true };
@@ -350,12 +428,29 @@ export class ProjectsService {
     dto: CreateTaskCommentDto,
   ) {
     await this.assertCanContribute(user, organizationId);
-    await this.findProjectOrThrow(organizationId, projectId);
-    await this.assertTaskBelongsToProject(projectId, taskId);
-    return this.prisma.taskComment.create({
+    const project = await this.findProjectOrThrow(organizationId, projectId);
+    const task = await this.assertTaskBelongsToProject(projectId, taskId);
+    const comment = await this.prisma.taskComment.create({
       data: { body: dto.body, taskId, authorId: user.id },
       include: { author: { select: { id: true, name: true } } },
     });
+    if (task.assigneeId && task.assigneeId !== user.id) {
+      const assignee = await this.prisma.user.findUnique({
+        where: { id: task.assigneeId },
+        select: { name: true, email: true },
+      });
+      if (assignee) {
+        await this.notifications.notifyNewComment({
+          to: assignee.email,
+          assigneeName: assignee.name,
+          commenterName: user.name,
+          taskTitle: task.title,
+          projectName: project.name,
+          body: dto.body,
+        });
+      }
+    }
+    return comment;
   }
 
   async removeComment(
@@ -464,7 +559,7 @@ export class ProjectsService {
   private async assertTaskBelongsToProject(projectId: string, taskId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id: taskId, projectId },
-      select: { id: true, title: true, status: true },
+      select: { id: true, title: true, status: true, assigneeId: true },
     });
     if (!task) throw new NotFoundException('Task not found');
     return task;
@@ -483,5 +578,25 @@ export class ProjectsService {
         'The assignee must be a member of this organization',
       );
     }
+  }
+
+  private async notifyAssignee(
+    assigneeId: string,
+    actor: AuthUser,
+    projectName: string,
+    taskTitle: string,
+  ) {
+    const assignee = await this.prisma.user.findUnique({
+      where: { id: assigneeId },
+      select: { name: true, email: true },
+    });
+    if (!assignee || assigneeId === actor.id) return;
+    await this.notifications.notifyTaskAssigned({
+      to: assignee.email,
+      assigneeName: assignee.name,
+      actorName: actor.name,
+      taskTitle,
+      projectName,
+    });
   }
 }
