@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -49,6 +49,13 @@ interface Member {
   user: { id: string; name: string };
 }
 
+interface TaskComment {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: { id: string; name: string };
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -69,7 +76,7 @@ export const TASK_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
 
 @Component({
   selector: 'app-portal-project-detail',
-  imports: [ReactiveFormsModule, RouterLink, DatePipe],
+  imports: [ReactiveFormsModule, RouterLink, DatePipe, NgTemplateOutlet],
   templateUrl: './portal-project-detail.html',
   styleUrl: './portal-project-detail.scss',
 })
@@ -98,6 +105,11 @@ export class PortalProjectDetail {
   readonly unassignedTasks = computed(() =>
     (this.project()?.tasks ?? []).filter((task) => !task.milestoneId),
   );
+
+  readonly expandedTaskId = signal<string | null>(null);
+  readonly taskComments = signal<Record<string, TaskComment[]>>({});
+  readonly commentDraft = signal('');
+  readonly commentError = signal('');
 
   readonly milestoneForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -352,6 +364,81 @@ export class PortalProjectDetail {
               : current,
           ),
         error: () => this.actionError.set('The task could not be deleted.'),
+      });
+  }
+
+  commentsFor(task: Task) {
+    return this.taskComments()[task.id] ?? [];
+  }
+
+  isCommentsOpen(task: Task) {
+    return this.expandedTaskId() === task.id;
+  }
+
+  canDeleteComment(comment: TaskComment) {
+    return comment.author.id === this.auth.user()?.sub || this.canManage();
+  }
+
+  toggleComments(task: Task) {
+    if (this.expandedTaskId() === task.id) {
+      this.expandedTaskId.set(null);
+      return;
+    }
+    this.expandedTaskId.set(task.id);
+    this.commentDraft.set('');
+    this.commentError.set('');
+    if (!this.taskComments()[task.id]) {
+      this.http
+        .get<TaskComment[]>(
+          `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks/${task.id}/comments`,
+        )
+        .subscribe({
+          next: (comments) =>
+            this.taskComments.update((current) => ({
+              ...current,
+              [task.id]: comments,
+            })),
+          error: () => this.commentError.set('Comments could not be loaded.'),
+        });
+    }
+  }
+
+  postComment(task: Task) {
+    const body = this.commentDraft().trim();
+    if (!body) return;
+    this.commentError.set('');
+    this.http
+      .post<TaskComment>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks/${task.id}/comments`,
+        { body },
+      )
+      .subscribe({
+        next: (comment) => {
+          this.taskComments.update((current) => ({
+            ...current,
+            [task.id]: [...(current[task.id] ?? []), comment],
+          }));
+          this.commentDraft.set('');
+        },
+        error: () => this.commentError.set('The comment could not be posted.'),
+      });
+  }
+
+  deleteComment(task: Task, comment: TaskComment) {
+    if (!confirm('Delete this comment?')) return;
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks/${task.id}/comments/${comment.id}`,
+      )
+      .subscribe({
+        next: () =>
+          this.taskComments.update((current) => ({
+            ...current,
+            [task.id]: (current[task.id] ?? []).filter(
+              (candidate) => candidate.id !== comment.id,
+            ),
+          })),
+        error: () => this.commentError.set('The comment could not be deleted.'),
       });
   }
 }

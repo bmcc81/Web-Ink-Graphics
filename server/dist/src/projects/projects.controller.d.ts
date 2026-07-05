@@ -1,6 +1,7 @@
 import type { AuthUser } from '../auth/auth-user';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -118,6 +119,35 @@ export declare class ProjectsController {
         assigneeId: string | null;
     }>;
     removeTask(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<{
+        removed: boolean;
+    }>;
+    listComments(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<({
+        author: {
+            id: string;
+            name: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        body: string;
+        taskId: string;
+        authorId: string;
+    })[]>;
+    createComment(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: CreateTaskCommentDto): Promise<{
+        author: {
+            id: string;
+            name: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        body: string;
+        taskId: string;
+        authorId: string;
+    }>;
+    removeComment(user: AuthUser, organizationId: string, projectId: string, taskId: string, commentId: string): Promise<{
         removed: boolean;
     }>;
 }

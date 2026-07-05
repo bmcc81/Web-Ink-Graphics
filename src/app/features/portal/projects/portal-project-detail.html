@@ -78,37 +78,45 @@
               <ul class="task-list">
                 @for (task of tasksForMilestone(milestone.id); track task.id) {
                   <li>
-                    <span class="task-title">{{ task.title }}</span>
-                    @if (task.dueDate) {
-                      <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
-                    }
-                    @if (canContribute()) {
-                      <select (change)="reassignTask(task, $any($event.target).value)">
-                        <option value="" [selected]="!task.assignee">Unassigned</option>
-                        @for (member of members(); track member.id) {
-                          <option
-                            [value]="member.user.id"
-                            [selected]="member.user.id === task.assignee?.id"
-                          >
-                            {{ member.user.name }}
-                          </option>
-                        }
-                      </select>
-                      <select (change)="updateTaskStatus(task, $any($event.target).value)">
-                        @for (status of taskStatuses; track status) {
-                          <option [value]="status" [selected]="status === task.status">
-                            {{ status.replaceAll('_', ' ') }}
-                          </option>
-                        }
-                      </select>
-                      <button type="button" class="danger" (click)="deleteTask(task)">
-                        Delete
-                      </button>
-                    } @else {
-                      <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
-                      @if (task.assignee) {
-                        <span class="assignee">{{ task.assignee.name }}</span>
+                    <div class="task-row">
+                      <span class="task-title">{{ task.title }}</span>
+                      @if (task.dueDate) {
+                        <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
                       }
+                      @if (canContribute()) {
+                        <select (change)="reassignTask(task, $any($event.target).value)">
+                          <option value="" [selected]="!task.assignee">Unassigned</option>
+                          @for (member of members(); track member.id) {
+                            <option
+                              [value]="member.user.id"
+                              [selected]="member.user.id === task.assignee?.id"
+                            >
+                              {{ member.user.name }}
+                            </option>
+                          }
+                        </select>
+                        <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                          @for (status of taskStatuses; track status) {
+                            <option [value]="status" [selected]="status === task.status">
+                              {{ status.replaceAll('_', ' ') }}
+                            </option>
+                          }
+                        </select>
+                        <button type="button" class="danger" (click)="deleteTask(task)">
+                          Delete
+                        </button>
+                      } @else {
+                        <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                        @if (task.assignee) {
+                          <span class="assignee">{{ task.assignee.name }}</span>
+                        }
+                      }
+                      <button type="button" class="comments-toggle" (click)="toggleComments(task)">
+                        Comments ({{ commentsFor(task).length }})
+                      </button>
+                    </div>
+                    @if (isCommentsOpen(task)) {
+                      <ng-container *ngTemplateOutlet="commentsThread; context: { task }" />
                     }
                   </li>
                 } @empty {
@@ -129,35 +137,43 @@
         <ul class="task-list">
           @for (task of unassignedTasks(); track task.id) {
             <li>
-              <span class="task-title">{{ task.title }}</span>
-              @if (task.dueDate) {
-                <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
-              }
-              @if (canContribute()) {
-                <select (change)="reassignTask(task, $any($event.target).value)">
-                  <option value="" [selected]="!task.assignee">Unassigned</option>
-                  @for (member of members(); track member.id) {
-                    <option
-                      [value]="member.user.id"
-                      [selected]="member.user.id === task.assignee?.id"
-                    >
-                      {{ member.user.name }}
-                    </option>
-                  }
-                </select>
-                <select (change)="updateTaskStatus(task, $any($event.target).value)">
-                  @for (status of taskStatuses; track status) {
-                    <option [value]="status" [selected]="status === task.status">
-                      {{ status.replaceAll('_', ' ') }}
-                    </option>
-                  }
-                </select>
-                <button type="button" class="danger" (click)="deleteTask(task)">Delete</button>
-              } @else {
-                <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
-                @if (task.assignee) {
-                  <span class="assignee">{{ task.assignee.name }}</span>
+              <div class="task-row">
+                <span class="task-title">{{ task.title }}</span>
+                @if (task.dueDate) {
+                  <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
                 }
+                @if (canContribute()) {
+                  <select (change)="reassignTask(task, $any($event.target).value)">
+                    <option value="" [selected]="!task.assignee">Unassigned</option>
+                    @for (member of members(); track member.id) {
+                      <option
+                        [value]="member.user.id"
+                        [selected]="member.user.id === task.assignee?.id"
+                      >
+                        {{ member.user.name }}
+                      </option>
+                    }
+                  </select>
+                  <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                    @for (status of taskStatuses; track status) {
+                      <option [value]="status" [selected]="status === task.status">
+                        {{ status.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                  <button type="button" class="danger" (click)="deleteTask(task)">Delete</button>
+                } @else {
+                  <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                  @if (task.assignee) {
+                    <span class="assignee">{{ task.assignee.name }}</span>
+                  }
+                }
+                <button type="button" class="comments-toggle" (click)="toggleComments(task)">
+                  Comments ({{ commentsFor(task).length }})
+                </button>
+              </div>
+              @if (isCommentsOpen(task)) {
+                <ng-container *ngTemplateOutlet="commentsThread; context: { task }" />
               }
             </li>
           }
@@ -215,4 +231,40 @@
       </section>
     }
   }
+
+  <ng-template #commentsThread let-task="task">
+    <div class="comments-thread">
+      @if (commentError()) {
+        <p class="error" role="alert">{{ commentError() }}</p>
+      }
+      <ul class="comment-list">
+        @for (comment of commentsFor(task); track comment.id) {
+          <li>
+            <span class="comment-author">{{ comment.author.name }}</span>
+            <span class="comment-body">{{ comment.body }}</span>
+            <span class="comment-date">{{ comment.createdAt | date: 'short' }}</span>
+            @if (canDeleteComment(comment)) {
+              <button type="button" class="danger" (click)="deleteComment(task, comment)">
+                Delete
+              </button>
+            }
+          </li>
+        } @empty {
+          <li class="empty">No comments yet.</li>
+        }
+      </ul>
+      @if (canContribute()) {
+        <div class="add-comment">
+          <textarea
+            [value]="commentDraft()"
+            (input)="commentDraft.set($any($event.target).value)"
+            placeholder="Add a comment"
+          ></textarea>
+          <button class="btn btn-primary" type="button" (click)="postComment(task)">
+            Post
+          </button>
+        </div>
+      }
+    </div>
+  </ng-template>
 </main>

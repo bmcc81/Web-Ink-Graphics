@@ -120,15 +120,65 @@ button.danger {
   border-left: 2px solid var(--line);
 }
 .task-list li {
+  padding: .6rem 0;
+}
+.task-list li.empty { color: var(--muted); }
+.task-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: .75rem;
-  padding: .6rem 0;
 }
-.task-list li.empty { color: var(--muted); }
 .task-title { font-weight: 600; margin-right: auto; }
 .assignee { color: var(--muted); font-size: .85rem; }
+.comments-toggle {
+  padding: .3rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.comments-thread {
+  margin-top: .75rem;
+  padding: 1rem;
+  background: var(--paper);
+  border-radius: .75rem;
+}
+.comment-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.comment-list li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding: 0;
+}
+.comment-list li.empty { color: var(--muted); }
+.comment-author { font-weight: 700; }
+.comment-body { flex: 1 1 auto; }
+.comment-date { color: var(--muted); font-size: .75rem; }
+.add-comment {
+  display: flex;
+  gap: .75rem;
+  align-items: end;
+}
+.add-comment textarea {
+  flex: 1 1 auto;
+  min-height: 2.5rem;
+  padding: .5rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+  resize: vertical;
+}
 
 .new-milestone form,
 .new-task form {

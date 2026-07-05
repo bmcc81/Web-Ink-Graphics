@@ -125,6 +125,7 @@ model User {
   organizationMemberships OrganizationMembership[]
   invitationsSent         OrganizationInvitation[] @relation("InvitationSender")
   assignedTasks           Task[]                   @relation("TaskAssignee")
+  taskComments            TaskComment[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -426,6 +427,7 @@ model Task {
   milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   assigneeId  String?
   assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  comments    TaskComment[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -433,4 +435,17 @@ model Task {
   @@index([projectId, milestoneId])
   @@index([assigneeId, status])
   @@index([projectId, dueDate])
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  body      String
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId, createdAt])
 }

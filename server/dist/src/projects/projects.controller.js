@@ -18,6 +18,7 @@ const current_user_decorator_1 = require("../auth/current-user.decorator");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_milestone_dto_1 = require("./dto/create-milestone.dto");
 const create_project_dto_1 = require("./dto/create-project.dto");
+const create_task_comment_dto_1 = require("./dto/create-task-comment.dto");
 const create_task_dto_1 = require("./dto/create-task.dto");
 const update_milestone_dto_1 = require("./dto/update-milestone.dto");
 const update_project_dto_1 = require("./dto/update-project.dto");
@@ -60,6 +61,15 @@ let ProjectsController = class ProjectsController {
     }
     removeTask(user, organizationId, projectId, taskId) {
         return this.projects.removeTask(user, organizationId, projectId, taskId);
+    }
+    listComments(user, organizationId, projectId, taskId) {
+        return this.projects.listComments(user, organizationId, projectId, taskId);
+    }
+    createComment(user, organizationId, projectId, taskId, dto) {
+        return this.projects.createComment(user, organizationId, projectId, taskId, dto);
+    }
+    removeComment(user, organizationId, projectId, taskId, commentId) {
+        return this.projects.removeComment(user, organizationId, projectId, taskId, commentId);
     }
 };
 exports.ProjectsController = ProjectsController;
@@ -170,6 +180,38 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeTask", null);
+__decorate([
+    (0, common_1.Get)(':projectId/tasks/:taskId/comments'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('projectId')),
+    __param(3, (0, common_1.Param)('taskId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "listComments", null);
+__decorate([
+    (0, common_1.Post)(':projectId/tasks/:taskId/comments'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('projectId')),
+    __param(3, (0, common_1.Param)('taskId')),
+    __param(4, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String, create_task_comment_dto_1.CreateTaskCommentDto]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "createComment", null);
+__decorate([
+    (0, common_1.Delete)(':projectId/tasks/:taskId/comments/:commentId'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('projectId')),
+    __param(3, (0, common_1.Param)('taskId')),
+    __param(4, (0, common_1.Param)('commentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "removeComment", null);
 exports.ProjectsController = ProjectsController = __decorate([
     (0, common_1.Controller)('organizations/:organizationId/projects'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

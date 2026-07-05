@@ -163,6 +163,43 @@ let ProjectsService = class ProjectsService {
         await this.prisma.task.delete({ where: { id: taskId } });
         return { removed: true };
     }
+    async listComments(user, organizationId, projectId, taskId) {
+        await this.assertCanView(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        await this.assertTaskBelongsToProject(projectId, taskId);
+        return this.prisma.taskComment.findMany({
+            where: { taskId },
+            include: { author: { select: { id: true, name: true } } },
+            orderBy: { createdAt: 'asc' },
+        });
+    }
+    async createComment(user, organizationId, projectId, taskId, dto) {
+        await this.assertCanContribute(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        await this.assertTaskBelongsToProject(projectId, taskId);
+        return this.prisma.taskComment.create({
+            data: { body: dto.body, taskId, authorId: user.id },
+            include: { author: { select: { id: true, name: true } } },
+        });
+    }
+    async removeComment(user, organizationId, projectId, taskId, commentId) {
+        const role = await this.assertCanContribute(user, organizationId);
+        await this.findProjectOrThrow(organizationId, projectId);
+        await this.assertTaskBelongsToProject(projectId, taskId);
+        const comment = await this.prisma.taskComment.findFirst({
+            where: { id: commentId, taskId },
+            select: { authorId: true },
+        });
+        if (!comment)
+            throw new common_1.NotFoundException('Comment not found');
+        const isAuthor = comment.authorId === user.id;
+        const canModerate = role === 'STAFF' || organization_access_1.MANAGE_ROLES.includes(role);
+        if (!isAuthor && !canModerate) {
+            throw new common_1.ForbiddenException('Only the author or an organization owner/manager can delete this comment');
+        }
+        await this.prisma.taskComment.delete({ where: { id: commentId } });
+        return { removed: true };
+    }
     async assertCanView(user, organizationId) {
         const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
         if (!role)
@@ -175,6 +212,7 @@ let ProjectsService = class ProjectsService {
         if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
             throw new common_1.ForbiddenException('Only contributors, managers, and owners can manage projects');
         }
+        return role;
     }
     async assertCanManageOwnerLevel(user, organizationId) {
         const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);

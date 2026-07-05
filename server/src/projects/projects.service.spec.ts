@@ -62,6 +62,12 @@ describe('ProjectsService', () => {
       delete: jest.fn(),
       count: jest.fn(),
     },
+    taskComment: {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+    },
     organizationMembership: {
       findUnique: jest.fn(),
       findFirst: jest.fn(),
@@ -334,6 +340,131 @@ describe('ProjectsService', () => {
       await expect(
         service.remove(staff, organizationId, 'project-1'),
       ).resolves.toEqual({ removed: true });
+    });
+  });
+
+  describe('task comments', () => {
+    it('lets any member view comments', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.findMany.mockResolvedValue([]);
+
+      await expect(
+        service.listComments(viewer, organizationId, 'project-1', 'task-1'),
+      ).resolves.toEqual([]);
+    });
+
+    it('blocks a viewer from posting a comment', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+
+      await expect(
+        service.createComment(viewer, organizationId, 'project-1', 'task-1', {
+          body: 'Nice work',
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.taskComment.create).not.toHaveBeenCalled();
+    });
+
+    it('lets a contributor post a comment authored by themselves', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.create.mockResolvedValue({ id: 'comment-1' });
+
+      await service.createComment(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { body: 'On it' },
+      );
+
+      const calls = prisma.taskComment.create.mock.calls as unknown as Array<
+        [{ data: { taskId: string; authorId: string; body: string } }]
+      >;
+      expect(calls[0][0].data).toEqual({
+        body: 'On it',
+        taskId: 'task-1',
+        authorId: contributor.id,
+      });
+    });
+
+    it('lets the comment author delete their own comment', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.findFirst.mockResolvedValue({
+        authorId: contributor.id,
+      });
+
+      await expect(
+        service.removeComment(
+          contributor,
+          organizationId,
+          'project-1',
+          'task-1',
+          'comment-1',
+        ),
+      ).resolves.toEqual({ removed: true });
+    });
+
+    it("blocks a different contributor from deleting someone else's comment", async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.findFirst.mockResolvedValue({
+        authorId: 'someone-else',
+      });
+
+      await expect(
+        service.removeComment(
+          contributor,
+          organizationId,
+          'project-1',
+          'task-1',
+          'comment-1',
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.taskComment.delete).not.toHaveBeenCalled();
+    });
+
+    it('lets an owner delete any comment as a moderator', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.findFirst.mockResolvedValue({
+        authorId: 'someone-else',
+      });
+
+      await expect(
+        service.removeComment(
+          owner,
+          organizationId,
+          'project-1',
+          'task-1',
+          'comment-1',
+        ),
+      ).resolves.toEqual({ removed: true });
+    });
+
+    it('throws when the comment does not belong to the task', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: 'project-1' });
+      prisma.task.findFirst.mockResolvedValue({ id: 'task-1' });
+      prisma.taskComment.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.removeComment(
+          contributor,
+          organizationId,
+          'project-1',
+          'task-1',
+          'comment-1',
+        ),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 });

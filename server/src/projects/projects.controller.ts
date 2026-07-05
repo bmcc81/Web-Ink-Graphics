@@ -13,6 +13,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -146,5 +147,49 @@ export class ProjectsController {
     @Param('taskId') taskId: string,
   ) {
     return this.projects.removeTask(user, organizationId, projectId, taskId);
+  }
+
+  @Get(':projectId/tasks/:taskId/comments')
+  listComments(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.projects.listComments(user, organizationId, projectId, taskId);
+  }
+
+  @Post(':projectId/tasks/:taskId/comments')
+  createComment(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+    @Param('taskId') taskId: string,
+    @Body() dto: CreateTaskCommentDto,
+  ) {
+    return this.projects.createComment(
+      user,
+      organizationId,
+      projectId,
+      taskId,
+      dto,
+    );
+  }
+
+  @Delete(':projectId/tasks/:taskId/comments/:commentId')
+  removeComment(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+    @Param('taskId') taskId: string,
+    @Param('commentId') commentId: string,
+  ) {
+    return this.projects.removeComment(
+      user,
+      organizationId,
+      projectId,
+      taskId,
+      commentId,
+    );
   }
 }

@@ -13,6 +13,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -218,6 +219,64 @@ export class ProjectsService {
     return { removed: true };
   }
 
+  async listComments(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    taskId: string,
+  ) {
+    await this.assertCanView(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.assertTaskBelongsToProject(projectId, taskId);
+    return this.prisma.taskComment.findMany({
+      where: { taskId },
+      include: { author: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async createComment(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    taskId: string,
+    dto: CreateTaskCommentDto,
+  ) {
+    await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.assertTaskBelongsToProject(projectId, taskId);
+    return this.prisma.taskComment.create({
+      data: { body: dto.body, taskId, authorId: user.id },
+      include: { author: { select: { id: true, name: true } } },
+    });
+  }
+
+  async removeComment(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    taskId: string,
+    commentId: string,
+  ) {
+    const role = await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.assertTaskBelongsToProject(projectId, taskId);
+    const comment = await this.prisma.taskComment.findFirst({
+      where: { id: commentId, taskId },
+      select: { authorId: true },
+    });
+    if (!comment) throw new NotFoundException('Comment not found');
+    const isAuthor = comment.authorId === user.id;
+    const canModerate = role === 'STAFF' || MANAGE_ROLES.includes(role);
+    if (!isAuthor && !canModerate) {
+      throw new ForbiddenException(
+        'Only the author or an organization owner/manager can delete this comment',
+      );
+    }
+    await this.prisma.taskComment.delete({ where: { id: commentId } });
+    return { removed: true };
+  }
+
   private async assertCanView(user: AuthUser, organizationId: string) {
     const role = await resolveOrganizationRole(
       this.prisma,
@@ -239,6 +298,7 @@ export class ProjectsService {
         'Only contributors, managers, and owners can manage projects',
       );
     }
+    return role;
   }
 
   private async assertCanManageOwnerLevel(
