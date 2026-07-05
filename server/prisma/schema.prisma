@@ -131,6 +131,20 @@ enum GoalStatus {
   ACHIEVED
 }
 
+enum ActivityAction {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  DELETED
+}
+
+enum ActivityEntityType {
+  PROJECT
+  MILESTONE
+  TASK
+  GOAL
+}
+
 model User {
   id                      String                   @id @default(cuid())
   email                   String                   @unique
@@ -141,23 +155,41 @@ model User {
   invitationsSent         OrganizationInvitation[] @relation("InvitationSender")
   assignedTasks           Task[]                   @relation("TaskAssignee")
   taskComments            TaskComment[]
+  activityLogEntries      ActivityLogEntry[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
 
 model Organization {
-  id          String                   @id @default(cuid())
-  name        String
-  slug        String                   @unique
-  memberships OrganizationMembership[]
-  invitations OrganizationInvitation[]
-  clients     Client[]
-  projects    Project[]
-  goals       Goal[]
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
+  id            String                   @id @default(cuid())
+  name          String
+  slug          String                   @unique
+  memberships   OrganizationMembership[]
+  invitations   OrganizationInvitation[]
+  clients       Client[]
+  projects      Project[]
+  goals         Goal[]
+  activityLog   ActivityLogEntry[]
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
 
   @@index([name])
+}
+
+model ActivityLogEntry {
+  id             String             @id @default(cuid())
+  organizationId String
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  entityType     ActivityEntityType
+  entityId       String
+  action         ActivityAction
+  summary        String
+  actorId        String?
+  actor          User?              @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime           @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entityType, entityId])
 }
 
 model OrganizationInvitation {

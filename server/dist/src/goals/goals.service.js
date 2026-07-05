@@ -11,12 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoalsService = void 0;
 const common_1 = require("@nestjs/common");
+const activity_log_service_1 = require("../activity/activity-log.service");
 const organization_access_1 = require("../organizations/organization-access");
 const prisma_service_1 = require("../prisma/prisma.service");
 let GoalsService = class GoalsService {
     prisma;
-    constructor(prisma) {
+    activityLog;
+    constructor(prisma, activityLog) {
         this.prisma = prisma;
+        this.activityLog = activityLog;
     }
     async list(user, organizationId) {
         await this.assertCanView(user, organizationId);
@@ -36,7 +39,7 @@ let GoalsService = class GoalsService {
     }
     async create(user, organizationId, dto) {
         await this.assertCanContribute(user, organizationId);
-        return this.prisma.goal.create({
+        const goal = await this.prisma.goal.create({
             data: {
                 title: dto.title,
                 description: dto.description,
@@ -46,11 +49,20 @@ let GoalsService = class GoalsService {
                 organizationId,
             },
         });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'GOAL',
+            entityId: goal.id,
+            action: 'CREATED',
+            summary: `Goal "${goal.title}" created`,
+            actorId: user.id,
+        });
+        return goal;
     }
     async update(user, organizationId, goalId, dto) {
         await this.assertCanContribute(user, organizationId);
-        await this.findGoalOrThrow(organizationId, goalId);
-        return this.prisma.goal.update({
+        const existing = await this.findGoalOrThrow(organizationId, goalId);
+        const updated = await this.prisma.goal.update({
             where: { id: goalId },
             data: {
                 title: dto.title,
@@ -60,11 +72,31 @@ let GoalsService = class GoalsService {
                 status: dto.status,
             },
         });
+        const statusChanged = dto.status && dto.status !== existing.status;
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'GOAL',
+            entityId: updated.id,
+            action: statusChanged ? 'STATUS_CHANGED' : 'UPDATED',
+            summary: statusChanged
+                ? `Goal "${updated.title}" status changed to ${updated.status}`
+                : `Goal "${updated.title}" updated`,
+            actorId: user.id,
+        });
+        return updated;
     }
     async remove(user, organizationId, goalId) {
         await this.assertCanContribute(user, organizationId);
-        await this.findGoalOrThrow(organizationId, goalId);
+        const goal = await this.findGoalOrThrow(organizationId, goalId);
         await this.prisma.goal.delete({ where: { id: goalId } });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'GOAL',
+            entityId: goalId,
+            action: 'DELETED',
+            summary: `Goal "${goal.title}" deleted`,
+            actorId: user.id,
+        });
         return { removed: true };
     }
     async assertCanView(user, organizationId) {
@@ -94,6 +126,7 @@ let GoalsService = class GoalsService {
 exports.GoalsService = GoalsService;
 exports.GoalsService = GoalsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        activity_log_service_1.ActivityLogService])
 ], GoalsService);
 //# sourceMappingURL=goals.service.js.map

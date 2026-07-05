@@ -17,6 +17,7 @@ import { SeoModule } from './seo/seo.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
 import { GoalsModule } from './goals/goals.module';
+import { ActivityLogModule } from './activity/activity-log.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GoalsModule } from './goals/goals.module';
     HealthModule,
     PortfolioModule,
     OrganizationsModule,
+    ActivityLogModule,
     ProjectsModule,
     GoalsModule,
   ],

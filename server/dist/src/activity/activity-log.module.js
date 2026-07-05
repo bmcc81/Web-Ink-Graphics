@@ -6,19 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectsModule = void 0;
+exports.ActivityLogModule = void 0;
 const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const projects_controller_1 = require("./projects.controller");
-const projects_service_1 = require("./projects.service");
-let ProjectsModule = class ProjectsModule {
+const activity_log_controller_1 = require("./activity-log.controller");
+const activity_log_service_1 = require("./activity-log.service");
+let ActivityLogModule = class ActivityLogModule {
 };
-exports.ProjectsModule = ProjectsModule;
-exports.ProjectsModule = ProjectsModule = __decorate([
+exports.ActivityLogModule = ActivityLogModule;
+exports.ActivityLogModule = ActivityLogModule = __decorate([
     (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [projects_controller_1.ProjectsController],
-        providers: [projects_service_1.ProjectsService],
+        controllers: [activity_log_controller_1.ActivityLogController],
+        providers: [activity_log_service_1.ActivityLogService],
+        exports: [activity_log_service_1.ActivityLogService],
     })
-], ProjectsModule);
-//# sourceMappingURL=projects.module.js.map
+], ActivityLogModule);
+//# sourceMappingURL=activity-log.module.js.map

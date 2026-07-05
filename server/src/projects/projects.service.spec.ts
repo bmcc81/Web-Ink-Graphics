@@ -76,6 +76,7 @@ describe('ProjectsService', () => {
       findFirst: jest.fn(),
     },
   };
+  const activityLog = { record: jest.fn() };
   let service: ProjectsService;
 
   function actorMembership(role: OrganizationRole | null) {
@@ -86,7 +87,7 @@ describe('ProjectsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new ProjectsService(prisma as never);
+    service = new ProjectsService(prisma as never, activityLog as never);
   });
 
   describe('view permission', () => {

@@ -1,10 +1,12 @@
+import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { UpdateGoalDto } from './dto/update-goal.dto';
 export declare class GoalsService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly activityLog;
+    constructor(prisma: PrismaService, activityLog: ActivityLogService);
     list(user: AuthUser, organizationId: string): Promise<({
         projects: {
             id: string;

@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import {
   CONTRIBUTE_ROLES,
@@ -14,7 +15,10 @@ import { UpdateGoalDto } from './dto/update-goal.dto';
 
 @Injectable()
 export class GoalsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLog: ActivityLogService,
+  ) {}
 
   async list(user: AuthUser, organizationId: string) {
     await this.assertCanView(user, organizationId);
@@ -36,7 +40,7 @@ export class GoalsService {
 
   async create(user: AuthUser, organizationId: string, dto: CreateGoalDto) {
     await this.assertCanContribute(user, organizationId);
-    return this.prisma.goal.create({
+    const goal = await this.prisma.goal.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -46,6 +50,15 @@ export class GoalsService {
         organizationId,
       },
     });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'GOAL',
+      entityId: goal.id,
+      action: 'CREATED',
+      summary: `Goal "${goal.title}" created`,
+      actorId: user.id,
+    });
+    return goal;
   }
 
   async update(
@@ -55,8 +68,8 @@ export class GoalsService {
     dto: UpdateGoalDto,
   ) {
     await this.assertCanContribute(user, organizationId);
-    await this.findGoalOrThrow(organizationId, goalId);
-    return this.prisma.goal.update({
+    const existing = await this.findGoalOrThrow(organizationId, goalId);
+    const updated = await this.prisma.goal.update({
       where: { id: goalId },
       data: {
         title: dto.title,
@@ -66,12 +79,32 @@ export class GoalsService {
         status: dto.status,
       },
     });
+    const statusChanged = dto.status && dto.status !== existing.status;
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'GOAL',
+      entityId: updated.id,
+      action: statusChanged ? 'STATUS_CHANGED' : 'UPDATED',
+      summary: statusChanged
+        ? `Goal "${updated.title}" status changed to ${updated.status}`
+        : `Goal "${updated.title}" updated`,
+      actorId: user.id,
+    });
+    return updated;
   }
 
   async remove(user: AuthUser, organizationId: string, goalId: string) {
     await this.assertCanContribute(user, organizationId);
-    await this.findGoalOrThrow(organizationId, goalId);
+    const goal = await this.findGoalOrThrow(organizationId, goalId);
     await this.prisma.goal.delete({ where: { id: goalId } });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'GOAL',
+      entityId: goalId,
+      action: 'DELETED',
+      summary: `Goal "${goal.title}" deleted`,
+      actorId: user.id,
+    });
     return { removed: true };
   }
 

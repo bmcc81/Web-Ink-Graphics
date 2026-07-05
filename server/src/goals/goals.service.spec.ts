@@ -48,6 +48,7 @@ describe('GoalsService', () => {
       findUnique: jest.fn(),
     },
   };
+  const activityLog = { record: jest.fn() };
   let service: GoalsService;
 
   function actorMembership(role: OrganizationRole | null) {
@@ -58,7 +59,7 @@ describe('GoalsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new GoalsService(prisma as never);
+    service = new GoalsService(prisma as never, activityLog as never);
   });
 
   describe('view permission', () => {

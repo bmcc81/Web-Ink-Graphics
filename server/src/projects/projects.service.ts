@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import {
   CONTRIBUTE_ROLES,
@@ -26,7 +27,10 @@ const taskInclude = {
 
 @Injectable()
 export class ProjectsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLog: ActivityLogService,
+  ) {}
 
   async list(user: AuthUser, organizationId: string) {
     await this.assertCanView(user, organizationId);
@@ -53,7 +57,7 @@ export class ProjectsService {
     if (dto.goalId) {
       await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
     }
-    return this.prisma.project.create({
+    const project = await this.prisma.project.create({
       data: {
         name: dto.name,
         description: dto.description,
@@ -64,6 +68,15 @@ export class ProjectsService {
         goalId: dto.goalId ?? undefined,
       },
     });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'PROJECT',
+      entityId: project.id,
+      action: 'CREATED',
+      summary: `Project "${project.name}" created`,
+      actorId: user.id,
+    });
+    return project;
   }
 
   async update(
@@ -73,11 +86,11 @@ export class ProjectsService {
     dto: UpdateProjectDto,
   ) {
     await this.assertCanContribute(user, organizationId);
-    await this.findProjectOrThrow(organizationId, projectId);
+    const existing = await this.findProjectOrThrow(organizationId, projectId);
     if (dto.goalId) {
       await this.assertGoalBelongsToOrganization(organizationId, dto.goalId);
     }
-    return this.prisma.project.update({
+    const updated = await this.prisma.project.update({
       where: { id: projectId },
       data: {
         name: dto.name,
@@ -88,12 +101,32 @@ export class ProjectsService {
         goalId: dto.goalId === null ? null : (dto.goalId ?? undefined),
       },
     });
+    const statusChanged = dto.status && dto.status !== existing.status;
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'PROJECT',
+      entityId: updated.id,
+      action: statusChanged ? 'STATUS_CHANGED' : 'UPDATED',
+      summary: statusChanged
+        ? `Project "${updated.name}" status changed to ${updated.status}`
+        : `Project "${updated.name}" updated`,
+      actorId: user.id,
+    });
+    return updated;
   }
 
   async remove(user: AuthUser, organizationId: string, projectId: string) {
     await this.assertCanManageOwnerLevel(user, organizationId);
-    await this.findProjectOrThrow(organizationId, projectId);
+    const project = await this.findProjectOrThrow(organizationId, projectId);
     await this.prisma.project.delete({ where: { id: projectId } });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'PROJECT',
+      entityId: project.id,
+      action: 'DELETED',
+      summary: `Project "${project.name}" deleted`,
+      actorId: user.id,
+    });
     return { removed: true };
   }
 
@@ -108,7 +141,7 @@ export class ProjectsService {
     const sortOrder = await this.prisma.milestone.count({
       where: { projectId },
     });
-    return this.prisma.milestone.create({
+    const milestone = await this.prisma.milestone.create({
       data: {
         name: dto.name,
         description: dto.description,
@@ -118,6 +151,15 @@ export class ProjectsService {
         projectId,
       },
     });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'MILESTONE',
+      entityId: milestone.id,
+      action: 'CREATED',
+      summary: `Milestone "${milestone.name}" created`,
+      actorId: user.id,
+    });
+    return milestone;
   }
 
   async updateMilestone(
@@ -129,8 +171,11 @@ export class ProjectsService {
   ) {
     await this.assertCanContribute(user, organizationId);
     await this.findProjectOrThrow(organizationId, projectId);
-    await this.assertMilestoneBelongsToProject(projectId, milestoneId);
-    return this.prisma.milestone.update({
+    const existing = await this.assertMilestoneBelongsToProject(
+      projectId,
+      milestoneId,
+    );
+    const updated = await this.prisma.milestone.update({
       where: { id: milestoneId },
       data: {
         name: dto.name,
@@ -139,6 +184,18 @@ export class ProjectsService {
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
       },
     });
+    const statusChanged = dto.status && dto.status !== existing.status;
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'MILESTONE',
+      entityId: updated.id,
+      action: statusChanged ? 'STATUS_CHANGED' : 'UPDATED',
+      summary: statusChanged
+        ? `Milestone "${updated.name}" status changed to ${updated.status}`
+        : `Milestone "${updated.name}" updated`,
+      actorId: user.id,
+    });
+    return updated;
   }
 
   async removeMilestone(
@@ -149,8 +206,19 @@ export class ProjectsService {
   ) {
     await this.assertCanContribute(user, organizationId);
     await this.findProjectOrThrow(organizationId, projectId);
-    await this.assertMilestoneBelongsToProject(projectId, milestoneId);
+    const existing = await this.assertMilestoneBelongsToProject(
+      projectId,
+      milestoneId,
+    );
     await this.prisma.milestone.delete({ where: { id: milestoneId } });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'MILESTONE',
+      entityId: milestoneId,
+      action: 'DELETED',
+      summary: `Milestone "${existing.name}" deleted`,
+      actorId: user.id,
+    });
     return { removed: true };
   }
 
@@ -169,7 +237,7 @@ export class ProjectsService {
       await this.assertAssigneeIsMember(organizationId, dto.assigneeId);
     }
     const sortOrder = await this.prisma.task.count({ where: { projectId } });
-    return this.prisma.task.create({
+    const task = await this.prisma.task.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -182,6 +250,15 @@ export class ProjectsService {
       },
       include: taskInclude,
     });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'TASK',
+      entityId: task.id,
+      action: 'CREATED',
+      summary: `Task "${task.title}" created`,
+      actorId: user.id,
+    });
+    return task;
   }
 
   async updateTask(
@@ -193,14 +270,14 @@ export class ProjectsService {
   ) {
     await this.assertCanContribute(user, organizationId);
     await this.findProjectOrThrow(organizationId, projectId);
-    await this.assertTaskBelongsToProject(projectId, taskId);
+    const existing = await this.assertTaskBelongsToProject(projectId, taskId);
     if (dto.milestoneId) {
       await this.assertMilestoneBelongsToProject(projectId, dto.milestoneId);
     }
     if (dto.assigneeId) {
       await this.assertAssigneeIsMember(organizationId, dto.assigneeId);
     }
-    return this.prisma.task.update({
+    const updated = await this.prisma.task.update({
       where: { id: taskId },
       data: {
         title: dto.title,
@@ -214,6 +291,18 @@ export class ProjectsService {
       },
       include: taskInclude,
     });
+    const statusChanged = dto.status && dto.status !== existing.status;
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'TASK',
+      entityId: updated.id,
+      action: statusChanged ? 'STATUS_CHANGED' : 'UPDATED',
+      summary: statusChanged
+        ? `Task "${updated.title}" status changed to ${updated.status}`
+        : `Task "${updated.title}" updated`,
+      actorId: user.id,
+    });
+    return updated;
   }
 
   async removeTask(
@@ -224,8 +313,16 @@ export class ProjectsService {
   ) {
     await this.assertCanContribute(user, organizationId);
     await this.findProjectOrThrow(organizationId, projectId);
-    await this.assertTaskBelongsToProject(projectId, taskId);
+    const existing = await this.assertTaskBelongsToProject(projectId, taskId);
     await this.prisma.task.delete({ where: { id: taskId } });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'TASK',
+      entityId: taskId,
+      action: 'DELETED',
+      summary: `Task "${existing.title}" deleted`,
+      actorId: user.id,
+    });
     return { removed: true };
   }
 
@@ -347,9 +444,10 @@ export class ProjectsService {
   ) {
     const milestone = await this.prisma.milestone.findFirst({
       where: { id: milestoneId, projectId },
-      select: { id: true },
+      select: { id: true, name: true, status: true },
     });
     if (!milestone) throw new NotFoundException('Milestone not found');
+    return milestone;
   }
 
   private async assertGoalBelongsToOrganization(
@@ -366,9 +464,10 @@ export class ProjectsService {
   private async assertTaskBelongsToProject(projectId: string, taskId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id: taskId, projectId },
-      select: { id: true },
+      select: { id: true, title: true, status: true },
     });
     if (!task) throw new NotFoundException('Task not found');
+    return task;
   }
 
   private async assertAssigneeIsMember(

@@ -26,6 +26,7 @@ const seo_module_1 = require("./seo/seo.module");
 const organizations_module_1 = require("./organizations/organizations.module");
 const projects_module_1 = require("./projects/projects.module");
 const goals_module_1 = require("./goals/goals.module");
+const activity_log_module_1 = require("./activity/activity-log.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +44,7 @@ exports.AppModule = AppModule = __decorate([
             health_module_1.HealthModule,
             portfolio_module_1.PortfolioModule,
             organizations_module_1.OrganizationsModule,
+            activity_log_module_1.ActivityLogModule,
             projects_module_1.ProjectsModule,
             goals_module_1.GoalsModule,
         ],

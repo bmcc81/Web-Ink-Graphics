@@ -237,6 +237,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/activity',
+    title: 'Activity | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/activity/portal-activity').then(
+        (module) => module.PortalActivity,
+      ),
+  },
+  {
     path: 'portal/:organizationId/projects',
     title: 'Projects | WebInk Graphics',
     canActivate: [portalAuthGuard],
