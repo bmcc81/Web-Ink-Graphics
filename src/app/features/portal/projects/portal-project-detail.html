@@ -126,6 +126,71 @@
       }
     </section>
 
+    <section class="designs" aria-label="Designs">
+      <h2>Designs</h2>
+      @if (designError()) {
+        <p class="error" role="alert">{{ designError() }}</p>
+      }
+      @if (designs().length) {
+        <ul class="design-list">
+          @for (design of designs(); track design.id) {
+            <li>
+              @if (design.versions[0]?.thumbnailUrl; as thumbnail) {
+                <img class="design-thumbnail" [src]="thumbnail" alt="" />
+              } @else {
+                <div class="design-thumbnail placeholder">No preview yet</div>
+              }
+              <div class="design-info">
+                <span class="design-name">{{ design.name }}</span>
+                <span class="design-meta">
+                  Linked by {{ design.linkedBy.name }}
+                  @if (design.versions[0]; as version) {
+                    · synced {{ version.syncedAt | date: 'short' }}
+                  } @else {
+                    · not synced yet
+                  }
+                </span>
+              </div>
+              <div class="design-actions">
+                <a class="btn-open" [href]="design.figmaUrl" target="_blank" rel="noopener">
+                  Open in Figma
+                </a>
+                @if (canContribute()) {
+                  <button
+                    type="button"
+                    (click)="syncDesign(design)"
+                    [disabled]="syncingDesignId() === design.id"
+                  >
+                    {{ syncingDesignId() === design.id ? 'Syncing…' : 'Sync' }}
+                  </button>
+                  <button type="button" class="danger" (click)="unlinkDesign(design)">
+                    Unlink
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No designs linked yet.</p>
+      }
+      @if (canContribute()) {
+        <form class="design-form" [formGroup]="designForm" (ngSubmit)="attachDesign()">
+          <label>
+            Figma link
+            <input formControlName="figmaUrl" placeholder="https://www.figma.com/design/..." />
+          </label>
+          <label>
+            Name (optional)
+            <input formControlName="name" />
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="attachingDesign()">
+            {{ attachingDesign() ? 'Linking…' : 'Link design' }}
+          </button>
+        </form>
+      }
+    </section>
+
     <section class="milestones" aria-label="Milestones">
       <h2>Milestones</h2>
       @if (current.milestones.length) {

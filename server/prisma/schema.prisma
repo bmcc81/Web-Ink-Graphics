@@ -144,6 +144,7 @@ enum ActivityEntityType {
   TASK
   GOAL
   BUDGET
+  DESIGN_DOCUMENT
 }
 
 model User {
@@ -157,22 +158,23 @@ model User {
   assignedTasks           Task[]                   @relation("TaskAssignee")
   taskComments            TaskComment[]
   activityLogEntries      ActivityLogEntry[]
+  linkedDesignDocuments   DesignDocument[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
 
 model Organization {
-  id            String                   @id @default(cuid())
-  name          String
-  slug          String                   @unique
-  memberships   OrganizationMembership[]
-  invitations   OrganizationInvitation[]
-  clients       Client[]
-  projects      Project[]
-  goals         Goal[]
-  activityLog   ActivityLogEntry[]
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
+  id          String                   @id @default(cuid())
+  name        String
+  slug        String                   @unique
+  memberships OrganizationMembership[]
+  invitations OrganizationInvitation[]
+  clients     Client[]
+  projects    Project[]
+  goals       Goal[]
+  activityLog ActivityLogEntry[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
 
   @@index([name])
 }
@@ -226,20 +228,20 @@ model OrganizationMembership {
 }
 
 model Client {
-  id             String           @id @default(cuid())
-  companyName    String
-  industry       String?
-  website        String?
-  serviceArea    String?
-  status         ClientStatus     @default(LEAD)
-  contactName    String?
-  contactEmail   String?
-  contactPhone   String?
-  generalNotes   String?
-  organizationId String
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id              String           @id @default(cuid())
+  companyName     String
+  industry        String?
+  website         String?
+  serviceArea     String?
+  status          ClientStatus     @default(LEAD)
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+  generalNotes    String?
+  organizationId  String
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   discoveryBriefs DiscoveryBrief[]
 
   @@index([status, companyName])
@@ -326,16 +328,16 @@ model BriefRequirement {
 }
 
 model BriefQuestion {
-  id        String         @id @default(cuid())
+  id        String           @id @default(cuid())
   question  String
   answer    String?
-  status    QuestionStatus @default(OPEN)
+  status    QuestionStatus   @default(OPEN)
   owner     String?
   dueDate   DateTime?
   priority  FollowUpPriority @default(NORMAL)
   briefId   String
-  brief     DiscoveryBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
-  sortOrder Int            @default(0)
+  brief     DiscoveryBrief   @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  sortOrder Int              @default(0)
 
   @@index([briefId, status, sortOrder])
   @@index([briefId, dueDate, status])
@@ -352,17 +354,17 @@ model GeneratedPrompt {
 }
 
 model PortfolioProject {
-  id           String             @id @default(cuid())
-  slug         String             @unique
+  id           String               @id @default(cuid())
+  slug         String               @unique
   clientName   String?
   projectUrl   String?
-  status       ProjectStatus      @default(DRAFT)
-  featured     Boolean            @default(false)
-  displayOrder Int                @default(0)
+  status       ProjectStatus        @default(DRAFT)
+  featured     Boolean              @default(false)
+  displayOrder Int                  @default(0)
   completedAt  DateTime?
   publishedAt  DateTime?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
   translations ProjectTranslation[]
   images       PortfolioImage[]
   categories   PortfolioCategory[]
@@ -411,7 +413,7 @@ model PortfolioCategory {
 }
 
 model ContactSubmission {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   company     String?
   email       String
@@ -422,28 +424,29 @@ model ContactSubmission {
   website     String?
   message     String
   source      String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
   contactedAt DateTime?
 
   @@index([createdAt])
 }
 
 model Project {
-  id             String                @id @default(cuid())
-  name           String
-  description    String?
-  status         ProjectWorkflowStatus @default(DRAFT)
-  startDate      DateTime?
-  targetLaunch   DateTime?
-  organizationId String
-  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
-  goalId         String?
-  goal           Goal?                 @relation(fields: [goalId], references: [id], onDelete: SetNull)
-  milestones     Milestone[]
-  tasks          Task[]
-  budget         Budget?
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id              String                @id @default(cuid())
+  name            String
+  description     String?
+  status          ProjectWorkflowStatus @default(DRAFT)
+  startDate       DateTime?
+  targetLaunch    DateTime?
+  organizationId  String
+  organization    Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  goalId          String?
+  goal            Goal?                 @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  milestones      Milestone[]
+  tasks           Task[]
+  budget          Budget?
+  designDocuments DesignDocument[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 
   @@index([organizationId, status])
   @@index([organizationId, updatedAt])
@@ -498,21 +501,21 @@ model Milestone {
 }
 
 model Task {
-  id          String     @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
   description String?
-  status      TaskStatus @default(TODO)
+  status      TaskStatus    @default(TODO)
   dueDate     DateTime?
-  sortOrder   Int        @default(0)
+  sortOrder   Int           @default(0)
   projectId   String
-  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   milestoneId String?
-  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  milestone   Milestone?    @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   assigneeId  String?
-  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  assignee    User?         @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   comments    TaskComment[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@index([projectId, status, sortOrder])
   @@index([projectId, milestoneId])
@@ -531,4 +534,33 @@ model TaskComment {
   updatedAt DateTime @updatedAt
 
   @@index([taskId, createdAt])
+}
+
+model DesignDocument {
+  id           String          @id @default(cuid())
+  projectId    String
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  name         String
+  figmaFileKey String
+  figmaNodeId  String?
+  figmaUrl     String
+  linkedById   String
+  linkedBy     User            @relation(fields: [linkedById], references: [id], onDelete: Restrict)
+  unlinkedAt   DateTime?
+  versions     DesignVersion[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([projectId, unlinkedAt])
+}
+
+model DesignVersion {
+  id                String         @id @default(cuid())
+  designDocumentId  String
+  designDocument    DesignDocument @relation(fields: [designDocumentId], references: [id], onDelete: Cascade)
+  thumbnailUrl      String?
+  figmaLastModified DateTime?
+  syncedAt          DateTime       @default(now())
+
+  @@index([designDocumentId, syncedAt])
 }

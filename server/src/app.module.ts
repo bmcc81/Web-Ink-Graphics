@@ -18,6 +18,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
 import { GoalsModule } from './goals/goals.module';
 import { ActivityLogModule } from './activity/activity-log.module';
+import { DesignsModule } from './designs/designs.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ActivityLogModule } from './activity/activity-log.module';
     ActivityLogModule,
     ProjectsModule,
     GoalsModule,
+    DesignsModule,
   ],
   controllers: [AppController],
   providers: [

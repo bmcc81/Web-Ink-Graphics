@@ -166,6 +166,93 @@ button.danger {
   font-weight: 600;
 }
 
+.designs {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+.design-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.design-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .85rem;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  flex-wrap: wrap;
+}
+.design-thumbnail {
+  width: 5rem;
+  height: 3.5rem;
+  border-radius: .5rem;
+  object-fit: cover;
+  background: var(--paper);
+  flex-shrink: 0;
+}
+.design-thumbnail.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+  color: var(--muted);
+  text-align: center;
+  padding: .25rem;
+}
+.design-info {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  margin-right: auto;
+}
+.design-name { font-weight: 700; }
+.design-meta { color: var(--muted); font-size: .8rem; }
+.design-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.design-actions button,
+.btn-open {
+  padding: .4rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-weight: 600;
+  font-size: .85rem;
+  text-decoration: none;
+  color: inherit;
+}
+.design-actions button.danger { color: #b3261e; border-color: transparent; background: var(--paper); }
+.design-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+}
+.design-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+  flex: 1 1 16rem;
+}
+.design-form input {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+
 .milestone-list,
 .task-list {
   list-style: none;

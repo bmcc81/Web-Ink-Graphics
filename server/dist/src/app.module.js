@@ -27,6 +27,7 @@ const organizations_module_1 = require("./organizations/organizations.module");
 const projects_module_1 = require("./projects/projects.module");
 const goals_module_1 = require("./goals/goals.module");
 const activity_log_module_1 = require("./activity/activity-log.module");
+const designs_module_1 = require("./designs/designs.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -47,6 +48,7 @@ exports.AppModule = AppModule = __decorate([
             activity_log_module_1.ActivityLogModule,
             projects_module_1.ProjectsModule,
             goals_module_1.GoalsModule,
+            designs_module_1.DesignsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

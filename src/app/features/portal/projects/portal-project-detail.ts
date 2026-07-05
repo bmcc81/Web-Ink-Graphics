@@ -68,6 +68,22 @@ interface Budget {
   notes: string | null;
 }
 
+interface DesignVersion {
+  id: string;
+  thumbnailUrl: string | null;
+  figmaLastModified: string | null;
+  syncedAt: string;
+}
+
+interface Design {
+  id: string;
+  name: string;
+  figmaUrl: string;
+  linkedBy: { id: string; name: string };
+  versions: DesignVersion[];
+  createdAt: string;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -136,6 +152,16 @@ export class PortalProjectDetail {
     notes: [''],
   });
 
+  readonly designs = signal<Design[]>([]);
+  readonly designError = signal('');
+  readonly attachingDesign = signal(false);
+  readonly syncingDesignId = signal<string | null>(null);
+
+  readonly designForm = this.formBuilder.nonNullable.group({
+    figmaUrl: ['', [Validators.required]],
+    name: [''],
+  });
+
   readonly milestoneForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     dueDate: [''],
@@ -188,6 +214,7 @@ export class PortalProjectDetail {
           this.project.set(project);
           if (this.canContribute()) this.loadMembers();
           this.loadBudget();
+          this.loadDesigns();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -283,6 +310,85 @@ export class PortalProjectDetail {
           this.budgetForm.reset({ currency: 'USD' });
         },
         error: () => this.budgetError.set('The budget could not be deleted.'),
+      });
+  }
+
+  private loadDesigns() {
+    this.http
+      .get<Design[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs`,
+      )
+      .subscribe({
+        next: (designs) => this.designs.set(designs),
+        error: () => this.designError.set('Designs could not be loaded.'),
+      });
+  }
+
+  attachDesign() {
+    if (this.designForm.invalid || this.attachingDesign()) {
+      this.designForm.markAllAsTouched();
+      return;
+    }
+    this.designError.set('');
+    this.attachingDesign.set(true);
+    const { figmaUrl, name } = this.designForm.getRawValue();
+    this.http
+      .post<Design>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs`,
+        { figmaUrl, name: name || undefined },
+      )
+      .pipe(finalize(() => this.attachingDesign.set(false)))
+      .subscribe({
+        next: (design) => {
+          this.designs.update((list) => [design, ...list]);
+          this.designForm.reset({ figmaUrl: '', name: '' });
+        },
+        error: (response) =>
+          this.designError.set(
+            response.error?.message ?? 'That design could not be attached.',
+          ),
+      });
+  }
+
+  syncDesign(design: Design) {
+    this.designError.set('');
+    this.syncingDesignId.set(design.id);
+    this.http
+      .post<Design & { synced: boolean }>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/sync`,
+        {},
+      )
+      .pipe(finalize(() => this.syncingDesignId.set(null)))
+      .subscribe({
+        next: (updated) => {
+          this.designs.update((list) =>
+            list.map((candidate) =>
+              candidate.id === updated.id ? updated : candidate,
+            ),
+          );
+          if (!updated.synced) {
+            this.designError.set(
+              'Figma could not be reached, so no new preview was pulled. The link is still saved.',
+            );
+          }
+        },
+        error: () => this.designError.set('The design could not be synced.'),
+      });
+  }
+
+  unlinkDesign(design: Design) {
+    if (!confirm(`Unlink "${design.name}" from this project?`)) return;
+    this.designError.set('');
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}`,
+      )
+      .subscribe({
+        next: () =>
+          this.designs.update((list) =>
+            list.filter((candidate) => candidate.id !== design.id),
+          ),
+        error: () => this.designError.set('The design could not be unlinked.'),
       });
   }
 
