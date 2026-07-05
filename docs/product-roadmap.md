@@ -33,14 +33,16 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3A — Figma-connected design workspace
 
-- Attach a Figma design or frame to a WebInk project
-- Display a secure preview and provide an explicit “Open in Figma” action
-- Sync file, page, frame, thumbnail, and last-modified metadata
-- Assign reviewers and due dates
-- Record comments, revision requests, decisions, and final approval in WebInk
-- Preserve design versions referenced by each approval
-- Restrict access using organization and project membership
-- Record every link, unlink, review, and approval action in the audit history
+**Status:** Complete
+
+- Attach a Figma design or frame to a WebInk project — implemented
+- Display a secure preview and provide an explicit “Open in Figma” action — implemented
+- Sync file, page, frame, thumbnail, and last-modified metadata — implemented
+- Assign reviewers and due dates — implemented
+- Record comments, revision requests, decisions, and final approval in WebInk — implemented
+- Preserve design versions referenced by each approval — implemented
+- Restrict access using organization and project membership — implemented
+- Record every link, unlink, review, and approval action in the audit history — implemented
 
 ### Release 3B — Template-based editing
 

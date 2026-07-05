@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -7,15 +8,28 @@ import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import {
   CONTRIBUTE_ROLES,
+  MANAGE_ROLES,
   resolveOrganizationRole,
 } from '../organizations/organization-access';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateDesignCommentDto } from './dto/create-design-comment.dto';
 import { CreateDesignDocumentDto } from './dto/create-design-document.dto';
+import { CreateDesignReviewDto } from './dto/create-design-review.dto';
+import {
+  DecideDesignReviewDto,
+  DesignReviewDecision,
+} from './dto/decide-design-review.dto';
 import { FigmaService } from './figma.service';
 
 const designInclude = {
   linkedBy: { select: { id: true, name: true } },
   versions: { orderBy: { syncedAt: 'desc' as const }, take: 1 },
+};
+
+const reviewInclude = {
+  reviewer: { select: { id: true, name: true } },
+  assignedBy: { select: { id: true, name: true } },
+  decidedVersion: { select: { id: true, syncedAt: true } },
 };
 
 @Injectable()
@@ -143,6 +157,175 @@ export class DesignsService {
     return { removed: true };
   }
 
+  async listReviews(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+  ) {
+    await this.assertCanView(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.findDesignOrThrow(projectId, designId);
+    return this.prisma.designReview.findMany({
+      where: { designDocumentId: designId },
+      include: reviewInclude,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async createReview(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+    dto: CreateDesignReviewDto,
+  ) {
+    await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    const design = await this.findDesignOrThrow(projectId, designId);
+    const reviewer = await this.prisma.organizationMembership.findFirst({
+      where: { organizationId, userId: dto.reviewerId },
+      select: { id: true },
+    });
+    if (!reviewer) {
+      throw new BadRequestException(
+        'The reviewer must be a member of this organization',
+      );
+    }
+    const review = await this.prisma.designReview.create({
+      data: {
+        designDocumentId: designId,
+        reviewerId: dto.reviewerId,
+        assignedById: user.id,
+        dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
+      },
+      include: reviewInclude,
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'DESIGN_DOCUMENT',
+      entityId: designId,
+      action: 'CREATED',
+      summary: `Review of "${design.name}" assigned to ${review.reviewer.name}`,
+      actorId: user.id,
+    });
+    return review;
+  }
+
+  async decideReview(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+    reviewId: string,
+    dto: DecideDesignReviewDto,
+  ) {
+    const role = await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    const design = await this.findDesignOrThrow(projectId, designId);
+    const review = await this.prisma.designReview.findFirst({
+      where: { id: reviewId, designDocumentId: designId },
+    });
+    if (!review) throw new NotFoundException('Review not found');
+    const isAssignedReviewer = review.reviewerId === user.id;
+    const canOverride = role === 'STAFF' || MANAGE_ROLES.includes(role);
+    if (!isAssignedReviewer && !canOverride) {
+      throw new ForbiddenException(
+        'Only the assigned reviewer or an organization owner/manager can decide this review',
+      );
+    }
+    if (review.status === 'APPROVED') {
+      throw new BadRequestException(
+        'This review has already been approved and cannot be changed',
+      );
+    }
+    const latestVersion = await this.prisma.designVersion.findFirst({
+      where: { designDocumentId: designId },
+      orderBy: { syncedAt: 'desc' },
+      select: { id: true },
+    });
+    const updated = await this.prisma.designReview.update({
+      where: { id: reviewId },
+      data: {
+        status: dto.decision,
+        decisionNote: dto.note,
+        decidedAt: new Date(),
+        decidedVersionId: latestVersion?.id,
+      },
+      include: reviewInclude,
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'DESIGN_DOCUMENT',
+      entityId: designId,
+      action: 'STATUS_CHANGED',
+      summary:
+        dto.decision === DesignReviewDecision.APPROVED
+          ? `${updated.reviewer.name} approved "${design.name}"`
+          : `${updated.reviewer.name} requested changes on "${design.name}"`,
+      actorId: user.id,
+    });
+    return updated;
+  }
+
+  async listComments(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+  ) {
+    await this.assertCanView(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.findDesignOrThrow(projectId, designId);
+    return this.prisma.designComment.findMany({
+      where: { designDocumentId: designId },
+      include: { author: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async createComment(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+    dto: CreateDesignCommentDto,
+  ) {
+    await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.findDesignOrThrow(projectId, designId);
+    return this.prisma.designComment.create({
+      data: { designDocumentId: designId, authorId: user.id, body: dto.body },
+      include: { author: { select: { id: true, name: true } } },
+    });
+  }
+
+  async removeComment(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+    designId: string,
+    commentId: string,
+  ) {
+    const role = await this.assertCanContribute(user, organizationId);
+    await this.findProjectOrThrow(organizationId, projectId);
+    await this.findDesignOrThrow(projectId, designId);
+    const comment = await this.prisma.designComment.findFirst({
+      where: { id: commentId, designDocumentId: designId },
+      select: { authorId: true },
+    });
+    if (!comment) throw new NotFoundException('Comment not found');
+    const isAuthor = comment.authorId === user.id;
+    const canModerate = role === 'STAFF' || MANAGE_ROLES.includes(role);
+    if (!isAuthor && !canModerate) {
+      throw new ForbiddenException(
+        'Only the author or an organization owner/manager can delete this comment',
+      );
+    }
+    await this.prisma.designComment.delete({ where: { id: commentId } });
+    return { removed: true };
+  }
+
   private async assertCanView(user: AuthUser, organizationId: string) {
     const role = await resolveOrganizationRole(
       this.prisma,
@@ -164,6 +347,7 @@ export class DesignsService {
         'Only contributors, managers, and owners can manage designs',
       );
     }
+    return role;
   }
 
   private async findProjectOrThrow(organizationId: string, projectId: string) {

@@ -84,6 +84,27 @@ interface Design {
   createdAt: string;
 }
 
+type DesignReviewStatus = 'PENDING' | 'CHANGES_REQUESTED' | 'APPROVED';
+
+interface DesignReview {
+  id: string;
+  reviewer: { id: string; name: string };
+  assignedBy: { id: string; name: string };
+  dueDate: string | null;
+  status: DesignReviewStatus;
+  decisionNote: string | null;
+  decidedAt: string | null;
+  decidedVersion: { id: string; syncedAt: string } | null;
+  createdAt: string;
+}
+
+interface DesignComment {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: { id: string; name: string };
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -160,6 +181,20 @@ export class PortalProjectDetail {
   readonly designForm = this.formBuilder.nonNullable.group({
     figmaUrl: ['', [Validators.required]],
     name: [''],
+  });
+
+  readonly expandedDesignId = signal<string | null>(null);
+  readonly designReviews = signal<Record<string, DesignReview[]>>({});
+  readonly designComments = signal<Record<string, DesignComment[]>>({});
+  readonly designDetailError = signal('');
+  readonly designCommentDraft = signal('');
+  readonly reviewNoteDraft = signal('');
+  readonly assigningReviewer = signal(false);
+  readonly decidingReviewId = signal<string | null>(null);
+
+  readonly reviewerForm = this.formBuilder.nonNullable.group({
+    reviewerId: ['', [Validators.required]],
+    dueDate: [''],
   });
 
   readonly milestoneForm = this.formBuilder.nonNullable.group({
@@ -389,6 +424,167 @@ export class PortalProjectDetail {
             list.filter((candidate) => candidate.id !== design.id),
           ),
         error: () => this.designError.set('The design could not be unlinked.'),
+      });
+  }
+
+  reviewsFor(design: Design) {
+    return this.designReviews()[design.id] ?? [];
+  }
+
+  commentsForDesign(design: Design) {
+    return this.designComments()[design.id] ?? [];
+  }
+
+  isDesignDetailOpen(design: Design) {
+    return this.expandedDesignId() === design.id;
+  }
+
+  canDecideReview(review: DesignReview) {
+    return review.reviewer.id === this.auth.user()?.sub || this.canManage();
+  }
+
+  canDeleteDesignComment(comment: DesignComment) {
+    return comment.author.id === this.auth.user()?.sub || this.canManage();
+  }
+
+  toggleDesignDetail(design: Design) {
+    if (this.expandedDesignId() === design.id) {
+      this.expandedDesignId.set(null);
+      return;
+    }
+    this.expandedDesignId.set(design.id);
+    this.designDetailError.set('');
+    this.designCommentDraft.set('');
+    this.reviewNoteDraft.set('');
+    this.reviewerForm.reset({ reviewerId: '', dueDate: '' });
+    if (!this.designReviews()[design.id]) {
+      this.http
+        .get<DesignReview[]>(
+          `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/reviews`,
+        )
+        .subscribe({
+          next: (reviews) =>
+            this.designReviews.update((current) => ({
+              ...current,
+              [design.id]: reviews,
+            })),
+          error: () => this.designDetailError.set('Reviews could not be loaded.'),
+        });
+    }
+    if (!this.designComments()[design.id]) {
+      this.http
+        .get<DesignComment[]>(
+          `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/comments`,
+        )
+        .subscribe({
+          next: (comments) =>
+            this.designComments.update((current) => ({
+              ...current,
+              [design.id]: comments,
+            })),
+          error: () => this.designDetailError.set('Comments could not be loaded.'),
+        });
+    }
+  }
+
+  assignReviewer(design: Design) {
+    if (this.reviewerForm.invalid || this.assigningReviewer()) {
+      this.reviewerForm.markAllAsTouched();
+      return;
+    }
+    this.designDetailError.set('');
+    this.assigningReviewer.set(true);
+    const { reviewerId, dueDate } = this.reviewerForm.getRawValue();
+    this.http
+      .post<DesignReview>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/reviews`,
+        { reviewerId, dueDate: dueDate || undefined },
+      )
+      .pipe(finalize(() => this.assigningReviewer.set(false)))
+      .subscribe({
+        next: (review) => {
+          this.designReviews.update((current) => ({
+            ...current,
+            [design.id]: [review, ...(current[design.id] ?? [])],
+          }));
+          this.reviewerForm.reset({ reviewerId: '', dueDate: '' });
+        },
+        error: (response) =>
+          this.designDetailError.set(
+            response.error?.message ?? 'The reviewer could not be assigned.',
+          ),
+      });
+  }
+
+  decideDesignReview(
+    design: Design,
+    review: DesignReview,
+    decision: 'APPROVED' | 'CHANGES_REQUESTED',
+  ) {
+    this.designDetailError.set('');
+    this.decidingReviewId.set(review.id);
+    const note = this.reviewNoteDraft().trim();
+    this.http
+      .patch<DesignReview>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/reviews/${review.id}`,
+        { decision, note: note || undefined },
+      )
+      .pipe(finalize(() => this.decidingReviewId.set(null)))
+      .subscribe({
+        next: (updated) => {
+          this.designReviews.update((current) => ({
+            ...current,
+            [design.id]: (current[design.id] ?? []).map((candidate) =>
+              candidate.id === updated.id ? updated : candidate,
+            ),
+          }));
+          this.reviewNoteDraft.set('');
+        },
+        error: (response) =>
+          this.designDetailError.set(
+            response.error?.message ?? 'The review could not be updated.',
+          ),
+      });
+  }
+
+  postDesignComment(design: Design) {
+    const body = this.designCommentDraft().trim();
+    if (!body) return;
+    this.designDetailError.set('');
+    this.http
+      .post<DesignComment>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/comments`,
+        { body },
+      )
+      .subscribe({
+        next: (comment) => {
+          this.designComments.update((current) => ({
+            ...current,
+            [design.id]: [...(current[design.id] ?? []), comment],
+          }));
+          this.designCommentDraft.set('');
+        },
+        error: () =>
+          this.designDetailError.set('The comment could not be posted.'),
+      });
+  }
+
+  deleteDesignComment(design: Design, comment: DesignComment) {
+    if (!confirm('Delete this comment?')) return;
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/designs/${design.id}/comments/${comment.id}`,
+      )
+      .subscribe({
+        next: () =>
+          this.designComments.update((current) => ({
+            ...current,
+            [design.id]: (current[design.id] ?? []).filter(
+              (candidate) => candidate.id !== comment.id,
+            ),
+          })),
+        error: () =>
+          this.designDetailError.set('The comment could not be deleted.'),
       });
   }
 

@@ -155,6 +155,9 @@
                 <a class="btn-open" [href]="design.figmaUrl" target="_blank" rel="noopener">
                   Open in Figma
                 </a>
+                <button type="button" (click)="toggleDesignDetail(design)">
+                  {{ isDesignDetailOpen(design) ? 'Hide reviews' : 'Reviews & comments' }}
+                </button>
                 @if (canContribute()) {
                   <button
                     type="button"
@@ -168,6 +171,116 @@
                   </button>
                 }
               </div>
+              @if (isDesignDetailOpen(design)) {
+                <div class="design-detail">
+                  @if (designDetailError()) {
+                    <p class="error" role="alert">{{ designDetailError() }}</p>
+                  }
+
+                  <div class="design-reviews">
+                    <h3>Reviews</h3>
+                    @if (reviewsFor(design).length) {
+                      <ul class="review-list">
+                        @for (review of reviewsFor(design); track review.id) {
+                          <li class="review-item">
+                            <div class="review-info">
+                              <span class="review-reviewer">{{ review.reviewer.name }}</span>
+                              <span class="review-status" [class]="'status-' + review.status.toLowerCase()">
+                                {{ review.status }}
+                              </span>
+                              @if (review.dueDate) {
+                                <span class="review-due">due {{ review.dueDate | date: 'mediumDate' }}</span>
+                              }
+                              @if (review.decisionNote) {
+                                <span class="review-note">"{{ review.decisionNote }}"</span>
+                              }
+                            </div>
+                            @if (canDecideReview(review) && review.status !== 'APPROVED') {
+                              <div class="review-actions">
+                                <input
+                                  class="review-note-input"
+                                  placeholder="Optional note"
+                                  [value]="reviewNoteDraft()"
+                                  (input)="reviewNoteDraft.set($any($event.target).value)"
+                                />
+                                <button
+                                  type="button"
+                                  (click)="decideDesignReview(design, review, 'APPROVED')"
+                                  [disabled]="decidingReviewId() === review.id"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  type="button"
+                                  class="danger"
+                                  (click)="decideDesignReview(design, review, 'CHANGES_REQUESTED')"
+                                  [disabled]="decidingReviewId() === review.id"
+                                >
+                                  Request changes
+                                </button>
+                              </div>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No reviewers assigned yet.</p>
+                    }
+                    @if (canContribute()) {
+                      <form class="reviewer-form" [formGroup]="reviewerForm" (ngSubmit)="assignReviewer(design)">
+                        <label>
+                          Reviewer
+                          <select formControlName="reviewerId">
+                            <option value="">Select a member</option>
+                            @for (member of members(); track member.id) {
+                              <option [value]="member.user.id">{{ member.user.name }}</option>
+                            }
+                          </select>
+                        </label>
+                        <label>
+                          Due date
+                          <input type="date" formControlName="dueDate" />
+                        </label>
+                        <button class="btn btn-primary" type="submit" [disabled]="assigningReviewer()">
+                          {{ assigningReviewer() ? 'Assigning…' : 'Assign reviewer' }}
+                        </button>
+                      </form>
+                    }
+                  </div>
+
+                  <div class="design-comments">
+                    <h3>Comments</h3>
+                    @if (commentsForDesign(design).length) {
+                      <ul class="comment-list">
+                        @for (comment of commentsForDesign(design); track comment.id) {
+                          <li>
+                            <span class="comment-author">{{ comment.author.name }}</span>
+                            <span class="comment-body">{{ comment.body }}</span>
+                            <span class="comment-date">{{ comment.createdAt | date: 'short' }}</span>
+                            @if (canDeleteDesignComment(comment)) {
+                              <button type="button" class="danger" (click)="deleteDesignComment(design, comment)">
+                                Delete
+                              </button>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No comments yet.</p>
+                    }
+                    @if (canContribute()) {
+                      <div class="add-comment">
+                        <textarea
+                          [value]="designCommentDraft()"
+                          (input)="designCommentDraft.set($any($event.target).value)"
+                          placeholder="Add a comment"
+                        ></textarea>
+                        <button type="button" (click)="postDesignComment(design)">Post</button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
             </li>
           }
         </ul>

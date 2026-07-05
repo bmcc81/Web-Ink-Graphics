@@ -159,6 +159,9 @@ model User {
   taskComments            TaskComment[]
   activityLogEntries      ActivityLogEntry[]
   linkedDesignDocuments   DesignDocument[]
+  designReviewsToDo       DesignReview[]           @relation("DesignReviewer")
+  designReviewsAssigned   DesignReview[]           @relation("DesignReviewAssigner")
+  designComments          DesignComment[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -548,6 +551,8 @@ model DesignDocument {
   linkedBy     User            @relation(fields: [linkedById], references: [id], onDelete: Restrict)
   unlinkedAt   DateTime?
   versions     DesignVersion[]
+  reviews      DesignReview[]
+  comments     DesignComment[]
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
@@ -561,6 +566,47 @@ model DesignVersion {
   thumbnailUrl      String?
   figmaLastModified DateTime?
   syncedAt          DateTime       @default(now())
+  decidingReviews   DesignReview[]
 
   @@index([designDocumentId, syncedAt])
+}
+
+enum DesignReviewStatus {
+  PENDING
+  CHANGES_REQUESTED
+  APPROVED
+}
+
+model DesignReview {
+  id               String             @id @default(cuid())
+  designDocumentId String
+  designDocument   DesignDocument     @relation(fields: [designDocumentId], references: [id], onDelete: Cascade)
+  reviewerId       String
+  reviewer         User               @relation("DesignReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  assignedById     String
+  assignedBy       User               @relation("DesignReviewAssigner", fields: [assignedById], references: [id], onDelete: Restrict)
+  dueDate          DateTime?
+  status           DesignReviewStatus @default(PENDING)
+  decidedVersionId String?
+  decidedVersion   DesignVersion?     @relation(fields: [decidedVersionId], references: [id], onDelete: SetNull)
+  decisionNote     String?
+  decidedAt        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([designDocumentId, status])
+  @@index([reviewerId, status])
+}
+
+model DesignComment {
+  id               String         @id @default(cuid())
+  designDocumentId String
+  designDocument   DesignDocument @relation(fields: [designDocumentId], references: [id], onDelete: Cascade)
+  authorId         String
+  author           User           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  body             String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([designDocumentId, createdAt])
 }
