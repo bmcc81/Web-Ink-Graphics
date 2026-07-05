@@ -15,14 +15,14 @@ a stronger dependency or opportunity.
 
 ## 2. Planning, projects, and approvals
 
-**Priority:** Next
+**Status:** Complete — the full planning workflow is in place
 
-- Quarterly and annual goals
-- Marketing initiatives, projects, milestones, and tasks
-- Assignments, comments, notifications, and due dates
-- Planned, approved, committed, and actual budgets
-- Draft, review, changes requested, approved, production, and completed states
-- Immutable approval and activity history
+- Quarterly and annual goals — implemented
+- Marketing initiatives, projects, milestones, and tasks — implemented
+- Assignments, comments, notifications, and due dates — implemented
+- Planned, approved, committed, and actual budgets — implemented
+- Draft, review, changes requested, approved, production, and completed states — implemented
+- Immutable approval and activity history — implemented
 
 ## 3. Connected design review and editing
 
