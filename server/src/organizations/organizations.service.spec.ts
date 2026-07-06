@@ -47,6 +47,7 @@ describe('OrganizationsService invitation acceptance', () => {
   const config = {
     getOrThrow: jest.fn(),
   };
+  const activityLog = { record: jest.fn() };
   let service: OrganizationsService;
 
   beforeEach(() => {
@@ -54,7 +55,11 @@ describe('OrganizationsService invitation acceptance', () => {
     prisma.$transaction.mockImplementation(
       (operation: (transaction: typeof prisma) => unknown) => operation(prisma),
     );
-    service = new OrganizationsService(prisma as never, config as never);
+    service = new OrganizationsService(
+      prisma as never,
+      config as never,
+      activityLog as never,
+    );
   });
 
   it('returns invitation context without exposing the token hash', async () => {
@@ -181,6 +186,7 @@ describe('OrganizationsService member management', () => {
     $transaction: jest.fn(),
   };
   const config = { getOrThrow: jest.fn() };
+  const activityLog = { record: jest.fn() };
   let service: OrganizationsService;
 
   function actorMembership(role: OrganizationRole) {
@@ -192,7 +198,11 @@ describe('OrganizationsService member management', () => {
     prisma.$transaction.mockImplementation(
       (operation: (transaction: typeof prisma) => unknown) => operation(prisma),
     );
-    service = new OrganizationsService(prisma as never, config as never);
+    service = new OrganizationsService(
+      prisma as never,
+      config as never,
+      activityLog as never,
+    );
   });
 
   describe('updateMemberRole', () => {
@@ -408,6 +418,98 @@ describe('OrganizationsService member management', () => {
       await expect(
         service.removeMember(owner, organizationId, 'missing'),
       ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+});
+
+describe('OrganizationsService brand kit', () => {
+  const organizationId = 'organization-1';
+  const owner: AuthUser = {
+    id: 'user-owner',
+    email: 'owner@example.com',
+    name: 'Owner',
+    role: Role.CUSTOMER,
+  };
+  const viewer: AuthUser = {
+    id: 'user-viewer',
+    email: 'viewer@example.com',
+    name: 'Viewer',
+    role: Role.CUSTOMER,
+  };
+
+  const prisma = {
+    organizationMembership: { findUnique: jest.fn() },
+    brandKit: { findUnique: jest.fn(), upsert: jest.fn() },
+  };
+  const config = { getOrThrow: jest.fn() };
+  const activityLog = { record: jest.fn() };
+  let service: OrganizationsService;
+
+  function actorMembership(role: OrganizationRole | null) {
+    prisma.organizationMembership.findUnique.mockResolvedValue(
+      role ? { role } : null,
+    );
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    service = new OrganizationsService(
+      prisma as never,
+      config as never,
+      activityLog as never,
+    );
+  });
+
+  describe('getBrandKit', () => {
+    it('lets any member view the brand kit', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+      prisma.brandKit.findUnique.mockResolvedValue({
+        organizationId,
+        primaryColor: '#123456',
+      });
+
+      await expect(
+        service.getBrandKit(viewer, organizationId),
+      ).resolves.toMatchObject({ primaryColor: '#123456' });
+    });
+
+    it('rejects a user with no membership', async () => {
+      actorMembership(null);
+
+      await expect(
+        service.getBrandKit(viewer, organizationId),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('upsertBrandKit', () => {
+    it('blocks a viewer from updating the brand kit', async () => {
+      actorMembership(OrganizationRole.VIEWER);
+
+      await expect(
+        service.upsertBrandKit(viewer, organizationId, {
+          primaryColor: '#111111',
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.brandKit.upsert).not.toHaveBeenCalled();
+    });
+
+    it('lets an owner create the brand kit', async () => {
+      actorMembership(OrganizationRole.OWNER);
+      prisma.brandKit.upsert.mockResolvedValue({
+        id: 'brand-kit-1',
+        organizationId,
+        primaryColor: '#111111',
+      });
+
+      await expect(
+        service.upsertBrandKit(owner, organizationId, {
+          primaryColor: '#111111',
+        }),
+      ).resolves.toMatchObject({ primaryColor: '#111111' });
+      expect(prisma.brandKit.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { organizationId } }),
+      );
     });
   });
 });

@@ -15,6 +15,10 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 import { AuthUser } from '../auth/auth-user';
+import {
+  CONTRIBUTE_ROLES,
+  resolveOrganizationRole,
+} from '../organizations/organization-access';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUploadDto } from './dto/create-upload.dto';
 
@@ -42,11 +46,13 @@ export class MediaService {
     const folder =
       purpose === 'DISCOVERY'
         ? await this.discoveryFolder(user, dto.briefId)
-        : this.portfolioFolder(user);
+        : purpose === 'ASSET'
+          ? await this.assetFolder(user, dto.organizationId)
+          : this.portfolioFolder(user);
     const bucket = this.config.getOrThrow<string>('S3_BUCKET');
     const key = `${folder}/${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${extensions[dto.contentType]}`;
     const client = this.client();
-    const isPublic = purpose === 'PORTFOLIO';
+    const isPublic = purpose === 'PORTFOLIO' || purpose === 'ASSET';
     const publicBaseUrl = isPublic
       ? this.config.getOrThrow<string>('S3_PUBLIC_URL').replace(/\/+$/, '')
       : '';
@@ -166,5 +172,27 @@ export class MediaService {
 
   private isStaff(user: AuthUser) {
     return user.role === Role.ADMIN || user.role === Role.EDITOR;
+  }
+
+  private async assetFolder(user: AuthUser, organizationId?: string) {
+    if (!organizationId) {
+      throw new BadRequestException(
+        'organizationId is required for an asset upload',
+      );
+    }
+    const role = await resolveOrganizationRole(
+      this.prisma,
+      user,
+      organizationId,
+    );
+    if (!role) {
+      throw new NotFoundException('Organization not found');
+    }
+    if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+      throw new ForbiddenException(
+        'Only contributors, managers, and owners can upload project assets',
+      );
+    }
+    return `assets/${organizationId}`;
   }
 }

@@ -1,0 +1,133 @@
+<main class="admin-shell">
+  <aside>
+    <a class="brand" routerLink="/"><span>W</span><strong>WebInk</strong></a>
+    <nav aria-label="Admin navigation">
+      <a routerLink="/admin">Portfolio</a>
+      <a routerLink="/admin/clients">Clients &amp; discovery</a>
+      <a routerLink="/admin/leads">Inquiries</a>
+      <a class="active" routerLink="/admin/templates">Templates</a>
+      <a routerLink="/">View website ↗</a>
+    </nav>
+    <button type="button" (click)="logout()">Sign out</button>
+  </aside>
+
+  <section class="admin-content">
+    <header>
+      <div><p>Marketing assets</p><h1>Design templates</h1></div>
+      <button class="btn btn-primary" type="button" (click)="toggleForm()">
+        {{ showForm() ? 'Cancel' : 'New template' }} <span>+</span>
+      </button>
+    </header>
+
+    @if (error()) {
+      <p class="page-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (showForm()) {
+      <form class="template-form" [formGroup]="form" (ngSubmit)="create()">
+        @if (createError()) {
+          <p class="page-error" role="alert">{{ createError() }}</p>
+        }
+        <div class="fields-row">
+          <label>
+            Name
+            <input formControlName="name" />
+          </label>
+          <label>
+            Category
+            <select formControlName="category">
+              @for (category of categories; track category) {
+                <option [value]="category">{{ category.replaceAll('_', ' ') }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Preview image URL
+            <input formControlName="previewImageUrl" placeholder="https://…" />
+          </label>
+        </div>
+        <label>
+          Description
+          <textarea formControlName="description"></textarea>
+        </label>
+
+        <h3>Editable fields</h3>
+        <ul class="field-rows" formArrayName="fields">
+          @for (fieldGroup of fields.controls; track $index) {
+            <li [formGroupName]="$index">
+              <label>
+                Key
+                <input formControlName="key" placeholder="headline" />
+              </label>
+              <label>
+                Label
+                <input formControlName="label" placeholder="Headline" />
+              </label>
+              <label>
+                Type
+                <select formControlName="fieldType">
+                  @for (fieldType of fieldTypes; track fieldType) {
+                    <option [value]="fieldType">{{ fieldType.replaceAll('_', ' ') }}</option>
+                  }
+                </select>
+              </label>
+              <label>
+                Max length
+                <input formControlName="maxLength" type="number" min="1" />
+              </label>
+              <label class="checkbox">
+                <input formControlName="required" type="checkbox" />
+                Required
+              </label>
+              <button
+                type="button"
+                class="remove-field"
+                [disabled]="fields.length <= 1"
+                (click)="removeField($index)"
+              >
+                Remove
+              </button>
+            </li>
+          }
+        </ul>
+        <button type="button" class="add-field" (click)="addField()">
+          Add field
+        </button>
+
+        <button class="btn btn-primary" type="submit" [disabled]="creating()">
+          {{ creating() ? 'Creating…' : 'Create template' }}
+        </button>
+      </form>
+    }
+
+    <div class="template-list">
+      @if (loading()) {
+        <p class="state">Loading templates…</p>
+      } @else if (!templates().length) {
+        <p class="state">No templates yet.</p>
+      } @else {
+        @for (template of templates(); track template.id) {
+          <article [class.unpublished]="!template.isPublished">
+            <div class="template-top">
+              <div>
+                <h2>{{ template.name }}</h2>
+                <p>{{ template.category.replaceAll('_', ' ') }} · {{ template.fields.length }} fields</p>
+              </div>
+              <button type="button" (click)="togglePublish(template)">
+                {{ template.isPublished ? 'Unpublish' : 'Publish' }}
+              </button>
+            </div>
+            @if (template.description) {
+              <p class="description">{{ template.description }}</p>
+            }
+            <ul class="field-summary">
+              @for (field of template.fields; track field.id) {
+                <li>{{ field.label }} ({{ field.fieldType.replaceAll('_', ' ') }}{{ field.required ? ', required' : '' }})</li>
+              }
+            </ul>
+          </article>
+        }
+      }
+    </div>
+  </section>
+</main>

@@ -18,6 +18,7 @@ const current_user_decorator_1 = require("../auth/current-user.decorator");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_invitation_dto_1 = require("./dto/create-invitation.dto");
 const update_member_role_dto_1 = require("./dto/update-member-role.dto");
+const upsert_brand_kit_dto_1 = require("./dto/upsert-brand-kit.dto");
 const organizations_service_1 = require("./organizations.service");
 let OrganizationsController = class OrganizationsController {
     organizations;
@@ -41,6 +42,12 @@ let OrganizationsController = class OrganizationsController {
     }
     revokeInvitation(user, organizationId, invitationId) {
         return this.organizations.revokeInvitation(user, organizationId, invitationId);
+    }
+    getBrandKit(user, organizationId) {
+        return this.organizations.getBrandKit(user, organizationId);
+    }
+    upsertBrandKit(user, organizationId, dto) {
+        return this.organizations.upsertBrandKit(user, organizationId, dto);
     }
 };
 exports.OrganizationsController = OrganizationsController;
@@ -97,6 +104,23 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], OrganizationsController.prototype, "revokeInvitation", null);
+__decorate([
+    (0, common_1.Get)(':organizationId/brand-kit'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], OrganizationsController.prototype, "getBrandKit", null);
+__decorate([
+    (0, common_1.Put)(':organizationId/brand-kit'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, upsert_brand_kit_dto_1.UpsertBrandKitDto]),
+    __metadata("design:returntype", void 0)
+], OrganizationsController.prototype, "upsertBrandKit", null);
 exports.OrganizationsController = OrganizationsController = __decorate([
     (0, common_1.Controller)('organizations'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

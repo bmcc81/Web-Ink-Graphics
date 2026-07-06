@@ -24,6 +24,12 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const prisma_exception_filter_1 = require("./prisma/prisma-exception.filter");
 const seo_module_1 = require("./seo/seo.module");
 const organizations_module_1 = require("./organizations/organizations.module");
+const projects_module_1 = require("./projects/projects.module");
+const goals_module_1 = require("./goals/goals.module");
+const activity_log_module_1 = require("./activity/activity-log.module");
+const designs_module_1 = require("./designs/designs.module");
+const templates_module_1 = require("./templates/templates.module");
+const project_assets_module_1 = require("./project-assets/project-assets.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,6 +47,12 @@ exports.AppModule = AppModule = __decorate([
             health_module_1.HealthModule,
             portfolio_module_1.PortfolioModule,
             organizations_module_1.OrganizationsModule,
+            activity_log_module_1.ActivityLogModule,
+            projects_module_1.ProjectsModule,
+            goals_module_1.GoalsModule,
+            designs_module_1.DesignsModule,
+            templates_module_1.TemplatesModule,
+            project_assets_module_1.ProjectAssetsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

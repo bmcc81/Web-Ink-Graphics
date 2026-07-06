@@ -1,0 +1,735 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a [routerLink]="['/portal', organizationId, 'projects']">Back to projects</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading project…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Project unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else if (project(); as current) {
+    <section class="welcome">
+      <p class="eyebrow">Project</p>
+      <h1>{{ current.name }}</h1>
+      @if (current.goal) {
+        <p class="goal-link">
+          Supports goal:
+          <a [routerLink]="['/portal', organizationId, 'goals']">
+            {{ current.goal.period }} {{ current.goal.year }} — {{ current.goal.title }}
+          </a>
+        </p>
+      }
+      @if (current.description) {
+        <p>{{ current.description }}</p>
+      }
+    </section>
+
+    @if (actionError()) {
+      <p class="error" role="alert">{{ actionError() }}</p>
+    }
+
+    <section class="project-meta" aria-label="Project status">
+      <div class="status-control">
+        <span class="label">Status</span>
+        @if (canContribute()) {
+          <select (change)="updateProjectStatus($any($event.target).value)">
+            @for (status of projectStatuses; track status) {
+              <option [value]="status" [selected]="status === current.status">
+                {{ status.replaceAll('_', ' ') }}
+              </option>
+            }
+          </select>
+        } @else {
+          <span class="status-badge" [attr.data-status]="current.status">
+            {{ current.status.replaceAll('_', ' ') }}
+          </span>
+        }
+      </div>
+      @if (canManage()) {
+        <button type="button" class="danger" (click)="deleteProject()">Delete project</button>
+      }
+    </section>
+
+    <section class="budget" aria-label="Budget">
+      <h2>Budget</h2>
+      @if (budgetError()) {
+        <p class="error" role="alert">{{ budgetError() }}</p>
+      }
+      @if (editingBudget()) {
+        <form class="budget-form" [formGroup]="budgetForm" (ngSubmit)="saveBudget()">
+          <label>
+            Currency
+            <input formControlName="currency" maxlength="3" />
+          </label>
+          <label>
+            Planned
+            <input formControlName="plannedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Approved
+            <input formControlName="approvedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Committed
+            <input formControlName="committedAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label>
+            Actual
+            <input formControlName="actualAmount" type="number" min="0" step="0.01" />
+          </label>
+          <label class="notes">
+            Notes
+            <input formControlName="notes" />
+          </label>
+          <div class="budget-form-actions">
+            <button class="btn btn-primary" type="submit">Save budget</button>
+            <button type="button" (click)="cancelEditingBudget()">Cancel</button>
+          </div>
+        </form>
+      } @else if (budget(); as currentBudget) {
+        <dl class="budget-summary">
+          <div>
+            <dt>Planned</dt>
+            <dd>{{ currentBudget.plannedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Approved</dt>
+            <dd>{{ currentBudget.approvedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Committed</dt>
+            <dd>{{ currentBudget.committedAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+          <div>
+            <dt>Actual</dt>
+            <dd>{{ currentBudget.actualAmount ?? '—' }} {{ currentBudget.currency }}</dd>
+          </div>
+        </dl>
+        @if (currentBudget.notes) {
+          <p class="budget-notes">{{ currentBudget.notes }}</p>
+        }
+        @if (canContribute()) {
+          <div class="budget-actions">
+            <button type="button" (click)="startEditingBudget()">Edit budget</button>
+            <button type="button" class="danger" (click)="deleteBudget()">Delete budget</button>
+          </div>
+        }
+      } @else if (canContribute()) {
+        <p>No budget set yet.</p>
+        <button type="button" (click)="startEditingBudget()">Add budget</button>
+      } @else {
+        <p>No budget set yet.</p>
+      }
+    </section>
+
+    <section class="designs" aria-label="Designs">
+      <h2>Designs</h2>
+      @if (designError()) {
+        <p class="error" role="alert">{{ designError() }}</p>
+      }
+      @if (designs().length) {
+        <ul class="design-list">
+          @for (design of designs(); track design.id) {
+            <li>
+              @if (design.versions[0]?.thumbnailUrl; as thumbnail) {
+                <img class="design-thumbnail" [src]="thumbnail" alt="" />
+              } @else {
+                <div class="design-thumbnail placeholder">No preview yet</div>
+              }
+              <div class="design-info">
+                <span class="design-name">{{ design.name }}</span>
+                <span class="design-meta">
+                  Linked by {{ design.linkedBy.name }}
+                  @if (design.versions[0]; as version) {
+                    · synced {{ version.syncedAt | date: 'short' }}
+                  } @else {
+                    · not synced yet
+                  }
+                </span>
+              </div>
+              <div class="design-actions">
+                <a class="btn-open" [href]="design.figmaUrl" target="_blank" rel="noopener">
+                  Open in Figma
+                </a>
+                <button type="button" (click)="toggleDesignDetail(design)">
+                  {{ isDesignDetailOpen(design) ? 'Hide reviews' : 'Reviews & comments' }}
+                </button>
+                @if (canContribute()) {
+                  <button
+                    type="button"
+                    (click)="syncDesign(design)"
+                    [disabled]="syncingDesignId() === design.id"
+                  >
+                    {{ syncingDesignId() === design.id ? 'Syncing…' : 'Sync' }}
+                  </button>
+                  <button type="button" class="danger" (click)="unlinkDesign(design)">
+                    Unlink
+                  </button>
+                }
+              </div>
+              @if (isDesignDetailOpen(design)) {
+                <div class="design-detail">
+                  @if (designDetailError()) {
+                    <p class="error" role="alert">{{ designDetailError() }}</p>
+                  }
+
+                  <div class="design-reviews">
+                    <h3>Reviews</h3>
+                    @if (reviewsFor(design).length) {
+                      <ul class="review-list">
+                        @for (review of reviewsFor(design); track review.id) {
+                          <li class="review-item">
+                            <div class="review-info">
+                              <span class="review-reviewer">{{ review.reviewer.name }}</span>
+                              <span class="review-status" [class]="'status-' + review.status.toLowerCase()">
+                                {{ review.status }}
+                              </span>
+                              @if (review.dueDate) {
+                                <span class="review-due">due {{ review.dueDate | date: 'mediumDate' }}</span>
+                              }
+                              @if (review.decisionNote) {
+                                <span class="review-note">"{{ review.decisionNote }}"</span>
+                              }
+                            </div>
+                            @if (canDecideReview(review) && review.status !== 'APPROVED') {
+                              <div class="review-actions">
+                                <input
+                                  class="review-note-input"
+                                  placeholder="Optional note"
+                                  [value]="reviewNoteDraft()"
+                                  (input)="reviewNoteDraft.set($any($event.target).value)"
+                                />
+                                <button
+                                  type="button"
+                                  (click)="decideDesignReview(design, review, 'APPROVED')"
+                                  [disabled]="decidingReviewId() === review.id"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  type="button"
+                                  class="danger"
+                                  (click)="decideDesignReview(design, review, 'CHANGES_REQUESTED')"
+                                  [disabled]="decidingReviewId() === review.id"
+                                >
+                                  Request changes
+                                </button>
+                              </div>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No reviewers assigned yet.</p>
+                    }
+                    @if (canContribute()) {
+                      <form class="reviewer-form" [formGroup]="reviewerForm" (ngSubmit)="assignReviewer(design)">
+                        <label>
+                          Reviewer
+                          <select formControlName="reviewerId">
+                            <option value="">Select a member</option>
+                            @for (member of members(); track member.id) {
+                              <option [value]="member.user.id">{{ member.user.name }}</option>
+                            }
+                          </select>
+                        </label>
+                        <label>
+                          Due date
+                          <input type="date" formControlName="dueDate" />
+                        </label>
+                        <button class="btn btn-primary" type="submit" [disabled]="assigningReviewer()">
+                          {{ assigningReviewer() ? 'Assigning…' : 'Assign reviewer' }}
+                        </button>
+                      </form>
+                    }
+                  </div>
+
+                  <div class="design-comments">
+                    <h3>Comments</h3>
+                    @if (commentsForDesign(design).length) {
+                      <ul class="comment-list">
+                        @for (comment of commentsForDesign(design); track comment.id) {
+                          <li>
+                            <span class="comment-author">{{ comment.author.name }}</span>
+                            <span class="comment-body">{{ comment.body }}</span>
+                            <span class="comment-date">{{ comment.createdAt | date: 'short' }}</span>
+                            @if (canDeleteDesignComment(comment)) {
+                              <button type="button" class="danger" (click)="deleteDesignComment(design, comment)">
+                                Delete
+                              </button>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No comments yet.</p>
+                    }
+                    @if (canContribute()) {
+                      <div class="add-comment">
+                        <textarea
+                          [value]="designCommentDraft()"
+                          (input)="designCommentDraft.set($any($event.target).value)"
+                          placeholder="Add a comment"
+                        ></textarea>
+                        <button type="button" (click)="postDesignComment(design)">Post</button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No designs linked yet.</p>
+      }
+      @if (canContribute()) {
+        <form class="design-form" [formGroup]="designForm" (ngSubmit)="attachDesign()">
+          <label>
+            Figma link
+            <input formControlName="figmaUrl" placeholder="https://www.figma.com/design/..." />
+          </label>
+          <label>
+            Name (optional)
+            <input formControlName="name" />
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="attachingDesign()">
+            {{ attachingDesign() ? 'Linking…' : 'Link design' }}
+          </button>
+        </form>
+      }
+    </section>
+
+    <section class="assets" aria-label="Marketing assets">
+      <h2>Marketing assets</h2>
+      @if (assetError()) {
+        <p class="error" role="alert">{{ assetError() }}</p>
+      }
+      @if (assets().length) {
+        <ul class="asset-list">
+          @for (asset of assets(); track asset.id) {
+            <li>
+              <div class="asset-row">
+                <div class="asset-info">
+                  <span class="asset-name">{{ asset.name }}</span>
+                  <span class="asset-meta">
+                    {{ asset.template.name }} ·
+                    <span
+                      class="asset-status"
+                      [class]="'status-' + (latestAssetRevision(asset)?.status ?? 'draft').toLowerCase()"
+                    >
+                      {{ latestAssetRevision(asset)?.status ?? 'DRAFT' }}
+                    </span>
+                  </span>
+                </div>
+                <div class="asset-actions">
+                  <button type="button" (click)="toggleAssetDetail(asset)">
+                    {{ expandedAssetId() === asset.id ? 'Hide details' : 'Edit & review' }}
+                  </button>
+                  @if (canContribute()) {
+                    <button type="button" class="danger" (click)="unlinkAsset(asset)">
+                      Unlink
+                    </button>
+                  }
+                </div>
+              </div>
+
+              @if (expandedAssetId() === asset.id) {
+                <div class="asset-detail">
+                  <div class="asset-fields">
+                    @for (field of asset.template.fields; track field.id) {
+                      <label>
+                        {{ field.label }}@if (field.required) {
+                          <span class="required">*</span>
+                        }
+                        @if (field.fieldType === 'COLOR') {
+                          <input
+                            type="color"
+                            [value]="editValues()[field.key] || '#000000'"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        } @else if (field.fieldType === 'IMAGE') {
+                          @if (editValues()[field.key]) {
+                            <img class="field-image-preview" [src]="editValues()[field.key]" alt="" />
+                          }
+                          @if (canContribute() && !isAssetApproved(asset)) {
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp,image/avif"
+                              [disabled]="editAssetUploadingKey() === field.key"
+                              (change)="uploadEditImage($event, field.key)"
+                            />
+                          }
+                        } @else if (field.fieldType === 'CTA_URL') {
+                          <input
+                            type="url"
+                            [value]="editValues()[field.key] || ''"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            [attr.maxlength]="field.maxLength"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        } @else {
+                          <input
+                            type="text"
+                            [value]="editValues()[field.key] || ''"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            [attr.maxlength]="field.maxLength"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        }
+                      </label>
+                    }
+                  </div>
+
+                  @if (canContribute()) {
+                    <div class="asset-detail-actions">
+                      <button
+                        type="button"
+                        (click)="saveAssetValues(asset)"
+                        [disabled]="savingAssetValues()"
+                      >
+                        {{
+                          savingAssetValues()
+                            ? 'Saving…'
+                            : isAssetApproved(asset)
+                              ? 'Save as new draft'
+                              : 'Save draft'
+                        }}
+                      </button>
+                      @if (canManage() && !isAssetApproved(asset)) {
+                        <button
+                          type="button"
+                          (click)="approveAsset(asset)"
+                          [disabled]="approvingAssetId() === asset.id"
+                        >
+                          {{ approvingAssetId() === asset.id ? 'Approving…' : 'Approve' }}
+                        </button>
+                      }
+                    </div>
+                  }
+
+                  <div class="asset-history">
+                    <h3>Revision history</h3>
+                    @if (assetRevisions()[asset.id]?.length) {
+                      <ul class="revision-list">
+                        @for (revision of assetRevisions()[asset.id]; track revision.id) {
+                          <li>
+                            <span
+                              class="revision-status"
+                              [class]="'status-' + revision.status.toLowerCase()"
+                            >
+                              {{ revision.status }}
+                            </span>
+                            <span>by {{ revision.createdBy.name }} · {{ revision.createdAt | date: 'short' }}</span>
+                            @if (revision.approvedBy) {
+                              <span>approved by {{ revision.approvedBy.name }}</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No revisions yet.</p>
+                    }
+                  </div>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No marketing assets linked yet.</p>
+      }
+      @if (canContribute()) {
+        <div class="attach-asset">
+          <label>
+            Template
+            <select (change)="selectTemplate($any($event.target).value)">
+              <option value="" [selected]="!selectedTemplateId()">Choose a template</option>
+              @for (template of assetTemplates(); track template.id) {
+                <option [value]="template.id" [selected]="template.id === selectedTemplateId()">
+                  {{ template.name }}
+                </option>
+              }
+            </select>
+          </label>
+          @if (selectedTemplateFields().length) {
+            <div class="asset-fields">
+              @for (field of selectedTemplateFields(); track field.id) {
+                <label>
+                  {{ field.label }}@if (field.required) {
+                    <span class="required">*</span>
+                  }
+                  @if (field.fieldType === 'COLOR') {
+                    <input
+                      type="color"
+                      [value]="attachValues()[field.key] || '#000000'"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  } @else if (field.fieldType === 'IMAGE') {
+                    @if (attachValues()[field.key]) {
+                      <img class="field-image-preview" [src]="attachValues()[field.key]" alt="" />
+                    }
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      [disabled]="attachAssetUploadingKey() === field.key"
+                      (change)="uploadAttachImage($event, field.key)"
+                    />
+                  } @else if (field.fieldType === 'CTA_URL') {
+                    <input
+                      type="url"
+                      [value]="attachValues()[field.key] || ''"
+                      [attr.maxlength]="field.maxLength"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  } @else {
+                    <input
+                      type="text"
+                      [value]="attachValues()[field.key] || ''"
+                      [attr.maxlength]="field.maxLength"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  }
+                </label>
+              }
+            </div>
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="attachAsset()"
+              [disabled]="attachingAsset()"
+            >
+              {{ attachingAsset() ? 'Adding…' : 'Add asset' }}
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="milestones" aria-label="Milestones">
+      <h2>Milestones</h2>
+      @if (current.milestones.length) {
+        <ul class="milestone-list">
+          @for (milestone of current.milestones; track milestone.id) {
+            <li>
+              <div class="milestone-header">
+                <span class="milestone-name">{{ milestone.name }}</span>
+                @if (milestone.dueDate) {
+                  <span class="due-date">Due {{ milestone.dueDate | date: 'mediumDate' }}</span>
+                }
+                @if (canContribute()) {
+                  <select
+                    (change)="updateMilestoneStatus(milestone, $any($event.target).value)"
+                  >
+                    @for (status of milestoneStatuses; track status) {
+                      <option [value]="status" [selected]="status === milestone.status">
+                        {{ status.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                  <button type="button" class="danger" (click)="deleteMilestone(milestone)">
+                    Delete
+                  </button>
+                } @else {
+                  <span class="status-badge">{{ milestone.status.replaceAll('_', ' ') }}</span>
+                }
+              </div>
+
+              <ul class="task-list">
+                @for (task of tasksForMilestone(milestone.id); track task.id) {
+                  <li>
+                    <div class="task-row">
+                      <span class="task-title">{{ task.title }}</span>
+                      @if (task.dueDate) {
+                        <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+                      }
+                      @if (canContribute()) {
+                        <select (change)="reassignTask(task, $any($event.target).value)">
+                          <option value="" [selected]="!task.assignee">Unassigned</option>
+                          @for (member of members(); track member.id) {
+                            <option
+                              [value]="member.user.id"
+                              [selected]="member.user.id === task.assignee?.id"
+                            >
+                              {{ member.user.name }}
+                            </option>
+                          }
+                        </select>
+                        <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                          @for (status of taskStatuses; track status) {
+                            <option [value]="status" [selected]="status === task.status">
+                              {{ status.replaceAll('_', ' ') }}
+                            </option>
+                          }
+                        </select>
+                        <button type="button" class="danger" (click)="deleteTask(task)">
+                          Delete
+                        </button>
+                      } @else {
+                        <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                        @if (task.assignee) {
+                          <span class="assignee">{{ task.assignee.name }}</span>
+                        }
+                      }
+                      <button type="button" class="comments-toggle" (click)="toggleComments(task)">
+                        Comments ({{ commentCount(task) }})
+                      </button>
+                    </div>
+                    @if (isCommentsOpen(task)) {
+                      <ng-container *ngTemplateOutlet="commentsThread; context: { task }" />
+                    }
+                  </li>
+                } @empty {
+                  <li class="empty">No tasks yet.</li>
+                }
+              </ul>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No milestones yet.</p>
+      }
+    </section>
+
+    @if (unassignedTasks().length) {
+      <section class="tasks" aria-label="Tasks without a milestone">
+        <h2>Tasks without a milestone</h2>
+        <ul class="task-list">
+          @for (task of unassignedTasks(); track task.id) {
+            <li>
+              <div class="task-row">
+                <span class="task-title">{{ task.title }}</span>
+                @if (task.dueDate) {
+                  <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+                }
+                @if (canContribute()) {
+                  <select (change)="reassignTask(task, $any($event.target).value)">
+                    <option value="" [selected]="!task.assignee">Unassigned</option>
+                    @for (member of members(); track member.id) {
+                      <option
+                        [value]="member.user.id"
+                        [selected]="member.user.id === task.assignee?.id"
+                      >
+                        {{ member.user.name }}
+                      </option>
+                    }
+                  </select>
+                  <select (change)="updateTaskStatus(task, $any($event.target).value)">
+                    @for (status of taskStatuses; track status) {
+                      <option [value]="status" [selected]="status === task.status">
+                        {{ status.replaceAll('_', ' ') }}
+                      </option>
+                    }
+                  </select>
+                  <button type="button" class="danger" (click)="deleteTask(task)">Delete</button>
+                } @else {
+                  <span class="status-badge">{{ task.status.replaceAll('_', ' ') }}</span>
+                  @if (task.assignee) {
+                    <span class="assignee">{{ task.assignee.name }}</span>
+                  }
+                }
+                <button type="button" class="comments-toggle" (click)="toggleComments(task)">
+                  Comments ({{ commentCount(task) }})
+                </button>
+              </div>
+              @if (isCommentsOpen(task)) {
+                <ng-container *ngTemplateOutlet="commentsThread; context: { task }" />
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (canContribute()) {
+      <section class="new-milestone" aria-label="Add a milestone">
+        <h2>Add a milestone</h2>
+        <form [formGroup]="milestoneForm" (ngSubmit)="createMilestone()">
+          <label>
+            Name
+            <input formControlName="name" />
+          </label>
+          <label>
+            Due date
+            <input formControlName="dueDate" type="date" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add milestone</button>
+        </form>
+      </section>
+
+      <section class="new-task" aria-label="Add a task">
+        <h2>Add a task</h2>
+        <form [formGroup]="taskForm" (ngSubmit)="createTask()">
+          <label>
+            Title
+            <input formControlName="title" />
+          </label>
+          <label>
+            Milestone
+            <select formControlName="milestoneId">
+              <option value="">No milestone</option>
+              @for (milestone of current.milestones; track milestone.id) {
+                <option [value]="milestone.id">{{ milestone.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Assignee
+            <select formControlName="assigneeId">
+              <option value="">Unassigned</option>
+              @for (member of members(); track member.id) {
+                <option [value]="member.user.id">{{ member.user.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Due date
+            <input formControlName="dueDate" type="date" />
+          </label>
+          <button class="btn btn-primary" type="submit">Add task</button>
+        </form>
+      </section>
+    }
+  }
+
+  <ng-template #commentsThread let-task="task">
+    <div class="comments-thread">
+      @if (commentError()) {
+        <p class="error" role="alert">{{ commentError() }}</p>
+      }
+      <ul class="comment-list">
+        @for (comment of commentsFor(task); track comment.id) {
+          <li>
+            <span class="comment-author">{{ comment.author.name }}</span>
+            <span class="comment-body">{{ comment.body }}</span>
+            <span class="comment-date">{{ comment.createdAt | date: 'short' }}</span>
+            @if (canDeleteComment(comment)) {
+              <button type="button" class="danger" (click)="deleteComment(task, comment)">
+                Delete
+              </button>
+            }
+          </li>
+        } @empty {
+          <li class="empty">No comments yet.</li>
+        }
+      </ul>
+      @if (canContribute()) {
+        <div class="add-comment">
+          <textarea
+            [value]="commentDraft()"
+            (input)="commentDraft.set($any($event.target).value)"
+            placeholder="Add a comment"
+          ></textarea>
+          <button class="btn btn-primary" type="button" (click)="postComment(task)">
+            Post
+          </button>
+        </div>
+      }
+    </div>
+  </ng-template>
+</main>

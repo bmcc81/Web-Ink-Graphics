@@ -1,0 +1,116 @@
+.portal-shell {
+  min-height: 100vh;
+  padding: 0 clamp(1.25rem, 6vw, 5rem) 5rem;
+  background: var(--paper);
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 6rem;
+  border-bottom: 1px solid var(--line);
+}
+.wordmark { font: 800 1rem var(--font-display); }
+header a { color: var(--muted); font-weight: 600; text-decoration: none; }
+.welcome {
+  padding: clamp(2.5rem, 6vw, 4rem) 0 1.5rem;
+  max-width: 55rem;
+}
+.eyebrow {
+  color: var(--violet);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: .75rem 0 0;
+  font: 800 clamp(2rem, 5vw, 3rem)/1 var(--font-display);
+  letter-spacing: -.04em;
+}
+.error {
+  padding: .75rem 1rem;
+  border-radius: .75rem;
+  background: #fdeceb;
+  color: #b3261e;
+  font-weight: 600;
+}
+section + section { margin-top: 1.5rem; }
+.brand-kit-form form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+.brand-kit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.brand-kit-form input[type="text"],
+.brand-kit-form input:not([type]) {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+.brand-kit-form input[type="color"] {
+  width: 4rem;
+  height: 2.6rem;
+  padding: .2rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+}
+.logo-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  flex: 1 1 100%;
+}
+.field-label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.logo-preview {
+  width: 10rem;
+  height: 6rem;
+  object-fit: contain;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+}
+.logo-preview.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  color: var(--muted);
+}
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: .5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.upload-button input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}

@@ -6,23 +6,23 @@ a stronger dependency or opportunity.
 
 ## 1. Customer access and workspace foundation
 
-**Status:** Foundation complete; member administration is the next refinement
+**Status:** Complete — customer access and workspace administration are fully in place
 
 - Organization invitations and account activation — implemented
-- Membership and role management
+- Membership and role management — implemented
 - Customer-safe authentication and tenant isolation — implemented
 - Customer dashboard shell — implemented
 
 ## 2. Planning, projects, and approvals
 
-**Priority:** Next
+**Status:** Complete — the full planning workflow is in place
 
-- Quarterly and annual goals
-- Marketing initiatives, projects, milestones, and tasks
-- Assignments, comments, notifications, and due dates
-- Planned, approved, committed, and actual budgets
-- Draft, review, changes requested, approved, production, and completed states
-- Immutable approval and activity history
+- Quarterly and annual goals — implemented
+- Marketing initiatives, projects, milestones, and tasks — implemented
+- Assignments, comments, notifications, and due dates — implemented
+- Planned, approved, committed, and actual budgets — implemented
+- Draft, review, changes requested, approved, production, and completed states — implemented
+- Immutable approval and activity history — implemented
 
 ## 3. Connected design review and editing
 
@@ -33,22 +33,30 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3A — Figma-connected design workspace
 
-- Attach a Figma design or frame to a WebInk project
-- Display a secure preview and provide an explicit “Open in Figma” action
-- Sync file, page, frame, thumbnail, and last-modified metadata
-- Assign reviewers and due dates
-- Record comments, revision requests, decisions, and final approval in WebInk
-- Preserve design versions referenced by each approval
-- Restrict access using organization and project membership
-- Record every link, unlink, review, and approval action in the audit history
+**Status:** Complete
+
+- Attach a Figma design or frame to a WebInk project — implemented
+- Display a secure preview and provide an explicit “Open in Figma” action — implemented
+- Sync file, page, frame, thumbnail, and last-modified metadata — implemented
+- Assign reviewers and due dates — implemented
+- Record comments, revision requests, decisions, and final approval in WebInk — implemented
+- Preserve design versions referenced by each approval — implemented
+- Restrict access using organization and project membership — implemented
+- Record every link, unlink, review, and approval action in the audit history — implemented
 
 ### Release 3B — Template-based editing
 
-- WebInk-managed templates for flyers, social graphics, newsletters, and ads
-- Customer-safe editable fields such as copy, image, color, and call to action
-- Brand-kit enforcement for logos, fonts, colors, and spacing
-- Save a new revision without overwriting an approved version
-- Export approved assets for web, print, or campaign delivery
+**Status:** Mostly complete — export delivery deferred to a follow-up
+
+- WebInk-managed templates for flyers, social graphics, newsletters, and ads — implemented
+- Customer-safe editable fields such as copy, image, color, and call to action — implemented
+- Brand-kit enforcement for logos, fonts, colors, and spacing — implemented (colors enforced
+  against the organization's brand kit; spacing/layout enforcement doesn't apply since there's
+  no visual canvas yet)
+- Save a new revision without overwriting an approved version — implemented
+- Export approved assets for web, print, or campaign delivery — **not started**; there's no
+  rendering pipeline to turn field values into a flyer/social image/PDF yet, so this needs its
+  own design pass rather than a stub `ExportJob` that can't actually produce a file
 
 ### Release 3C — AI-assisted creative work
 

@@ -3,7 +3,8 @@ export declare class CreateUploadDto {
     fileName: string;
     contentType: (typeof contentTypes)[number];
     fileSize: number;
-    purpose?: 'PORTFOLIO' | 'DISCOVERY';
+    purpose?: 'PORTFOLIO' | 'DISCOVERY' | 'ASSET';
     briefId?: string;
+    organizationId?: string;
 }
 export {};

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth-user';
@@ -13,6 +14,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
 import { OrganizationsService } from './organizations.service';
 
 @Controller('organizations')
@@ -80,5 +82,22 @@ export class OrganizationsController {
       organizationId,
       invitationId,
     );
+  }
+
+  @Get(':organizationId/brand-kit')
+  getBrandKit(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+  ) {
+    return this.organizations.getBrandKit(user, organizationId);
+  }
+
+  @Put(':organizationId/brand-kit')
+  upsertBrandKit(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Body() dto: UpsertBrandKitDto,
+  ) {
+    return this.organizations.upsertBrandKit(user, organizationId, dto);
   }
 }

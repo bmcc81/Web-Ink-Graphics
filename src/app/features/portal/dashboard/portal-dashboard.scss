@@ -58,12 +58,22 @@ h2 {
   letter-spacing: -.04em;
 }
 article p { color: var(--muted); line-height: 1.6; }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1rem;
+}
 article button,
 article a.enter-workspace {
   display: inline-block;
-  margin-top: 1rem;
   padding: .7rem 1rem;
   border: 0;
   border-radius: 100px;
   text-decoration: none;
+}
+article a.enter-workspace.secondary {
+  background: var(--paper);
+  color: var(--ink, inherit);
+  border: 1px solid var(--line);
 }

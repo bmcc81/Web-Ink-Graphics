@@ -15,6 +15,12 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PrismaExceptionFilter } from './prisma/prisma-exception.filter';
 import { SeoModule } from './seo/seo.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { ProjectsModule } from './projects/projects.module';
+import { GoalsModule } from './goals/goals.module';
+import { ActivityLogModule } from './activity/activity-log.module';
+import { DesignsModule } from './designs/designs.module';
+import { TemplatesModule } from './templates/templates.module';
+import { ProjectAssetsModule } from './project-assets/project-assets.module';
 
 @Module({
   imports: [
@@ -29,6 +35,12 @@ import { OrganizationsModule } from './organizations/organizations.module';
     HealthModule,
     PortfolioModule,
     OrganizationsModule,
+    ActivityLogModule,
+    ProjectsModule,
+    GoalsModule,
+    DesignsModule,
+    TemplatesModule,
+    ProjectAssetsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,0 +1,47 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a routerLink="/portal">Back to companies</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading activity…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Activity unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else {
+    <section class="welcome">
+      <p class="eyebrow">Planning</p>
+      <h1>Activity</h1>
+      <p>A running record of planning changes across this workspace.</p>
+    </section>
+
+    <section class="activity-feed" aria-label="Activity">
+      @if (entries().length) {
+        <ul>
+          @for (entry of entries(); track entry.id) {
+            <li>
+              <span class="action-badge" [attr.data-action]="entry.action">
+                {{ entry.action.replaceAll('_', ' ') }}
+              </span>
+              <span class="summary">
+                @if (entityLink(entry); as link) {
+                  <a [routerLink]="link">{{ entry.summary }}</a>
+                } @else {
+                  {{ entry.summary }}
+                }
+              </span>
+              <span class="meta">
+                {{ entry.actor?.name ?? 'Unknown' }} · {{ entry.createdAt | date: 'short' }}
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No activity yet.</p>
+      }
+    </section>
+  }
+</main>

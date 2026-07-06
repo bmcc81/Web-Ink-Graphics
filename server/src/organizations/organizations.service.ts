@@ -10,17 +10,20 @@ import { ConfigService } from '@nestjs/config';
 import { OrganizationRole, Role } from '@prisma/client';
 import { compare, hash } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
+import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly activityLog: ActivityLogService,
   ) {}
 
   async members(user: AuthUser, organizationId: string) {
@@ -293,6 +296,40 @@ export class OrganizationsService {
       });
       return { removed: true };
     });
+  }
+
+  async getBrandKit(user: AuthUser, organizationId: string) {
+    await this.assertCanView(user, organizationId);
+    return this.prisma.brandKit.findUnique({ where: { organizationId } });
+  }
+
+  async upsertBrandKit(
+    user: AuthUser,
+    organizationId: string,
+    dto: UpsertBrandKitDto,
+  ) {
+    await this.assertCanManage(user, organizationId);
+    const data = {
+      logoUrl: dto.logoUrl,
+      primaryColor: dto.primaryColor,
+      secondaryColor: dto.secondaryColor,
+      accentColor: dto.accentColor,
+      fontFamily: dto.fontFamily,
+    };
+    const brandKit = await this.prisma.brandKit.upsert({
+      where: { organizationId },
+      create: { organizationId, ...data },
+      update: data,
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'BRAND_KIT',
+      entityId: brandKit.id,
+      action: 'UPDATED',
+      summary: 'Brand kit updated',
+      actorId: user.id,
+    });
+    return brandKit;
   }
 
   private assertManagerScope(

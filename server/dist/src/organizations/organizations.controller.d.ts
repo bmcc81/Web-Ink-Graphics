@@ -1,6 +1,7 @@
 import type { AuthUser } from '../auth/auth-user';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
 import { OrganizationsService } from './organizations.service';
 export declare class OrganizationsController {
     private readonly organizations;
@@ -53,5 +54,27 @@ export declare class OrganizationsController {
     }>;
     revokeInvitation(user: AuthUser, organizationId: string, invitationId: string): Promise<{
         revoked: boolean;
+    }>;
+    getBrandKit(user: AuthUser, organizationId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        logoUrl: string | null;
+        primaryColor: string | null;
+        secondaryColor: string | null;
+        accentColor: string | null;
+        fontFamily: string | null;
+    } | null>;
+    upsertBrandKit(user: AuthUser, organizationId: string, dto: UpsertBrandKitDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        logoUrl: string | null;
+        primaryColor: string | null;
+        secondaryColor: string | null;
+        accentColor: string | null;
+        fontFamily: string | null;
     }>;
 }

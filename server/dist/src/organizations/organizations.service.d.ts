@@ -1,13 +1,16 @@
 import { ConfigService } from '@nestjs/config';
+import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
 export declare class OrganizationsService {
     private readonly prisma;
     private readonly config;
-    constructor(prisma: PrismaService, config: ConfigService);
+    private readonly activityLog;
+    constructor(prisma: PrismaService, config: ConfigService, activityLog: ActivityLogService);
     members(user: AuthUser, organizationId: string): Promise<{
         id: string;
         role: import("@prisma/client").$Enums.OrganizationRole;
@@ -77,6 +80,28 @@ export declare class OrganizationsService {
     }>;
     removeMember(user: AuthUser, organizationId: string, membershipId: string): Promise<{
         removed: boolean;
+    }>;
+    getBrandKit(user: AuthUser, organizationId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        logoUrl: string | null;
+        primaryColor: string | null;
+        secondaryColor: string | null;
+        accentColor: string | null;
+        fontFamily: string | null;
+    } | null>;
+    upsertBrandKit(user: AuthUser, organizationId: string, dto: UpsertBrandKitDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        logoUrl: string | null;
+        primaryColor: string | null;
+        secondaryColor: string | null;
+        accentColor: string | null;
+        fontFamily: string | null;
     }>;
     private assertManagerScope;
     private assertRemainingOwner;

@@ -228,6 +228,51 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/brand-kit',
+    title: 'Brand Kit | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/brand-kit/portal-brand-kit').then(
+        (module) => module.PortalBrandKit,
+      ),
+  },
+  {
+    path: 'portal/:organizationId/goals',
+    title: 'Goals | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/goals/portal-goals').then(
+        (module) => module.PortalGoals,
+      ),
+  },
+  {
+    path: 'portal/:organizationId/activity',
+    title: 'Activity | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/activity/portal-activity').then(
+        (module) => module.PortalActivity,
+      ),
+  },
+  {
+    path: 'portal/:organizationId/projects',
+    title: 'Projects | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/projects/portal-projects-list').then(
+        (module) => module.PortalProjectsList,
+      ),
+  },
+  {
+    path: 'portal/:organizationId/projects/:projectId',
+    title: 'Project | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/projects/portal-project-detail').then(
+        (module) => module.PortalProjectDetail,
+      ),
+  },
+  {
     path: 'admin/login',
     title: 'Admin Login | WebInk Graphics',
     loadComponent: () =>
@@ -274,6 +319,15 @@ export const routes: Routes = [
     title: 'Clients & Discovery | WebInk Graphics',
     canActivate: [authGuard],
     loadComponent: () => import('./features/admin/clients/admin-clients').then((module) => module.AdminClients),
+  },
+  {
+    path: 'admin/templates',
+    title: 'Design Templates | WebInk Graphics',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/admin/templates/admin-templates').then(
+        (module) => module.AdminTemplates,
+      ),
   },
   {
     path: 'admin/clients/:clientId/discovery/:briefId',
