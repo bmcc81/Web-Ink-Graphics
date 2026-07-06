@@ -145,6 +145,8 @@ enum ActivityEntityType {
   GOAL
   BUDGET
   DESIGN_DOCUMENT
+  BRAND_KIT
+  PROJECT_ASSET
 }
 
 model User {
@@ -162,6 +164,9 @@ model User {
   designReviewsToDo       DesignReview[]           @relation("DesignReviewer")
   designReviewsAssigned   DesignReview[]           @relation("DesignReviewAssigner")
   designComments          DesignComment[]
+  createdProjectAssets    ProjectAsset[]
+  createdAssetRevisions   AssetRevision[]          @relation("AssetRevisionCreator")
+  approvedAssetRevisions  AssetRevision[]          @relation("AssetRevisionApprover")
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -176,6 +181,7 @@ model Organization {
   projects    Project[]
   goals       Goal[]
   activityLog ActivityLogEntry[]
+  brandKit    BrandKit?
   createdAt   DateTime                 @default(now())
   updatedAt   DateTime                 @updatedAt
 
@@ -448,6 +454,7 @@ model Project {
   tasks           Task[]
   budget          Budget?
   designDocuments DesignDocument[]
+  assets          ProjectAsset[]
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -609,4 +616,112 @@ model DesignComment {
   updatedAt        DateTime       @updatedAt
 
   @@index([designDocumentId, createdAt])
+}
+
+model BrandKit {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  logoUrl        String?
+  primaryColor   String?
+  secondaryColor String?
+  accentColor    String?
+  fontFamily     String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum TemplateCategory {
+  FLYER
+  SOCIAL_GRAPHIC
+  NEWSLETTER
+  AD
+}
+
+enum TemplateFieldType {
+  TEXT
+  IMAGE
+  COLOR
+  CTA_TEXT
+  CTA_URL
+}
+
+model DesignTemplate {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  category        TemplateCategory
+  previewImageUrl String?
+  isPublished     Boolean          @default(true)
+  fields          TemplateField[]
+  assets          ProjectAsset[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([category, isPublished])
+}
+
+model TemplateField {
+  id         String            @id @default(cuid())
+  templateId String
+  template   DesignTemplate    @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  key        String
+  label      String
+  fieldType  TemplateFieldType
+  required   Boolean           @default(false)
+  maxLength  Int?
+  sortOrder  Int               @default(0)
+  values     AssetFieldValue[]
+
+  @@unique([templateId, key])
+  @@index([templateId, sortOrder])
+}
+
+model ProjectAsset {
+  id          String          @id @default(cuid())
+  projectId   String
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  templateId  String
+  template    DesignTemplate  @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  name        String
+  createdById String
+  createdBy   User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  revisions   AssetRevision[]
+  unlinkedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([projectId, unlinkedAt])
+}
+
+enum AssetRevisionStatus {
+  DRAFT
+  APPROVED
+}
+
+model AssetRevision {
+  id             String              @id @default(cuid())
+  projectAssetId String
+  projectAsset   ProjectAsset        @relation(fields: [projectAssetId], references: [id], onDelete: Cascade)
+  status         AssetRevisionStatus @default(DRAFT)
+  values         AssetFieldValue[]
+  createdById    String
+  createdBy      User                @relation("AssetRevisionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  approvedById   String?
+  approvedBy     User?               @relation("AssetRevisionApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt     DateTime?
+  createdAt      DateTime            @default(now())
+
+  @@index([projectAssetId, createdAt])
+}
+
+model AssetFieldValue {
+  id              String        @id @default(cuid())
+  revisionId      String
+  revision        AssetRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  templateFieldId String
+  templateField   TemplateField @relation(fields: [templateFieldId], references: [id], onDelete: Restrict)
+  value           String
+
+  @@unique([revisionId, templateFieldId])
 }

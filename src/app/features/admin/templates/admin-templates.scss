@@ -1,0 +1,122 @@
+:host { display: block; min-height: 100vh; background: #f2f2ed; }
+.admin-shell { min-height: 100vh; display: grid; grid-template-columns: 15rem 1fr; }
+aside { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 2rem 1.5rem; background: var(--ink); color: white; }
+.brand { display: flex; align-items: center; gap: .65rem;
+  span { display: grid; width: 2.15rem; height: 2.15rem; place-items: center; border-radius: 50%; background: var(--lime); color: var(--ink); font-weight: 800; }
+  strong { font: 800 1.05rem var(--font-display); }
+}
+nav { display: grid; gap: .35rem; margin-top: 4rem;
+  a { padding: .75rem 1rem; border-radius: .55rem; color: #9fa1a5; font-size: .9rem; }
+  a.active { background: #292b2f; color: white; }
+}
+aside > button { margin-top: auto; border: 0; background: transparent; color: #9fa1a5; text-align: left; }
+.admin-content { padding: 3rem clamp(1.5rem, 5vw, 5rem); }
+header { display: flex; align-items: end; justify-content: space-between;
+  p { margin: 0 0 .35rem; color: var(--violet); font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { margin: 0; font: 800 clamp(2.5rem, 6vw, 4rem)/1 var(--font-display); letter-spacing: -.06em; }
+}
+.state, .page-error { margin: 0; padding: 2rem; border-radius: .7rem; background: white; color: var(--muted); }
+.page-error { margin-bottom: 1rem; background: #ffe8e2; color: #923d2d; padding: .75rem 1rem; }
+
+.template-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+}
+.template-form h3 { margin: .5rem 0 0; font: 700 .95rem var(--font-display); }
+.fields-row { display: flex; flex-wrap: wrap; gap: 1rem; }
+.template-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--muted);
+  flex: 1 1 14rem;
+}
+.template-form input,
+.template-form select,
+.template-form textarea {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+.template-form textarea { min-height: 4rem; resize: vertical; }
+.field-rows { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem; }
+.field-rows li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .75rem;
+  padding: .85rem;
+  background: #fafaf7;
+  border: 1px solid var(--line);
+  border-radius: .6rem;
+}
+.field-rows label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: .4rem;
+  flex: 0 0 auto;
+}
+.remove-field, .add-field {
+  padding: .5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  align-self: center;
+}
+.remove-field:disabled { opacity: .5; cursor: not-allowed; }
+.add-field { width: fit-content; }
+
+.template-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.template-list article {
+  padding: 1.25rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+}
+.template-list article.unpublished { opacity: .6; }
+.template-top { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.template-top h2 { margin: 0; font: 700 1.1rem var(--font-display); }
+.template-top p { margin: .25rem 0 0; color: var(--muted); font-size: .8rem; }
+.template-top button {
+  padding: .45rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-size: .8rem;
+  font-weight: 600;
+}
+.description { margin: .75rem 0 0; color: #55585d; font-size: .85rem; }
+.field-summary {
+  list-style: none;
+  padding: 0;
+  margin: .75rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.field-summary li {
+  padding: .3rem .65rem;
+  border-radius: 100px;
+  background: #eeeafc;
+  color: #6046b5;
+  font-size: .72rem;
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  aside { position: static; height: auto; flex-direction: row; align-items: center; gap: 1rem; padding: 1rem; }
+  nav { display: none; }
+  aside > button { margin: 0 0 0 auto; }
+}

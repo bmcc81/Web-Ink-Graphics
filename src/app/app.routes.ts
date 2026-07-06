@@ -228,6 +228,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'portal/:organizationId/brand-kit',
+    title: 'Brand Kit | WebInk Graphics',
+    canActivate: [portalAuthGuard],
+    loadComponent: () =>
+      import('./features/portal/brand-kit/portal-brand-kit').then(
+        (module) => module.PortalBrandKit,
+      ),
+  },
+  {
     path: 'portal/:organizationId/goals',
     title: 'Goals | WebInk Graphics',
     canActivate: [portalAuthGuard],
@@ -310,6 +319,15 @@ export const routes: Routes = [
     title: 'Clients & Discovery | WebInk Graphics',
     canActivate: [authGuard],
     loadComponent: () => import('./features/admin/clients/admin-clients').then((module) => module.AdminClients),
+  },
+  {
+    path: 'admin/templates',
+    title: 'Design Templates | WebInk Graphics',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/admin/templates/admin-templates').then(
+        (module) => module.AdminTemplates,
+      ),
   },
   {
     path: 'admin/clients/:clientId/discovery/:briefId',

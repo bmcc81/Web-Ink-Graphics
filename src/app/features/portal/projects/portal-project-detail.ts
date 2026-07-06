@@ -1,6 +1,12 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  type WritableSignal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -105,6 +111,47 @@ interface DesignComment {
   author: { id: string; name: string };
 }
 
+interface TemplateFieldSummary {
+  id: string;
+  key: string;
+  label: string;
+  fieldType: 'TEXT' | 'IMAGE' | 'COLOR' | 'CTA_TEXT' | 'CTA_URL';
+  required: boolean;
+  maxLength: number | null;
+}
+
+interface AssetTemplate {
+  id: string;
+  name: string;
+  category: string;
+  fields: TemplateFieldSummary[];
+}
+
+interface AssetFieldValueView {
+  id: string;
+  value: string;
+  templateField: TemplateFieldSummary;
+}
+
+interface AssetRevision {
+  id: string;
+  status: 'DRAFT' | 'APPROVED';
+  values: AssetFieldValueView[];
+  createdBy: { id: string; name: string };
+  approvedBy: { id: string; name: string } | null;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+interface ProjectAsset {
+  id: string;
+  name: string;
+  template: AssetTemplate;
+  createdBy: { id: string; name: string };
+  revisions: AssetRevision[];
+  createdAt: string;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -197,6 +244,28 @@ export class PortalProjectDetail {
     dueDate: [''],
   });
 
+  readonly assetTemplates = signal<AssetTemplate[]>([]);
+  readonly assets = signal<ProjectAsset[]>([]);
+  readonly assetError = signal('');
+  readonly selectedTemplateId = signal('');
+  readonly attachValues = signal<Record<string, string>>({});
+  readonly attachingAsset = signal(false);
+  readonly attachAssetUploadingKey = signal<string | null>(null);
+
+  readonly expandedAssetId = signal<string | null>(null);
+  readonly assetRevisions = signal<Record<string, AssetRevision[]>>({});
+  readonly editValues = signal<Record<string, string>>({});
+  readonly savingAssetValues = signal(false);
+  readonly approvingAssetId = signal<string | null>(null);
+  readonly editAssetUploadingKey = signal<string | null>(null);
+
+  readonly selectedTemplateFields = computed(() => {
+    const template = this.assetTemplates().find(
+      (candidate) => candidate.id === this.selectedTemplateId(),
+    );
+    return template?.fields ?? [];
+  });
+
   readonly milestoneForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     dueDate: [''],
@@ -250,6 +319,8 @@ export class PortalProjectDetail {
           if (this.canContribute()) this.loadMembers();
           this.loadBudget();
           this.loadDesigns();
+          this.loadAssetTemplates();
+          this.loadAssets();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -585,6 +656,246 @@ export class PortalProjectDetail {
           })),
         error: () =>
           this.designDetailError.set('The comment could not be deleted.'),
+      });
+  }
+
+  private loadAssetTemplates() {
+    this.http
+      .get<AssetTemplate[]>('/api/templates')
+      .subscribe({ next: (templates) => this.assetTemplates.set(templates) });
+  }
+
+  private loadAssets() {
+    this.http
+      .get<ProjectAsset[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets`,
+      )
+      .subscribe({
+        next: (assets) => this.assets.set(assets),
+        error: () => this.assetError.set('Marketing assets could not be loaded.'),
+      });
+  }
+
+  latestAssetRevision(asset: ProjectAsset): AssetRevision | null {
+    return asset.revisions[0] ?? null;
+  }
+
+  isAssetApproved(asset: ProjectAsset) {
+    return this.latestAssetRevision(asset)?.status === 'APPROVED';
+  }
+
+  selectTemplate(templateId: string) {
+    this.selectedTemplateId.set(templateId);
+    this.attachValues.set({});
+  }
+
+  setAttachValue(key: string, value: string) {
+    this.attachValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  uploadAttachImage(event: Event, key: string) {
+    this.uploadAssetImage(event, key, this.attachAssetUploadingKey, (url) =>
+      this.setAttachValue(key, url),
+    );
+  }
+
+  attachAsset() {
+    const templateId = this.selectedTemplateId();
+    if (!templateId || this.attachingAsset()) return;
+    this.assetError.set('');
+    this.attachingAsset.set(true);
+    const values = Object.entries(this.attachValues())
+      .filter(([, value]) => value.trim().length > 0)
+      .map(([key, value]) => ({ key, value }));
+    this.http
+      .post<ProjectAsset>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets`,
+        { templateId, values },
+      )
+      .pipe(finalize(() => this.attachingAsset.set(false)))
+      .subscribe({
+        next: (asset) => {
+          this.assets.update((list) => [asset, ...list]);
+          this.selectedTemplateId.set('');
+          this.attachValues.set({});
+        },
+        error: (response) =>
+          this.assetError.set(
+            response.error?.message ?? 'That asset could not be created.',
+          ),
+      });
+  }
+
+  toggleAssetDetail(asset: ProjectAsset) {
+    if (this.expandedAssetId() === asset.id) {
+      this.expandedAssetId.set(null);
+      return;
+    }
+    this.expandedAssetId.set(asset.id);
+    this.assetError.set('');
+    const latest = this.latestAssetRevision(asset);
+    const values: Record<string, string> = {};
+    for (const value of latest?.values ?? []) {
+      values[value.templateField.key] = value.value;
+    }
+    this.editValues.set(values);
+    if (!this.assetRevisions()[asset.id]) {
+      this.http
+        .get<AssetRevision[]>(
+          `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}/revisions`,
+        )
+        .subscribe({
+          next: (revisions) =>
+            this.assetRevisions.update((current) => ({
+              ...current,
+              [asset.id]: revisions,
+            })),
+        });
+    }
+  }
+
+  setEditValue(key: string, value: string) {
+    this.editValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  uploadEditImage(event: Event, key: string) {
+    this.uploadAssetImage(event, key, this.editAssetUploadingKey, (url) =>
+      this.setEditValue(key, url),
+    );
+  }
+
+  saveAssetValues(asset: ProjectAsset) {
+    if (this.savingAssetValues()) return;
+    this.assetError.set('');
+    this.savingAssetValues.set(true);
+    const values = Object.entries(this.editValues())
+      .filter(([, value]) => value.trim().length > 0)
+      .map(([key, value]) => ({ key, value }));
+    this.http
+      .patch<AssetRevision>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}`,
+        { values },
+      )
+      .pipe(finalize(() => this.savingAssetValues.set(false)))
+      .subscribe({
+        next: (revision) => {
+          this.assets.update((list) =>
+            list.map((candidate) =>
+              candidate.id === asset.id
+                ? { ...candidate, revisions: [revision, ...candidate.revisions] }
+                : candidate,
+            ),
+          );
+          this.assetRevisions.update((current) => ({
+            ...current,
+            [asset.id]: [revision, ...(current[asset.id] ?? [])],
+          }));
+        },
+        error: (response) =>
+          this.assetError.set(
+            response.error?.message ?? 'The asset could not be updated.',
+          ),
+      });
+  }
+
+  approveAsset(asset: ProjectAsset) {
+    this.assetError.set('');
+    this.approvingAssetId.set(asset.id);
+    this.http
+      .post<AssetRevision>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}/approve`,
+        {},
+      )
+      .pipe(finalize(() => this.approvingAssetId.set(null)))
+      .subscribe({
+        next: (revision) => {
+          this.assets.update((list) =>
+            list.map((candidate) =>
+              candidate.id === asset.id
+                ? {
+                    ...candidate,
+                    revisions: candidate.revisions.map((existing) =>
+                      existing.id === revision.id ? revision : existing,
+                    ),
+                  }
+                : candidate,
+            ),
+          );
+        },
+        error: (response) =>
+          this.assetError.set(
+            response.error?.message ?? 'The asset could not be approved.',
+          ),
+      });
+  }
+
+  unlinkAsset(asset: ProjectAsset) {
+    if (!confirm(`Unlink "${asset.name}" from this project?`)) return;
+    this.assetError.set('');
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}`,
+      )
+      .subscribe({
+        next: () =>
+          this.assets.update((list) =>
+            list.filter((candidate) => candidate.id !== asset.id),
+          ),
+        error: () => this.assetError.set('The asset could not be unlinked.'),
+      });
+  }
+
+  private uploadAssetImage(
+    event: Event,
+    key: string,
+    uploadingKey: WritableSignal<string | null>,
+    onUploaded: (url: string) => void,
+  ) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (!allowedTypes.includes(file.type)) {
+      this.assetError.set('Choose a JPEG, PNG, WebP or AVIF image.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      this.assetError.set('Images must be 10 MB or smaller.');
+      return;
+    }
+
+    this.assetError.set('');
+    uploadingKey.set(key);
+    this.http
+      .post<{ uploadUrl: string; publicUrl?: string; headers: Record<string, string> }>(
+        '/api/media/upload-url',
+        {
+          fileName: file.name,
+          contentType: file.type,
+          fileSize: file.size,
+          purpose: 'ASSET',
+          organizationId: this.organizationId,
+        },
+      )
+      .subscribe({
+        next: (upload) => {
+          this.http
+            .put(upload.uploadUrl, file, {
+              headers: upload.headers,
+              responseType: 'text',
+            })
+            .pipe(finalize(() => uploadingKey.set(null)))
+            .subscribe({
+              next: () => onUploaded(upload.publicUrl ?? ''),
+              error: () => this.assetError.set('The image upload failed.'),
+            });
+        },
+        error: () => {
+          uploadingKey.set(null);
+          this.assetError.set('An upload URL could not be created.');
+        },
       });
   }
 

@@ -23,4 +23,5 @@ export declare class MediaService {
     private portfolioFolder;
     private discoveryFolder;
     private isStaff;
+    private assetFolder;
 }

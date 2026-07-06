@@ -1,0 +1,94 @@
+<main class="portal-shell">
+  <header>
+    <a class="wordmark" routerLink="/">WebInk Graphics</a>
+    <a routerLink="/portal">Back to companies</a>
+  </header>
+
+  @if (loading()) {
+    <section class="welcome"><p>Loading brand kit…</p></section>
+  } @else if (error()) {
+    <section class="welcome">
+      <h1>Brand kit unavailable</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else {
+    <section class="welcome">
+      <p class="eyebrow">Brand kit</p>
+      <h1>Logo, colors, and fonts</h1>
+      <p>
+        These brand settings are used across your marketing assets and
+        enforced when your team edits template-based assets.
+      </p>
+    </section>
+
+    @if (saveError()) {
+      <p class="error" role="alert">{{ saveError() }}</p>
+    }
+
+    <section class="brand-kit-form" aria-label="Brand kit">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="logo-field">
+          <span class="field-label">Logo</span>
+          @if (previewUrl()) {
+            <img class="logo-preview" [src]="previewUrl()" alt="" />
+          } @else {
+            <div class="logo-preview placeholder">No logo yet</div>
+          }
+          @if (canManage()) {
+            <label class="upload-button">
+              {{ uploading() ? 'Uploading…' : 'Upload logo' }}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                [disabled]="uploading()"
+                (change)="uploadLogo($event)"
+              />
+            </label>
+            @if (uploadError()) {
+              <p class="error" role="alert">{{ uploadError() }}</p>
+            }
+          }
+        </div>
+
+        <label>
+          Primary color
+          <input
+            type="color"
+            formControlName="primaryColor"
+            [disabled]="!canManage()"
+          />
+        </label>
+        <label>
+          Secondary color
+          <input
+            type="color"
+            formControlName="secondaryColor"
+            [disabled]="!canManage()"
+          />
+        </label>
+        <label>
+          Accent color
+          <input
+            type="color"
+            formControlName="accentColor"
+            [disabled]="!canManage()"
+          />
+        </label>
+        <label>
+          Font family
+          <input
+            formControlName="fontFamily"
+            placeholder="e.g. Manrope"
+            [disabled]="!canManage()"
+          />
+        </label>
+
+        @if (canManage()) {
+          <button class="btn btn-primary" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : 'Save brand kit' }}
+          </button>
+        }
+      </form>
+    </section>
+  }
+</main>

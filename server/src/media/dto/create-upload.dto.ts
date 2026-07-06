@@ -33,11 +33,16 @@ export class CreateUploadDto {
   fileSize: number;
 
   @IsOptional()
-  @IsIn(['PORTFOLIO', 'DISCOVERY'])
-  purpose?: 'PORTFOLIO' | 'DISCOVERY';
+  @IsIn(['PORTFOLIO', 'DISCOVERY', 'ASSET'])
+  purpose?: 'PORTFOLIO' | 'DISCOVERY' | 'ASSET';
 
   @IsOptional()
   @IsString()
   @MaxLength(64)
   briefId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  organizationId?: string;
 }

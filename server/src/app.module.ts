@@ -19,6 +19,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { GoalsModule } from './goals/goals.module';
 import { ActivityLogModule } from './activity/activity-log.module';
 import { DesignsModule } from './designs/designs.module';
+import { TemplatesModule } from './templates/templates.module';
+import { ProjectAssetsModule } from './project-assets/project-assets.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { DesignsModule } from './designs/designs.module';
     ProjectsModule,
     GoalsModule,
     DesignsModule,
+    TemplatesModule,
+    ProjectAssetsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -304,6 +304,213 @@
       }
     </section>
 
+    <section class="assets" aria-label="Marketing assets">
+      <h2>Marketing assets</h2>
+      @if (assetError()) {
+        <p class="error" role="alert">{{ assetError() }}</p>
+      }
+      @if (assets().length) {
+        <ul class="asset-list">
+          @for (asset of assets(); track asset.id) {
+            <li>
+              <div class="asset-row">
+                <div class="asset-info">
+                  <span class="asset-name">{{ asset.name }}</span>
+                  <span class="asset-meta">
+                    {{ asset.template.name }} ·
+                    <span
+                      class="asset-status"
+                      [class]="'status-' + (latestAssetRevision(asset)?.status ?? 'draft').toLowerCase()"
+                    >
+                      {{ latestAssetRevision(asset)?.status ?? 'DRAFT' }}
+                    </span>
+                  </span>
+                </div>
+                <div class="asset-actions">
+                  <button type="button" (click)="toggleAssetDetail(asset)">
+                    {{ expandedAssetId() === asset.id ? 'Hide details' : 'Edit & review' }}
+                  </button>
+                  @if (canContribute()) {
+                    <button type="button" class="danger" (click)="unlinkAsset(asset)">
+                      Unlink
+                    </button>
+                  }
+                </div>
+              </div>
+
+              @if (expandedAssetId() === asset.id) {
+                <div class="asset-detail">
+                  <div class="asset-fields">
+                    @for (field of asset.template.fields; track field.id) {
+                      <label>
+                        {{ field.label }}@if (field.required) {
+                          <span class="required">*</span>
+                        }
+                        @if (field.fieldType === 'COLOR') {
+                          <input
+                            type="color"
+                            [value]="editValues()[field.key] || '#000000'"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        } @else if (field.fieldType === 'IMAGE') {
+                          @if (editValues()[field.key]) {
+                            <img class="field-image-preview" [src]="editValues()[field.key]" alt="" />
+                          }
+                          @if (canContribute() && !isAssetApproved(asset)) {
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp,image/avif"
+                              [disabled]="editAssetUploadingKey() === field.key"
+                              (change)="uploadEditImage($event, field.key)"
+                            />
+                          }
+                        } @else if (field.fieldType === 'CTA_URL') {
+                          <input
+                            type="url"
+                            [value]="editValues()[field.key] || ''"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            [attr.maxlength]="field.maxLength"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        } @else {
+                          <input
+                            type="text"
+                            [value]="editValues()[field.key] || ''"
+                            [disabled]="isAssetApproved(asset) || !canContribute()"
+                            [attr.maxlength]="field.maxLength"
+                            (input)="setEditValue(field.key, $any($event.target).value)"
+                          />
+                        }
+                      </label>
+                    }
+                  </div>
+
+                  @if (canContribute()) {
+                    <div class="asset-detail-actions">
+                      <button
+                        type="button"
+                        (click)="saveAssetValues(asset)"
+                        [disabled]="savingAssetValues()"
+                      >
+                        {{
+                          savingAssetValues()
+                            ? 'Saving…'
+                            : isAssetApproved(asset)
+                              ? 'Save as new draft'
+                              : 'Save draft'
+                        }}
+                      </button>
+                      @if (canManage() && !isAssetApproved(asset)) {
+                        <button
+                          type="button"
+                          (click)="approveAsset(asset)"
+                          [disabled]="approvingAssetId() === asset.id"
+                        >
+                          {{ approvingAssetId() === asset.id ? 'Approving…' : 'Approve' }}
+                        </button>
+                      }
+                    </div>
+                  }
+
+                  <div class="asset-history">
+                    <h3>Revision history</h3>
+                    @if (assetRevisions()[asset.id]?.length) {
+                      <ul class="revision-list">
+                        @for (revision of assetRevisions()[asset.id]; track revision.id) {
+                          <li>
+                            <span
+                              class="revision-status"
+                              [class]="'status-' + revision.status.toLowerCase()"
+                            >
+                              {{ revision.status }}
+                            </span>
+                            <span>by {{ revision.createdBy.name }} · {{ revision.createdAt | date: 'short' }}</span>
+                            @if (revision.approvedBy) {
+                              <span>approved by {{ revision.approvedBy.name }}</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No revisions yet.</p>
+                    }
+                  </div>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No marketing assets linked yet.</p>
+      }
+      @if (canContribute()) {
+        <div class="attach-asset">
+          <label>
+            Template
+            <select (change)="selectTemplate($any($event.target).value)">
+              <option value="" [selected]="!selectedTemplateId()">Choose a template</option>
+              @for (template of assetTemplates(); track template.id) {
+                <option [value]="template.id" [selected]="template.id === selectedTemplateId()">
+                  {{ template.name }}
+                </option>
+              }
+            </select>
+          </label>
+          @if (selectedTemplateFields().length) {
+            <div class="asset-fields">
+              @for (field of selectedTemplateFields(); track field.id) {
+                <label>
+                  {{ field.label }}@if (field.required) {
+                    <span class="required">*</span>
+                  }
+                  @if (field.fieldType === 'COLOR') {
+                    <input
+                      type="color"
+                      [value]="attachValues()[field.key] || '#000000'"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  } @else if (field.fieldType === 'IMAGE') {
+                    @if (attachValues()[field.key]) {
+                      <img class="field-image-preview" [src]="attachValues()[field.key]" alt="" />
+                    }
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      [disabled]="attachAssetUploadingKey() === field.key"
+                      (change)="uploadAttachImage($event, field.key)"
+                    />
+                  } @else if (field.fieldType === 'CTA_URL') {
+                    <input
+                      type="url"
+                      [value]="attachValues()[field.key] || ''"
+                      [attr.maxlength]="field.maxLength"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  } @else {
+                    <input
+                      type="text"
+                      [value]="attachValues()[field.key] || ''"
+                      [attr.maxlength]="field.maxLength"
+                      (input)="setAttachValue(field.key, $any($event.target).value)"
+                    />
+                  }
+                </label>
+              }
+            </div>
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="attachAsset()"
+              [disabled]="attachingAsset()"
+            >
+              {{ attachingAsset() ? 'Adding…' : 'Add asset' }}
+            </button>
+          }
+        </div>
+      }
+    </section>
+
     <section class="milestones" aria-label="Milestones">
       <h2>Milestones</h2>
       @if (current.milestones.length) {

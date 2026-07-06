@@ -46,11 +46,17 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3B — Template-based editing
 
-- WebInk-managed templates for flyers, social graphics, newsletters, and ads
-- Customer-safe editable fields such as copy, image, color, and call to action
-- Brand-kit enforcement for logos, fonts, colors, and spacing
-- Save a new revision without overwriting an approved version
-- Export approved assets for web, print, or campaign delivery
+**Status:** Mostly complete — export delivery deferred to a follow-up
+
+- WebInk-managed templates for flyers, social graphics, newsletters, and ads — implemented
+- Customer-safe editable fields such as copy, image, color, and call to action — implemented
+- Brand-kit enforcement for logos, fonts, colors, and spacing — implemented (colors enforced
+  against the organization's brand kit; spacing/layout enforcement doesn't apply since there's
+  no visual canvas yet)
+- Save a new revision without overwriting an approved version — implemented
+- Export approved assets for web, print, or campaign delivery — **not started**; there's no
+  rendering pipeline to turn field values into a flyer/social image/PDF yet, so this needs its
+  own design pass rather than a stub `ExportJob` that can't actually produce a file
 
 ### Release 3C — AI-assisted creative work
 

@@ -16,6 +16,7 @@ const client_1 = require("@prisma/client");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
 const crypto_1 = require("crypto");
+const organization_access_1 = require("../organizations/organization-access");
 const prisma_service_1 = require("../prisma/prisma.service");
 const extensions = {
     'image/jpeg': 'jpg',
@@ -38,11 +39,13 @@ let MediaService = class MediaService {
         const purpose = dto.purpose ?? 'PORTFOLIO';
         const folder = purpose === 'DISCOVERY'
             ? await this.discoveryFolder(user, dto.briefId)
-            : this.portfolioFolder(user);
+            : purpose === 'ASSET'
+                ? await this.assetFolder(user, dto.organizationId)
+                : this.portfolioFolder(user);
         const bucket = this.config.getOrThrow('S3_BUCKET');
         const key = `${folder}/${new Date().toISOString().slice(0, 7)}/${(0, crypto_1.randomUUID)()}.${extensions[dto.contentType]}`;
         const client = this.client();
-        const isPublic = purpose === 'PORTFOLIO';
+        const isPublic = purpose === 'PORTFOLIO' || purpose === 'ASSET';
         const publicBaseUrl = isPublic
             ? this.config.getOrThrow('S3_PUBLIC_URL').replace(/\/+$/, '')
             : '';
@@ -143,6 +146,19 @@ let MediaService = class MediaService {
     }
     isStaff(user) {
         return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+    }
+    async assetFolder(user, organizationId) {
+        if (!organizationId) {
+            throw new common_1.BadRequestException('organizationId is required for an asset upload');
+        }
+        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        if (!role) {
+            throw new common_1.NotFoundException('Organization not found');
+        }
+        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
+            throw new common_1.ForbiddenException('Only contributors, managers, and owners can upload project assets');
+        }
+        return `assets/${organizationId}`;
     }
 };
 exports.MediaService = MediaService;

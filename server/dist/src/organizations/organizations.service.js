@@ -15,13 +15,16 @@ const config_1 = require("@nestjs/config");
 const client_1 = require("@prisma/client");
 const bcryptjs_1 = require("bcryptjs");
 const crypto_1 = require("crypto");
+const activity_log_service_1 = require("../activity/activity-log.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 let OrganizationsService = class OrganizationsService {
     prisma;
     config;
-    constructor(prisma, config) {
+    activityLog;
+    constructor(prisma, config, activityLog) {
         this.prisma = prisma;
         this.config = config;
+        this.activityLog = activityLog;
     }
     async members(user, organizationId) {
         await this.assertCanView(user, organizationId);
@@ -237,6 +240,34 @@ let OrganizationsService = class OrganizationsService {
             return { removed: true };
         });
     }
+    async getBrandKit(user, organizationId) {
+        await this.assertCanView(user, organizationId);
+        return this.prisma.brandKit.findUnique({ where: { organizationId } });
+    }
+    async upsertBrandKit(user, organizationId, dto) {
+        await this.assertCanManage(user, organizationId);
+        const data = {
+            logoUrl: dto.logoUrl,
+            primaryColor: dto.primaryColor,
+            secondaryColor: dto.secondaryColor,
+            accentColor: dto.accentColor,
+            fontFamily: dto.fontFamily,
+        };
+        const brandKit = await this.prisma.brandKit.upsert({
+            where: { organizationId },
+            create: { organizationId, ...data },
+            update: data,
+        });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'BRAND_KIT',
+            entityId: brandKit.id,
+            action: 'UPDATED',
+            summary: 'Brand kit updated',
+            actorId: user.id,
+        });
+        return brandKit;
+    }
     assertManagerScope(actingRole, ...rolesInvolved) {
         if (actingRole !== client_1.OrganizationRole.MANAGER)
             return;
@@ -335,6 +366,7 @@ exports.OrganizationsService = OrganizationsService;
 exports.OrganizationsService = OrganizationsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        activity_log_service_1.ActivityLogService])
 ], OrganizationsService);
 //# sourceMappingURL=organizations.service.js.map
