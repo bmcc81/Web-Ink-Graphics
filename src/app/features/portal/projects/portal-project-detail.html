@@ -381,6 +381,17 @@
                             [attr.maxlength]="field.maxLength"
                             (input)="setEditValue(field.key, $any($event.target).value)"
                           />
+                          @if (canContribute() && !isAssetApproved(asset) && copySuggestions().length) {
+                            <select
+                              class="copy-suggestion-select"
+                              (change)="applyEditSuggestion($event, field.key)"
+                            >
+                              <option value="" selected>Insert copy suggestion…</option>
+                              @for (suggestion of copySuggestions(); track suggestion) {
+                                <option [value]="suggestion">{{ suggestion }}</option>
+                              }
+                            </select>
+                          }
                         }
                       </label>
                     }
@@ -542,6 +553,17 @@
                       [attr.maxlength]="field.maxLength"
                       (input)="setAttachValue(field.key, $any($event.target).value)"
                     />
+                    @if (copySuggestions().length) {
+                      <select
+                        class="copy-suggestion-select"
+                        (change)="applyAttachSuggestion($event, field.key)"
+                      >
+                        <option value="" selected>Insert copy suggestion…</option>
+                        @for (suggestion of copySuggestions(); track suggestion) {
+                          <option [value]="suggestion">{{ suggestion }}</option>
+                        }
+                      </select>
+                    }
                   }
                 </label>
               }
@@ -608,6 +630,24 @@
                   <dd>{{ brief.readinessNotes }}</dd>
                 </div>
               </dl>
+              @if (brief.variants.length) {
+                <div class="creative-brief-variants">
+                  <h3>Creative variants</h3>
+                  <ul class="variant-list">
+                    @for (variant of brief.variants; track variant.id) {
+                      <li class="variant-item">
+                        <span class="variant-label">{{ variant.label }}</span>
+                        <span class="variant-field">
+                          <strong>Copy angle:</strong> {{ variant.copyAngle }}
+                        </span>
+                        <span class="variant-field">
+                          <strong>Image concept:</strong> {{ variant.imageConcept }}
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
               @if (brief.status === 'APPROVED') {
                 <p class="approved-note">Approved by {{ brief.approvedBy?.name }}</p>
               } @else if (canManage()) {

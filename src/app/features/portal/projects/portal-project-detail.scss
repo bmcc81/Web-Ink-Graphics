@@ -617,6 +617,37 @@ button.danger {
   margin: .2rem 0 0;
 }
 .preserve-lines { white-space: pre-line; }
+.creative-brief-variants h3 { margin: 0 0 .5rem; font-size: .9rem; }
+.variant-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+.variant-item {
+  flex: 1 1 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: .75rem;
+  background: var(--paper);
+  border-radius: .5rem;
+  font-size: .82rem;
+}
+.variant-label { font-weight: 700; }
+.variant-field strong { font-weight: 600; color: var(--muted); }
+.copy-suggestion-select {
+  margin-top: .35rem;
+  padding: .4rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+  font-size: .8rem;
+  color: var(--muted);
+  max-width: 100%;
+}
 .approved-note { margin: 0; color: #1c6b3d; font-size: .85rem; font-weight: 600; }
 .creative-brief-item > button {
   align-self: flex-start;

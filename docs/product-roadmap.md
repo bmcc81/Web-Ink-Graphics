@@ -26,7 +26,7 @@ a stronger dependency or opportunity.
 
 ## 3. Connected design review and editing
 
-**Priority:** High, after the project and approval workflow is stable
+**Status:** Complete — Releases 3A, 3B, and 3C are all implemented
 
 The first release should connect design work to the customer workspace instead
 of attempting to reproduce a full professional design editor.
@@ -60,6 +60,8 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3C — AI-assisted creative work
 
+**Status:** Complete
+
 - Generate a design brief from approved goals and audience information —
   implemented; a contributor can generate a creative brief (summary, audience
   notes, copy angles, layout direction) from a project's linked goal and the
@@ -74,10 +76,19 @@ of attempting to reproduce a full professional design editor.
 - Per-organization usage limits and cost reporting — implemented; a configurable
   monthly call cap (default 50) blocks generation once reached, and each
   organization can see calls used and estimated cost for the current month
-- Suggest image concepts and asset variants — deferred to a later slice
-- Auto-filling copy/layout suggestions directly into `ProjectAsset` fields —
-  deferred; briefs are currently a separate reviewable document, not yet wired
-  into template field values
+- Suggest image concepts and asset variants — implemented; each generated
+  brief includes 2-3 named creative variants, each pairing a distinct copy
+  angle with a descriptive image concept (subject, setting, mood, framing)
+  for a designer or photographer to act on
+- Auto-filling copy suggestions directly into `ProjectAsset` fields —
+  implemented; when attaching or editing a text/CTA field, a contributor can
+  pick any copy angle or variant copy angle from the project's creative
+  briefs and insert it directly into that field with one click. Layout
+  auto-fill does not apply here: template layout (field position, size, and
+  style) is staff-defined per template, not a per-asset customer-editable
+  value, so `layoutDirection` remains written guidance for designers, as
+  before. Image fields are left for manual upload — image concepts are
+  descriptive guidance, not generated images or URLs
 
 ### Suggested backend concepts
 

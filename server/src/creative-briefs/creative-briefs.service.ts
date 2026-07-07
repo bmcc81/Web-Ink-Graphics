@@ -23,7 +23,14 @@ const HAIKU_MODEL = 'claude-haiku-4-5';
 const briefInclude = {
   createdBy: { select: { id: true, name: true } },
   approvedBy: { select: { id: true, name: true } },
+  variants: { orderBy: { sortOrder: 'asc' as const } },
 };
+
+interface GeneratedBriefVariant {
+  label: string;
+  copyAngle: string;
+  imageConcept: string;
+}
 
 interface GeneratedBriefContent {
   summary: string;
@@ -32,6 +39,7 @@ interface GeneratedBriefContent {
   layoutDirection: string;
   readinessScore: number;
   readinessNotes: string;
+  variants: GeneratedBriefVariant[];
 }
 
 @Injectable()
@@ -102,6 +110,14 @@ export class CreativeBriefsService {
         readinessScore: parsed.readinessScore,
         readinessNotes: parsed.readinessNotes,
         createdById: user.id,
+        variants: {
+          create: parsed.variants.map((variant, index) => ({
+            label: variant.label,
+            copyAngle: variant.copyAngle,
+            imageConcept: variant.imageConcept,
+            sortOrder: index,
+          })),
+        },
       },
       include: briefInclude,
     });
@@ -198,6 +214,33 @@ export class CreativeBriefsService {
                 description:
                   'Explicit reasoning for the readiness score, including what information is missing or assumed',
               },
+              variants: {
+                type: 'array',
+                description:
+                  '2-3 distinct creative variants, each pairing a copy angle with an image concept a photographer or designer could act on',
+                items: {
+                  type: 'object',
+                  properties: {
+                    label: {
+                      type: 'string',
+                      description:
+                        "A short name for this creative direction, e.g. 'Bold and direct' or 'Warm and personal'",
+                    },
+                    copyAngle: {
+                      type: 'string',
+                      description:
+                        'A single copy/messaging angle for this variant',
+                    },
+                    imageConcept: {
+                      type: 'string',
+                      description:
+                        'A concrete, descriptive image concept for this variant (subject, setting, mood, framing)',
+                    },
+                  },
+                  required: ['label', 'copyAngle', 'imageConcept'],
+                  additionalProperties: false,
+                },
+              },
             },
             required: [
               'summary',
@@ -206,6 +249,7 @@ export class CreativeBriefsService {
               'layoutDirection',
               'readinessScore',
               'readinessNotes',
+              'variants',
             ],
             additionalProperties: false,
           },
@@ -230,6 +274,7 @@ export class CreativeBriefsService {
         0,
         Math.min(100, Math.round(parsed.readinessScore)),
       ),
+      variants: Array.isArray(parsed.variants) ? parsed.variants : [],
     };
   }
 

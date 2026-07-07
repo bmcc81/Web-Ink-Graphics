@@ -167,6 +167,13 @@ interface AssetExport {
 
 type CreativeBriefStatus = 'DRAFT' | 'APPROVED';
 
+interface CreativeBriefVariant {
+  id: string;
+  label: string;
+  copyAngle: string;
+  imageConcept: string;
+}
+
 interface CreativeBrief {
   id: string;
   summary: string;
@@ -176,6 +183,7 @@ interface CreativeBrief {
   readinessScore: number;
   readinessNotes: string;
   status: CreativeBriefStatus;
+  variants: CreativeBriefVariant[];
   createdBy: { id: string; name: string };
   approvedBy: { id: string; name: string } | null;
   approvedAt: string | null;
@@ -310,6 +318,20 @@ export class PortalProjectDetail {
       (candidate) => candidate.id === this.selectedTemplateId(),
     );
     return template?.fields ?? [];
+  });
+
+  readonly copySuggestions = computed(() => {
+    const suggestions = new Set<string>();
+    for (const brief of this.creativeBriefs()) {
+      for (const line of brief.copyAngles.split('\n')) {
+        const trimmed = line.trim();
+        if (trimmed) suggestions.add(trimmed);
+      }
+      for (const variant of brief.variants) {
+        if (variant.copyAngle.trim()) suggestions.add(variant.copyAngle.trim());
+      }
+    }
+    return [...suggestions];
   });
 
   readonly milestoneForm = this.formBuilder.nonNullable.group({
@@ -741,6 +763,13 @@ export class PortalProjectDetail {
     this.attachValues.update((current) => ({ ...current, [key]: value }));
   }
 
+  applyAttachSuggestion(event: Event, key: string) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+    if (value) this.setAttachValue(key, value);
+    select.value = '';
+  }
+
   uploadAttachImage(event: Event, key: string) {
     this.uploadAssetImage(event, key, this.attachAssetUploadingKey, (url) =>
       this.setAttachValue(key, url),
@@ -857,6 +886,13 @@ export class PortalProjectDetail {
 
   setEditValue(key: string, value: string) {
     this.editValues.update((current) => ({ ...current, [key]: value }));
+  }
+
+  applyEditSuggestion(event: Event, key: string) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+    if (value) this.setEditValue(key, value);
+    select.value = '';
   }
 
   uploadEditImage(event: Event, key: string) {

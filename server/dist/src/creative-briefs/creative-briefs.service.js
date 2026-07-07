@@ -25,6 +25,7 @@ const HAIKU_MODEL = 'claude-haiku-4-5';
 const briefInclude = {
     createdBy: { select: { id: true, name: true } },
     approvedBy: { select: { id: true, name: true } },
+    variants: { orderBy: { sortOrder: 'asc' } },
 };
 let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsService {
     prisma;
@@ -77,6 +78,14 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
                 readinessScore: parsed.readinessScore,
                 readinessNotes: parsed.readinessNotes,
                 createdById: user.id,
+                variants: {
+                    create: parsed.variants.map((variant, index) => ({
+                        label: variant.label,
+                        copyAngle: variant.copyAngle,
+                        imageConcept: variant.imageConcept,
+                        sortOrder: index,
+                    })),
+                },
             },
             include: briefInclude,
         });
@@ -162,6 +171,29 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
                                 type: 'string',
                                 description: 'Explicit reasoning for the readiness score, including what information is missing or assumed',
                             },
+                            variants: {
+                                type: 'array',
+                                description: '2-3 distinct creative variants, each pairing a copy angle with an image concept a photographer or designer could act on',
+                                items: {
+                                    type: 'object',
+                                    properties: {
+                                        label: {
+                                            type: 'string',
+                                            description: "A short name for this creative direction, e.g. 'Bold and direct' or 'Warm and personal'",
+                                        },
+                                        copyAngle: {
+                                            type: 'string',
+                                            description: 'A single copy/messaging angle for this variant',
+                                        },
+                                        imageConcept: {
+                                            type: 'string',
+                                            description: 'A concrete, descriptive image concept for this variant (subject, setting, mood, framing)',
+                                        },
+                                    },
+                                    required: ['label', 'copyAngle', 'imageConcept'],
+                                    additionalProperties: false,
+                                },
+                            },
                         },
                         required: [
                             'summary',
@@ -170,6 +202,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
                             'layoutDirection',
                             'readinessScore',
                             'readinessNotes',
+                            'variants',
                         ],
                         additionalProperties: false,
                     },
@@ -186,6 +219,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
         return {
             ...parsed,
             readinessScore: Math.max(0, Math.min(100, Math.round(parsed.readinessScore))),
+            variants: Array.isArray(parsed.variants) ? parsed.variants : [],
         };
     }
     buildContext(project, discoveryBrief) {

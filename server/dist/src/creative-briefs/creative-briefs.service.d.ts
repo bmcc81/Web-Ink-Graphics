@@ -19,6 +19,14 @@ export declare class CreativeBriefsService {
             id: string;
             name: string;
         };
+        variants: {
+            id: string;
+            sortOrder: number;
+            label: string;
+            copyAngle: string;
+            imageConcept: string;
+            creativeBriefId: string;
+        }[];
     } & {
         id: string;
         createdAt: Date;
@@ -44,6 +52,14 @@ export declare class CreativeBriefsService {
             id: string;
             name: string;
         };
+        variants: {
+            id: string;
+            sortOrder: number;
+            label: string;
+            copyAngle: string;
+            imageConcept: string;
+            creativeBriefId: string;
+        }[];
     } & {
         id: string;
         createdAt: Date;
@@ -69,6 +85,14 @@ export declare class CreativeBriefsService {
             id: string;
             name: string;
         };
+        variants: {
+            id: string;
+            sortOrder: number;
+            label: string;
+            copyAngle: string;
+            imageConcept: string;
+            creativeBriefId: string;
+        }[];
     } & {
         id: string;
         createdAt: Date;

@@ -147,6 +147,18 @@ describe('CreativeBriefsService', () => {
           layoutDirection: 'Bold hero image',
           readinessScore: 142,
           readinessNotes: 'Missing budget info',
+          variants: [
+            {
+              label: 'Bold and direct',
+              copyAngle: 'Angle one',
+              imageConcept: 'A close-up product shot on a bright background',
+            },
+            {
+              label: 'Warm and personal',
+              copyAngle: 'Angle two',
+              imageConcept: 'A candid lifestyle photo of the product in use',
+            },
+          ],
         }),
       );
       prisma.creativeBrief.create.mockResolvedValue({
@@ -170,9 +182,71 @@ describe('CreativeBriefsService', () => {
         150,
       );
       const createCalls = prisma.creativeBrief.create.mock
-        .calls as unknown as Array<[{ data: { readinessScore: number } }]>;
+        .calls as unknown as Array<
+        [
+          {
+            data: {
+              readinessScore: number;
+              variants: {
+                create: Array<{
+                  label: string;
+                  copyAngle: string;
+                  imageConcept: string;
+                  sortOrder: number;
+                }>;
+              };
+            };
+          },
+        ]
+      >;
       expect(createCalls[0][0].data.readinessScore).toBe(100);
+      expect(createCalls[0][0].data.variants.create).toEqual([
+        {
+          label: 'Bold and direct',
+          copyAngle: 'Angle one',
+          imageConcept: 'A close-up product shot on a bright background',
+          sortOrder: 0,
+        },
+        {
+          label: 'Warm and personal',
+          copyAngle: 'Angle two',
+          imageConcept: 'A candid lifestyle photo of the product in use',
+          sortOrder: 1,
+        },
+      ]);
       expect(activityLog.record).toHaveBeenCalled();
+    });
+
+    it('defaults to an empty variant list when Claude omits variants', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      config.get.mockReturnValue('fake-api-key');
+      prisma.project.findFirst.mockResolvedValue({
+        name: 'Spring Launch',
+        description: null,
+        status: 'ACTIVE',
+        goal: null,
+      });
+      prisma.discoveryBrief.findFirst.mockResolvedValue(null);
+      aiUsage.assertWithinCap.mockResolvedValue(undefined);
+      mockCreate.mockResolvedValue(
+        structuredResponse({
+          summary: 'Summary',
+          audienceNotes: 'Audience',
+          copyAngles: 'Angle one',
+          layoutDirection: 'Bold hero image',
+          readinessScore: 50,
+          readinessNotes: 'Notes',
+        }),
+      );
+      prisma.creativeBrief.create.mockResolvedValue({ id: briefId });
+
+      await service.generate(contributor, organizationId, projectId);
+
+      const createCalls = prisma.creativeBrief.create.mock
+        .calls as unknown as Array<
+        [{ data: { variants: { create: unknown[] } } }]
+      >;
+      expect(createCalls[0][0].data.variants.create).toEqual([]);
     });
 
     it('wraps Claude API failures in a friendly error', async () => {
