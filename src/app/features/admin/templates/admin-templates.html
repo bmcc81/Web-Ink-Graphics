@@ -45,6 +45,14 @@
             Preview image URL
             <input formControlName="previewImageUrl" placeholder="https://…" />
           </label>
+          <label>
+            Canvas width (px)
+            <input formControlName="canvasWidth" type="number" min="100" />
+          </label>
+          <label>
+            Canvas height (px)
+            <input formControlName="canvasHeight" type="number" min="100" />
+          </label>
         </div>
         <label>
           Description
@@ -52,41 +60,74 @@
         </label>
 
         <h3>Editable fields</h3>
+        <p class="hint">
+          Position and size place each field on the canvas above, in pixels
+          from the top-left corner. This layout is what gets rendered when an
+          approved asset is exported.
+        </p>
         <ul class="field-rows" formArrayName="fields">
           @for (fieldGroup of fields.controls; track $index) {
             <li [formGroupName]="$index">
-              <label>
-                Key
-                <input formControlName="key" placeholder="headline" />
-              </label>
-              <label>
-                Label
-                <input formControlName="label" placeholder="Headline" />
-              </label>
-              <label>
-                Type
-                <select formControlName="fieldType">
-                  @for (fieldType of fieldTypes; track fieldType) {
-                    <option [value]="fieldType">{{ fieldType.replaceAll('_', ' ') }}</option>
-                  }
-                </select>
-              </label>
-              <label>
-                Max length
-                <input formControlName="maxLength" type="number" min="1" />
-              </label>
-              <label class="checkbox">
-                <input formControlName="required" type="checkbox" />
-                Required
-              </label>
-              <button
-                type="button"
-                class="remove-field"
-                [disabled]="fields.length <= 1"
-                (click)="removeField($index)"
-              >
-                Remove
-              </button>
+              <div class="field-row-main">
+                <label>
+                  Key
+                  <input formControlName="key" placeholder="headline" />
+                </label>
+                <label>
+                  Label
+                  <input formControlName="label" placeholder="Headline" />
+                </label>
+                <label>
+                  Type
+                  <select formControlName="fieldType">
+                    @for (fieldType of fieldTypes; track fieldType) {
+                      <option [value]="fieldType">{{ fieldType.replaceAll('_', ' ') }}</option>
+                    }
+                  </select>
+                </label>
+                <label>
+                  Max length
+                  <input formControlName="maxLength" type="number" min="1" />
+                </label>
+                <label class="checkbox">
+                  <input formControlName="required" type="checkbox" />
+                  Required
+                </label>
+                <button
+                  type="button"
+                  class="remove-field"
+                  [disabled]="fields.length <= 1"
+                  (click)="removeField($index)"
+                >
+                  Remove
+                </button>
+              </div>
+              <div class="field-row-layout">
+                <label>
+                  X
+                  <input formControlName="x" type="number" min="0" />
+                </label>
+                <label>
+                  Y
+                  <input formControlName="y" type="number" min="0" />
+                </label>
+                <label>
+                  Width
+                  <input formControlName="width" type="number" min="1" />
+                </label>
+                <label>
+                  Height
+                  <input formControlName="height" type="number" min="1" />
+                </label>
+                <label>
+                  Font size
+                  <input formControlName="fontSize" type="number" min="1" />
+                </label>
+                <label>
+                  Text color
+                  <input formControlName="color" type="color" />
+                </label>
+              </div>
             </li>
           }
         </ul>

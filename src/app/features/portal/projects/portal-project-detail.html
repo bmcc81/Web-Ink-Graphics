@@ -436,6 +436,54 @@
                       <p>No revisions yet.</p>
                     }
                   </div>
+
+                  <div class="asset-export">
+                    <h3>Export</h3>
+                    @if (canContribute()) {
+                      @if (isAssetApproved(asset)) {
+                        <div class="export-request">
+                          <select (change)="exportFormatChoice.set($any($event.target).value)">
+                            <option value="PNG" [selected]="exportFormatChoice() === 'PNG'">PNG (web / campaign)</option>
+                            <option value="PDF" [selected]="exportFormatChoice() === 'PDF'">PDF (print)</option>
+                          </select>
+                          <button
+                            type="button"
+                            (click)="requestExport(asset)"
+                            [disabled]="requestingExportAssetId() === asset.id"
+                          >
+                            {{ requestingExportAssetId() === asset.id ? 'Rendering…' : 'Export' }}
+                          </button>
+                        </div>
+                      } @else {
+                        <p class="hint">Approve this asset to export it.</p>
+                      }
+                    }
+                    @if (assetExports()[asset.id]?.length) {
+                      <ul class="export-list">
+                        @for (exportRecord of assetExports()[asset.id]; track exportRecord.id) {
+                          <li>
+                            <span
+                              class="export-status"
+                              [class]="'status-' + exportRecord.status.toLowerCase()"
+                            >
+                              {{ exportRecord.status }}
+                            </span>
+                            <span>{{ exportRecord.format }} · requested by {{ exportRecord.requestedBy.name }} · {{ exportRecord.createdAt | date: 'short' }}</span>
+                            @if (exportRecord.status === 'READY') {
+                              <button type="button" (click)="downloadExport(asset, exportRecord)">
+                                Download
+                              </button>
+                            }
+                            @if (exportRecord.status === 'FAILED' && exportRecord.errorMessage) {
+                              <span class="export-error">{{ exportRecord.errorMessage }}</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No exports yet.</p>
+                    }
+                  </div>
                 </div>
               }
             </li>

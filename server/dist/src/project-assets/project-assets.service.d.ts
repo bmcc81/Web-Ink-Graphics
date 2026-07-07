@@ -11,12 +11,18 @@ export declare class ProjectAssetsService {
         template: {
             fields: {
                 id: string;
+                y: number;
                 sortOrder: number;
                 key: string;
+                width: number;
+                height: number;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
+                x: number;
+                fontSize: number;
+                color: string | null;
                 templateId: string;
             }[];
         } & {
@@ -27,6 +33,8 @@ export declare class ProjectAssetsService {
             category: import("@prisma/client").$Enums.TemplateCategory;
             description: string | null;
             previewImageUrl: string | null;
+            canvasWidth: number;
+            canvasHeight: number;
             isPublished: boolean;
         };
         createdBy: {
@@ -37,12 +45,18 @@ export declare class ProjectAssetsService {
             values: ({
                 templateField: {
                     id: string;
+                    y: number;
                     sortOrder: number;
                     key: string;
+                    width: number;
+                    height: number;
                     label: string;
                     fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                     required: boolean;
                     maxLength: number | null;
+                    x: number;
+                    fontSize: number;
+                    color: string | null;
                     templateId: string;
                 };
             } & {
@@ -82,12 +96,18 @@ export declare class ProjectAssetsService {
         template: {
             fields: {
                 id: string;
+                y: number;
                 sortOrder: number;
                 key: string;
+                width: number;
+                height: number;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
+                x: number;
+                fontSize: number;
+                color: string | null;
                 templateId: string;
             }[];
         } & {
@@ -98,6 +118,8 @@ export declare class ProjectAssetsService {
             category: import("@prisma/client").$Enums.TemplateCategory;
             description: string | null;
             previewImageUrl: string | null;
+            canvasWidth: number;
+            canvasHeight: number;
             isPublished: boolean;
         };
         createdBy: {
@@ -108,12 +130,18 @@ export declare class ProjectAssetsService {
             values: ({
                 templateField: {
                     id: string;
+                    y: number;
                     sortOrder: number;
                     key: string;
+                    width: number;
+                    height: number;
                     label: string;
                     fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                     required: boolean;
                     maxLength: number | null;
+                    x: number;
+                    fontSize: number;
+                    color: string | null;
                     templateId: string;
                 };
             } & {
@@ -153,12 +181,18 @@ export declare class ProjectAssetsService {
         values: ({
             templateField: {
                 id: string;
+                y: number;
                 sortOrder: number;
                 key: string;
+                width: number;
+                height: number;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
+                x: number;
+                fontSize: number;
+                color: string | null;
                 templateId: string;
             };
         } & {
@@ -188,12 +222,18 @@ export declare class ProjectAssetsService {
         values: ({
             templateField: {
                 id: string;
+                y: number;
                 sortOrder: number;
                 key: string;
+                width: number;
+                height: number;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
+                x: number;
+                fontSize: number;
+                color: string | null;
                 templateId: string;
             };
         } & {
@@ -223,12 +263,18 @@ export declare class ProjectAssetsService {
         values: ({
             templateField: {
                 id: string;
+                y: number;
                 sortOrder: number;
                 key: string;
+                width: number;
+                height: number;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
+                x: number;
+                fontSize: number;
+                color: string | null;
                 templateId: string;
             };
         } & {

@@ -167,6 +167,7 @@ model User {
   createdProjectAssets    ProjectAsset[]
   createdAssetRevisions   AssetRevision[]          @relation("AssetRevisionCreator")
   approvedAssetRevisions  AssetRevision[]          @relation("AssetRevisionApprover")
+  requestedAssetExports   AssetExport[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -653,6 +654,8 @@ model DesignTemplate {
   category        TemplateCategory
   previewImageUrl String?
   isPublished     Boolean          @default(true)
+  canvasWidth     Int              @default(1200)
+  canvasHeight    Int              @default(1200)
   fields          TemplateField[]
   assets          ProjectAsset[]
   createdAt       DateTime         @default(now())
@@ -671,6 +674,12 @@ model TemplateField {
   required   Boolean           @default(false)
   maxLength  Int?
   sortOrder  Int               @default(0)
+  x          Int               @default(0)
+  y          Int               @default(0)
+  width      Int               @default(200)
+  height     Int               @default(60)
+  fontSize   Int               @default(24)
+  color      String?
   values     AssetFieldValue[]
 
   @@unique([templateId, key])
@@ -705,6 +714,7 @@ model AssetRevision {
   projectAsset   ProjectAsset        @relation(fields: [projectAssetId], references: [id], onDelete: Cascade)
   status         AssetRevisionStatus @default(DRAFT)
   values         AssetFieldValue[]
+  exports        AssetExport[]
   createdById    String
   createdBy      User                @relation("AssetRevisionCreator", fields: [createdById], references: [id], onDelete: Restrict)
   approvedById   String?
@@ -724,4 +734,31 @@ model AssetFieldValue {
   value           String
 
   @@unique([revisionId, templateFieldId])
+}
+
+enum ExportFormat {
+  PNG
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model AssetExport {
+  id              String        @id @default(cuid())
+  assetRevisionId String
+  assetRevision   AssetRevision @relation(fields: [assetRevisionId], references: [id], onDelete: Cascade)
+  format          ExportFormat
+  status          ExportStatus  @default(PENDING)
+  objectKey       String?
+  errorMessage    String?
+  requestedById   String
+  requestedBy     User          @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  createdAt       DateTime      @default(now())
+  completedAt     DateTime?
+
+  @@index([assetRevisionId, createdAt])
 }

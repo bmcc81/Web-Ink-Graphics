@@ -152,6 +152,19 @@ interface ProjectAsset {
   createdAt: string;
 }
 
+type ExportFormat = 'PNG' | 'PDF';
+type ExportStatus = 'PENDING' | 'READY' | 'FAILED';
+
+interface AssetExport {
+  id: string;
+  format: ExportFormat;
+  status: ExportStatus;
+  errorMessage: string | null;
+  requestedBy: { id: string; name: string };
+  createdAt: string;
+  completedAt: string | null;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -258,6 +271,10 @@ export class PortalProjectDetail {
   readonly savingAssetValues = signal(false);
   readonly approvingAssetId = signal<string | null>(null);
   readonly editAssetUploadingKey = signal<string | null>(null);
+
+  readonly assetExports = signal<Record<string, AssetExport[]>>({});
+  readonly exportFormatChoice = signal<ExportFormat>('PNG');
+  readonly requestingExportAssetId = signal<string | null>(null);
 
   readonly selectedTemplateFields = computed(() => {
     const template = this.assetTemplates().find(
@@ -752,6 +769,59 @@ export class PortalProjectDetail {
             })),
         });
     }
+    if (!this.assetExports()[asset.id]) {
+      this.http
+        .get<AssetExport[]>(
+          `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}/exports`,
+        )
+        .subscribe({
+          next: (exports) =>
+            this.assetExports.update((current) => ({
+              ...current,
+              [asset.id]: exports,
+            })),
+        });
+    }
+  }
+
+  requestExport(asset: ProjectAsset) {
+    this.assetError.set('');
+    this.requestingExportAssetId.set(asset.id);
+    this.http
+      .post<AssetExport>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}/exports`,
+        { format: this.exportFormatChoice() },
+      )
+      .pipe(finalize(() => this.requestingExportAssetId.set(null)))
+      .subscribe({
+        next: (exportRecord) => {
+          this.assetExports.update((current) => ({
+            ...current,
+            [asset.id]: [exportRecord, ...(current[asset.id] ?? [])],
+          }));
+          if (exportRecord.status === 'FAILED') {
+            this.assetError.set(
+              exportRecord.errorMessage ?? 'The export could not be rendered.',
+            );
+          }
+        },
+        error: (response) =>
+          this.assetError.set(
+            response.error?.message ?? 'The export could not be requested.',
+          ),
+      });
+  }
+
+  downloadExport(asset: ProjectAsset, exportRecord: AssetExport) {
+    this.http
+      .get<{ downloadUrl: string }>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/assets/${asset.id}/exports/${exportRecord.id}/download`,
+      )
+      .subscribe({
+        next: ({ downloadUrl }) => window.open(downloadUrl, '_blank'),
+        error: () =>
+          this.assetError.set('The download link could not be created.'),
+      });
   }
 
   setEditValue(key: string, value: string) {

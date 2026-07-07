@@ -30,6 +30,7 @@ const activity_log_module_1 = require("./activity/activity-log.module");
 const designs_module_1 = require("./designs/designs.module");
 const templates_module_1 = require("./templates/templates.module");
 const project_assets_module_1 = require("./project-assets/project-assets.module");
+const exports_module_1 = require("./exports/exports.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -53,6 +54,7 @@ exports.AppModule = AppModule = __decorate([
             designs_module_1.DesignsModule,
             templates_module_1.TemplatesModule,
             project_assets_module_1.ProjectAssetsModule,
+            exports_module_1.ExportsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
