@@ -22,6 +22,7 @@ import { DesignsModule } from './designs/designs.module';
 import { TemplatesModule } from './templates/templates.module';
 import { ProjectAssetsModule } from './project-assets/project-assets.module';
 import { ExportsModule } from './exports/exports.module';
+import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ExportsModule } from './exports/exports.module';
     TemplatesModule,
     ProjectAssetsModule,
     ExportsModule,
+    CreativeBriefsModule,
   ],
   controllers: [AppController],
   providers: [

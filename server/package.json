@@ -28,6 +28,7 @@
     "prisma:seed:prod": "node dist/prisma/seed.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "@aws-sdk/client-s3": "^3.1078.0",
     "@aws-sdk/s3-request-presigner": "^3.1078.0",
     "@nestjs/common": "^11.0.1",

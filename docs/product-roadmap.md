@@ -60,10 +60,24 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3C — AI-assisted creative work
 
-- Generate a design brief from approved goals and audience information
-- Suggest copy, layout directions, image concepts, and variants
-- Score readiness using explicit criteria and confidence—not promised outcomes
-- Require human review before publishing, exporting, or replacing approved work
+- Generate a design brief from approved goals and audience information —
+  implemented; a contributor can generate a creative brief (summary, audience
+  notes, copy angles, layout direction) from a project's linked goal and the
+  organization's most recent discovery brief, via Claude Haiku 4.5 with
+  structured JSON output
+- Score readiness using explicit criteria and confidence—not promised outcomes —
+  implemented; each generated brief includes a 0-100 readiness score and
+  explicit notes on what information was missing or assumed
+- Require human review before publishing, exporting, or replacing approved work —
+  implemented; briefs are created as drafts and require an explicit manager/owner
+  approval, matching the design and asset approval workflows
+- Per-organization usage limits and cost reporting — implemented; a configurable
+  monthly call cap (default 50) blocks generation once reached, and each
+  organization can see calls used and estimated cost for the current month
+- Suggest image concepts and asset variants — deferred to a later slice
+- Auto-filling copy/layout suggestions directly into `ProjectAsset` fields —
+  deferred; briefs are currently a separate reviewable document, not yet wired
+  into template field values
 
 ### Suggested backend concepts
 

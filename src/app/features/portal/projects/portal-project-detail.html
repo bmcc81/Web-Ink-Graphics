@@ -559,6 +559,84 @@
       }
     </section>
 
+    <section class="creative-briefs" aria-label="Creative briefs">
+      <h2>Creative briefs</h2>
+      @if (creativeBriefError()) {
+        <p class="error" role="alert">{{ creativeBriefError() }}</p>
+      }
+      @if (aiUsage(); as usage) {
+        <p class="ai-usage-indicator">
+          AI generations this month: {{ usage.callsUsed }} / {{ usage.callsCap }}
+          (est. cost ${{ usage.estimatedCostUsd | number: '1.2-4' }})
+        </p>
+      }
+      @if (creativeBriefs().length) {
+        <ul class="creative-brief-list">
+          @for (brief of creativeBriefs(); track brief.id) {
+            <li class="creative-brief-item">
+              <div class="creative-brief-header">
+                <span
+                  class="creative-brief-status"
+                  [class]="'status-' + brief.status.toLowerCase()"
+                >
+                  {{ brief.status }}
+                </span>
+                <span class="readiness-score">Readiness: {{ brief.readinessScore }}/100</span>
+                <span class="creative-brief-meta">
+                  by {{ brief.createdBy.name }} · {{ brief.createdAt | date: 'short' }}
+                </span>
+              </div>
+              <dl class="creative-brief-fields">
+                <div>
+                  <dt>Summary</dt>
+                  <dd>{{ brief.summary }}</dd>
+                </div>
+                <div>
+                  <dt>Audience notes</dt>
+                  <dd>{{ brief.audienceNotes }}</dd>
+                </div>
+                <div>
+                  <dt>Copy angles</dt>
+                  <dd class="preserve-lines">{{ brief.copyAngles }}</dd>
+                </div>
+                <div>
+                  <dt>Layout direction</dt>
+                  <dd>{{ brief.layoutDirection }}</dd>
+                </div>
+                <div>
+                  <dt>Readiness notes</dt>
+                  <dd>{{ brief.readinessNotes }}</dd>
+                </div>
+              </dl>
+              @if (brief.status === 'APPROVED') {
+                <p class="approved-note">Approved by {{ brief.approvedBy?.name }}</p>
+              } @else if (canManage()) {
+                <button
+                  type="button"
+                  (click)="approveCreativeBrief(brief)"
+                  [disabled]="approvingBriefId() === brief.id"
+                >
+                  {{ approvingBriefId() === brief.id ? 'Approving…' : 'Approve' }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No creative briefs generated yet.</p>
+      }
+      @if (canContribute()) {
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="generateCreativeBrief()"
+          [disabled]="generatingBrief()"
+        >
+          {{ generatingBrief() ? 'Generating…' : 'Generate creative brief' }}
+        </button>
+      }
+    </section>
+
     <section class="milestones" aria-label="Milestones">
       <h2>Milestones</h2>
       @if (current.milestones.length) {

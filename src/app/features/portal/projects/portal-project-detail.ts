@@ -1,4 +1,4 @@
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   Component,
@@ -165,6 +165,29 @@ interface AssetExport {
   completedAt: string | null;
 }
 
+type CreativeBriefStatus = 'DRAFT' | 'APPROVED';
+
+interface CreativeBrief {
+  id: string;
+  summary: string;
+  audienceNotes: string;
+  copyAngles: string;
+  layoutDirection: string;
+  readinessScore: number;
+  readinessNotes: string;
+  status: CreativeBriefStatus;
+  createdBy: { id: string; name: string };
+  approvedBy: { id: string; name: string } | null;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+interface AiUsageSummary {
+  callsUsed: number;
+  callsCap: number;
+  estimatedCostUsd: number;
+}
+
 const CONTRIBUTE_ROLES = ['OWNER', 'MANAGER', 'CONTRIBUTOR', 'WEBINK_SPECIALIST'];
 const MANAGE_ROLES = ['OWNER', 'MANAGER'];
 
@@ -185,7 +208,7 @@ export const TASK_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
 
 @Component({
   selector: 'app-portal-project-detail',
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, NgTemplateOutlet],
+  imports: [ReactiveFormsModule, RouterLink, DatePipe, DecimalPipe, NgTemplateOutlet],
   templateUrl: './portal-project-detail.html',
   styleUrl: './portal-project-detail.scss',
 })
@@ -276,6 +299,12 @@ export class PortalProjectDetail {
   readonly exportFormatChoice = signal<ExportFormat>('PNG');
   readonly requestingExportAssetId = signal<string | null>(null);
 
+  readonly creativeBriefs = signal<CreativeBrief[]>([]);
+  readonly creativeBriefError = signal('');
+  readonly generatingBrief = signal(false);
+  readonly approvingBriefId = signal<string | null>(null);
+  readonly aiUsage = signal<AiUsageSummary | null>(null);
+
   readonly selectedTemplateFields = computed(() => {
     const template = this.assetTemplates().find(
       (candidate) => candidate.id === this.selectedTemplateId(),
@@ -338,6 +367,8 @@ export class PortalProjectDetail {
           this.loadDesigns();
           this.loadAssetTemplates();
           this.loadAssets();
+          this.loadCreativeBriefs();
+          this.loadAiUsage();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -912,6 +943,69 @@ export class PortalProjectDetail {
             list.filter((candidate) => candidate.id !== asset.id),
           ),
         error: () => this.assetError.set('The asset could not be unlinked.'),
+      });
+  }
+
+  private loadCreativeBriefs() {
+    this.http
+      .get<CreativeBrief[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/creative-briefs`,
+      )
+      .subscribe({
+        next: (briefs) => this.creativeBriefs.set(briefs),
+        error: () =>
+          this.creativeBriefError.set('Creative briefs could not be loaded.'),
+      });
+  }
+
+  private loadAiUsage() {
+    this.http
+      .get<AiUsageSummary>(`/api/organizations/${this.organizationId}/ai-usage`)
+      .subscribe({ next: (usage) => this.aiUsage.set(usage) });
+  }
+
+  generateCreativeBrief() {
+    if (this.generatingBrief()) return;
+    this.creativeBriefError.set('');
+    this.generatingBrief.set(true);
+    this.http
+      .post<CreativeBrief>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/creative-briefs`,
+        {},
+      )
+      .pipe(finalize(() => this.generatingBrief.set(false)))
+      .subscribe({
+        next: (brief) => {
+          this.creativeBriefs.update((list) => [brief, ...list]);
+          this.loadAiUsage();
+        },
+        error: (response) =>
+          this.creativeBriefError.set(
+            response.error?.message ?? 'The creative brief could not be generated.',
+          ),
+      });
+  }
+
+  approveCreativeBrief(brief: CreativeBrief) {
+    this.creativeBriefError.set('');
+    this.approvingBriefId.set(brief.id);
+    this.http
+      .patch<CreativeBrief>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/creative-briefs/${brief.id}/approve`,
+        {},
+      )
+      .pipe(finalize(() => this.approvingBriefId.set(null)))
+      .subscribe({
+        next: (updated) =>
+          this.creativeBriefs.update((list) =>
+            list.map((candidate) =>
+              candidate.id === updated.id ? updated : candidate,
+            ),
+          ),
+        error: (response) =>
+          this.creativeBriefError.set(
+            response.error?.message ?? 'The creative brief could not be approved.',
+          ),
       });
   }
 
