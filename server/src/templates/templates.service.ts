@@ -47,6 +47,8 @@ export class TemplatesService {
         description: dto.description,
         category: dto.category,
         previewImageUrl: dto.previewImageUrl,
+        canvasWidth: dto.canvasWidth,
+        canvasHeight: dto.canvasHeight,
         fields: {
           create: dto.fields.map((field, index) => ({
             key: field.key,
@@ -55,6 +57,12 @@ export class TemplatesService {
             required: field.required ?? false,
             maxLength: field.maxLength,
             sortOrder: index,
+            x: field.x,
+            y: field.y,
+            width: field.width,
+            height: field.height,
+            fontSize: field.fontSize,
+            color: field.color,
           })),
         },
       },

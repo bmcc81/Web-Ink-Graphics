@@ -381,6 +381,17 @@
                             [attr.maxlength]="field.maxLength"
                             (input)="setEditValue(field.key, $any($event.target).value)"
                           />
+                          @if (canContribute() && !isAssetApproved(asset) && copySuggestions().length) {
+                            <select
+                              class="copy-suggestion-select"
+                              (change)="applyEditSuggestion($event, field.key)"
+                            >
+                              <option value="" selected>Insert copy suggestion…</option>
+                              @for (suggestion of copySuggestions(); track suggestion) {
+                                <option [value]="suggestion">{{ suggestion }}</option>
+                              }
+                            </select>
+                          }
                         }
                       </label>
                     }
@@ -434,6 +445,54 @@
                       </ul>
                     } @else {
                       <p>No revisions yet.</p>
+                    }
+                  </div>
+
+                  <div class="asset-export">
+                    <h3>Export</h3>
+                    @if (canContribute()) {
+                      @if (isAssetApproved(asset)) {
+                        <div class="export-request">
+                          <select (change)="exportFormatChoice.set($any($event.target).value)">
+                            <option value="PNG" [selected]="exportFormatChoice() === 'PNG'">PNG (web / campaign)</option>
+                            <option value="PDF" [selected]="exportFormatChoice() === 'PDF'">PDF (print)</option>
+                          </select>
+                          <button
+                            type="button"
+                            (click)="requestExport(asset)"
+                            [disabled]="requestingExportAssetId() === asset.id"
+                          >
+                            {{ requestingExportAssetId() === asset.id ? 'Rendering…' : 'Export' }}
+                          </button>
+                        </div>
+                      } @else {
+                        <p class="hint">Approve this asset to export it.</p>
+                      }
+                    }
+                    @if (assetExports()[asset.id]?.length) {
+                      <ul class="export-list">
+                        @for (exportRecord of assetExports()[asset.id]; track exportRecord.id) {
+                          <li>
+                            <span
+                              class="export-status"
+                              [class]="'status-' + exportRecord.status.toLowerCase()"
+                            >
+                              {{ exportRecord.status }}
+                            </span>
+                            <span>{{ exportRecord.format }} · requested by {{ exportRecord.requestedBy.name }} · {{ exportRecord.createdAt | date: 'short' }}</span>
+                            @if (exportRecord.status === 'READY') {
+                              <button type="button" (click)="downloadExport(asset, exportRecord)">
+                                Download
+                              </button>
+                            }
+                            @if (exportRecord.status === 'FAILED' && exportRecord.errorMessage) {
+                              <span class="export-error">{{ exportRecord.errorMessage }}</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p>No exports yet.</p>
                     }
                   </div>
                 </div>
@@ -494,6 +553,17 @@
                       [attr.maxlength]="field.maxLength"
                       (input)="setAttachValue(field.key, $any($event.target).value)"
                     />
+                    @if (copySuggestions().length) {
+                      <select
+                        class="copy-suggestion-select"
+                        (change)="applyAttachSuggestion($event, field.key)"
+                      >
+                        <option value="" selected>Insert copy suggestion…</option>
+                        @for (suggestion of copySuggestions(); track suggestion) {
+                          <option [value]="suggestion">{{ suggestion }}</option>
+                        }
+                      </select>
+                    }
                   }
                 </label>
               }
@@ -508,6 +578,102 @@
             </button>
           }
         </div>
+      }
+    </section>
+
+    <section class="creative-briefs" aria-label="Creative briefs">
+      <h2>Creative briefs</h2>
+      @if (creativeBriefError()) {
+        <p class="error" role="alert">{{ creativeBriefError() }}</p>
+      }
+      @if (aiUsage(); as usage) {
+        <p class="ai-usage-indicator">
+          AI generations this month: {{ usage.callsUsed }} / {{ usage.callsCap }}
+          (est. cost ${{ usage.estimatedCostUsd | number: '1.2-4' }})
+        </p>
+      }
+      @if (creativeBriefs().length) {
+        <ul class="creative-brief-list">
+          @for (brief of creativeBriefs(); track brief.id) {
+            <li class="creative-brief-item">
+              <div class="creative-brief-header">
+                <span
+                  class="creative-brief-status"
+                  [class]="'status-' + brief.status.toLowerCase()"
+                >
+                  {{ brief.status }}
+                </span>
+                <span class="readiness-score">Readiness: {{ brief.readinessScore }}/100</span>
+                <span class="creative-brief-meta">
+                  by {{ brief.createdBy.name }} · {{ brief.createdAt | date: 'short' }}
+                </span>
+              </div>
+              <dl class="creative-brief-fields">
+                <div>
+                  <dt>Summary</dt>
+                  <dd>{{ brief.summary }}</dd>
+                </div>
+                <div>
+                  <dt>Audience notes</dt>
+                  <dd>{{ brief.audienceNotes }}</dd>
+                </div>
+                <div>
+                  <dt>Copy angles</dt>
+                  <dd class="preserve-lines">{{ brief.copyAngles }}</dd>
+                </div>
+                <div>
+                  <dt>Layout direction</dt>
+                  <dd>{{ brief.layoutDirection }}</dd>
+                </div>
+                <div>
+                  <dt>Readiness notes</dt>
+                  <dd>{{ brief.readinessNotes }}</dd>
+                </div>
+              </dl>
+              @if (brief.variants.length) {
+                <div class="creative-brief-variants">
+                  <h3>Creative variants</h3>
+                  <ul class="variant-list">
+                    @for (variant of brief.variants; track variant.id) {
+                      <li class="variant-item">
+                        <span class="variant-label">{{ variant.label }}</span>
+                        <span class="variant-field">
+                          <strong>Copy angle:</strong> {{ variant.copyAngle }}
+                        </span>
+                        <span class="variant-field">
+                          <strong>Image concept:</strong> {{ variant.imageConcept }}
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+              @if (brief.status === 'APPROVED') {
+                <p class="approved-note">Approved by {{ brief.approvedBy?.name }}</p>
+              } @else if (canManage()) {
+                <button
+                  type="button"
+                  (click)="approveCreativeBrief(brief)"
+                  [disabled]="approvingBriefId() === brief.id"
+                >
+                  {{ approvingBriefId() === brief.id ? 'Approving…' : 'Approve' }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No creative briefs generated yet.</p>
+      }
+      @if (canContribute()) {
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="generateCreativeBrief()"
+          [disabled]="generatingBrief()"
+        >
+          {{ generatingBrief() ? 'Generating…' : 'Generate creative brief' }}
+        </button>
       }
     </section>
 

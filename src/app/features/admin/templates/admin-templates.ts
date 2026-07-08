@@ -20,6 +20,12 @@ interface TemplateField {
   fieldType: TemplateFieldType;
   required: boolean;
   maxLength: number | null;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  color: string | null;
 }
 
 interface DesignTemplate {
@@ -29,6 +35,8 @@ interface DesignTemplate {
   category: TemplateCategory;
   previewImageUrl: string | null;
   isPublished: boolean;
+  canvasWidth: number;
+  canvasHeight: number;
   fields: TemplateField[];
   createdAt: string;
 }
@@ -74,6 +82,8 @@ export class AdminTemplates {
     description: [''],
     category: ['FLYER' as TemplateCategory, [Validators.required]],
     previewImageUrl: [''],
+    canvasWidth: [1200, [Validators.required, Validators.min(100)]],
+    canvasHeight: [1200, [Validators.required, Validators.min(100)]],
     fields: this.formBuilder.array([this.fieldGroup()]),
   });
 
@@ -92,6 +102,12 @@ export class AdminTemplates {
       fieldType: ['TEXT' as TemplateFieldType, [Validators.required]],
       required: [false],
       maxLength: [''],
+      x: [0, [Validators.required, Validators.min(0)]],
+      y: [0, [Validators.required, Validators.min(0)]],
+      width: [200, [Validators.required, Validators.min(1)]],
+      height: [60, [Validators.required, Validators.min(1)]],
+      fontSize: [24, [Validators.required, Validators.min(1)]],
+      color: [''],
     });
   }
 
@@ -134,12 +150,20 @@ export class AdminTemplates {
         description: raw.description || undefined,
         category: raw.category,
         previewImageUrl: raw.previewImageUrl || undefined,
+        canvasWidth: raw.canvasWidth,
+        canvasHeight: raw.canvasHeight,
         fields: raw.fields.map((field) => ({
           key: field.key,
           label: field.label,
           fieldType: field.fieldType,
           required: field.required,
           maxLength: field.maxLength ? Number(field.maxLength) : undefined,
+          x: field.x,
+          y: field.y,
+          width: field.width,
+          height: field.height,
+          fontSize: field.fontSize,
+          color: field.color || undefined,
         })),
       })
       .pipe(finalize(() => this.creating.set(false)))
@@ -151,6 +175,8 @@ export class AdminTemplates {
             description: '',
             category: 'FLYER',
             previewImageUrl: '',
+            canvasWidth: 1200,
+            canvasHeight: 1200,
           });
           this.fields.clear();
           this.fields.push(this.fieldGroup());

@@ -26,7 +26,7 @@ a stronger dependency or opportunity.
 
 ## 3. Connected design review and editing
 
-**Priority:** High, after the project and approval workflow is stable
+**Status:** Complete — Releases 3A, 3B, and 3C are all implemented
 
 The first release should connect design work to the customer workspace instead
 of attempting to reproduce a full professional design editor.
@@ -46,24 +46,49 @@ of attempting to reproduce a full professional design editor.
 
 ### Release 3B — Template-based editing
 
-**Status:** Mostly complete — export delivery deferred to a follow-up
+**Status:** Complete
 
 - WebInk-managed templates for flyers, social graphics, newsletters, and ads — implemented
+  (staff lay out each field's position and size on a canvas of a configurable pixel size)
 - Customer-safe editable fields such as copy, image, color, and call to action — implemented
 - Brand-kit enforcement for logos, fonts, colors, and spacing — implemented (colors enforced
-  against the organization's brand kit; spacing/layout enforcement doesn't apply since there's
-  no visual canvas yet)
+  against the organization's brand kit; spacing/layout is set once by staff per template)
 - Save a new revision without overwriting an approved version — implemented
-- Export approved assets for web, print, or campaign delivery — **not started**; there's no
-  rendering pipeline to turn field values into a flyer/social image/PDF yet, so this needs its
-  own design pass rather than a stub `ExportJob` that can't actually produce a file
+- Export approved assets for web, print, or campaign delivery — implemented; an approved
+  revision renders through headless Chromium to a real PNG (web/campaign) or PDF (print),
+  stored privately and served through a short-lived signed download link
 
 ### Release 3C — AI-assisted creative work
 
-- Generate a design brief from approved goals and audience information
-- Suggest copy, layout directions, image concepts, and variants
-- Score readiness using explicit criteria and confidence—not promised outcomes
-- Require human review before publishing, exporting, or replacing approved work
+**Status:** Complete
+
+- Generate a design brief from approved goals and audience information —
+  implemented; a contributor can generate a creative brief (summary, audience
+  notes, copy angles, layout direction) from a project's linked goal and the
+  organization's most recent discovery brief, via Claude Haiku 4.5 with
+  structured JSON output
+- Score readiness using explicit criteria and confidence—not promised outcomes —
+  implemented; each generated brief includes a 0-100 readiness score and
+  explicit notes on what information was missing or assumed
+- Require human review before publishing, exporting, or replacing approved work —
+  implemented; briefs are created as drafts and require an explicit manager/owner
+  approval, matching the design and asset approval workflows
+- Per-organization usage limits and cost reporting — implemented; a configurable
+  monthly call cap (default 50) blocks generation once reached, and each
+  organization can see calls used and estimated cost for the current month
+- Suggest image concepts and asset variants — implemented; each generated
+  brief includes 2-3 named creative variants, each pairing a distinct copy
+  angle with a descriptive image concept (subject, setting, mood, framing)
+  for a designer or photographer to act on
+- Auto-filling copy suggestions directly into `ProjectAsset` fields —
+  implemented; when attaching or editing a text/CTA field, a contributor can
+  pick any copy angle or variant copy angle from the project's creative
+  briefs and insert it directly into that field with one click. Layout
+  auto-fill does not apply here: template layout (field position, size, and
+  style) is staff-defined per template, not a per-asset customer-editable
+  value, so `layoutDirection` remains written guidance for designers, as
+  before. Image fields are left for manual upload — image concepts are
+  descriptive guidance, not generated images or URLs
 
 ### Suggested backend concepts
 

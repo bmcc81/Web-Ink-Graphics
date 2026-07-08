@@ -147,6 +147,7 @@ enum ActivityEntityType {
   DESIGN_DOCUMENT
   BRAND_KIT
   PROJECT_ASSET
+  CREATIVE_BRIEF
 }
 
 model User {
@@ -167,23 +168,28 @@ model User {
   createdProjectAssets    ProjectAsset[]
   createdAssetRevisions   AssetRevision[]          @relation("AssetRevisionCreator")
   approvedAssetRevisions  AssetRevision[]          @relation("AssetRevisionApprover")
+  requestedAssetExports   AssetExport[]
+  createdCreativeBriefs   CreativeBrief[]          @relation("CreativeBriefCreator")
+  approvedCreativeBriefs  CreativeBrief[]          @relation("CreativeBriefApprover")
+  aiUsageRequests         AiUsageRecord[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
 
 model Organization {
-  id          String                   @id @default(cuid())
-  name        String
-  slug        String                   @unique
-  memberships OrganizationMembership[]
-  invitations OrganizationInvitation[]
-  clients     Client[]
-  projects    Project[]
-  goals       Goal[]
-  activityLog ActivityLogEntry[]
-  brandKit    BrandKit?
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
+  id             String                   @id @default(cuid())
+  name           String
+  slug           String                   @unique
+  memberships    OrganizationMembership[]
+  invitations    OrganizationInvitation[]
+  clients        Client[]
+  projects       Project[]
+  goals          Goal[]
+  activityLog    ActivityLogEntry[]
+  brandKit       BrandKit?
+  aiUsageRecords AiUsageRecord[]
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
 
   @@index([name])
 }
@@ -455,6 +461,7 @@ model Project {
   budget          Budget?
   designDocuments DesignDocument[]
   assets          ProjectAsset[]
+  creativeBriefs  CreativeBrief[]
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -653,6 +660,8 @@ model DesignTemplate {
   category        TemplateCategory
   previewImageUrl String?
   isPublished     Boolean          @default(true)
+  canvasWidth     Int              @default(1200)
+  canvasHeight    Int              @default(1200)
   fields          TemplateField[]
   assets          ProjectAsset[]
   createdAt       DateTime         @default(now())
@@ -671,6 +680,12 @@ model TemplateField {
   required   Boolean           @default(false)
   maxLength  Int?
   sortOrder  Int               @default(0)
+  x          Int               @default(0)
+  y          Int               @default(0)
+  width      Int               @default(200)
+  height     Int               @default(60)
+  fontSize   Int               @default(24)
+  color      String?
   values     AssetFieldValue[]
 
   @@unique([templateId, key])
@@ -705,6 +720,7 @@ model AssetRevision {
   projectAsset   ProjectAsset        @relation(fields: [projectAssetId], references: [id], onDelete: Cascade)
   status         AssetRevisionStatus @default(DRAFT)
   values         AssetFieldValue[]
+  exports        AssetExport[]
   createdById    String
   createdBy      User                @relation("AssetRevisionCreator", fields: [createdById], references: [id], onDelete: Restrict)
   approvedById   String?
@@ -724,4 +740,91 @@ model AssetFieldValue {
   value           String
 
   @@unique([revisionId, templateFieldId])
+}
+
+enum ExportFormat {
+  PNG
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model AssetExport {
+  id              String        @id @default(cuid())
+  assetRevisionId String
+  assetRevision   AssetRevision @relation(fields: [assetRevisionId], references: [id], onDelete: Cascade)
+  format          ExportFormat
+  status          ExportStatus  @default(PENDING)
+  objectKey       String?
+  errorMessage    String?
+  requestedById   String
+  requestedBy     User          @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  createdAt       DateTime      @default(now())
+  completedAt     DateTime?
+
+  @@index([assetRevisionId, createdAt])
+}
+
+enum CreativeBriefStatus {
+  DRAFT
+  APPROVED
+}
+
+model CreativeBrief {
+  id              String                 @id @default(cuid())
+  projectId       String
+  project         Project                @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  summary         String
+  audienceNotes   String
+  copyAngles      String
+  layoutDirection String
+  readinessScore  Int
+  readinessNotes  String
+  status          CreativeBriefStatus    @default(DRAFT)
+  variants        CreativeBriefVariant[]
+  createdById     String
+  createdBy       User                   @relation("CreativeBriefCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  approvedById    String?
+  approvedBy      User?                  @relation("CreativeBriefApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt      DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([projectId, createdAt])
+}
+
+model CreativeBriefVariant {
+  id              String        @id @default(cuid())
+  creativeBriefId String
+  creativeBrief   CreativeBrief @relation(fields: [creativeBriefId], references: [id], onDelete: Cascade)
+  label           String
+  copyAngle       String
+  imageConcept    String
+  sortOrder       Int           @default(0)
+
+  @@index([creativeBriefId, sortOrder])
+}
+
+enum AiUsagePurpose {
+  CREATIVE_BRIEF
+}
+
+model AiUsageRecord {
+  id                  String         @id @default(cuid())
+  organizationId      String
+  organization        Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requestedById       String
+  requestedBy         User           @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  purpose             AiUsagePurpose
+  model               String
+  promptTokens        Int
+  completionTokens    Int
+  estimatedCostMicros Int
+  createdAt           DateTime       @default(now())
+
+  @@index([organizationId, createdAt])
 }

@@ -39,6 +39,43 @@ export class TemplateFieldInputDto {
   @Min(1)
   @Max(4000)
   maxLength?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(10000)
+  x?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(10000)
+  y?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(10000)
+  width?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(10000)
+  height?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(500)
+  fontSize?: number;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^#(?:[0-9a-fA-F]{3}){1,2}$/, {
+    message: 'color must be a hex color',
+  })
+  color?: string;
 }
 
 export class CreateDesignTemplateDto {
@@ -58,6 +95,18 @@ export class CreateDesignTemplateDto {
   @IsString()
   @MaxLength(1024)
   previewImageUrl?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(100)
+  @Max(6000)
+  canvasWidth?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(100)
+  @Max(6000)
+  canvasHeight?: number;
 
   @IsArray()
   @ArrayMinSize(1)

@@ -19,6 +19,12 @@ class TemplateFieldInputDto {
     fieldType;
     required;
     maxLength;
+    x;
+    y;
+    width;
+    height;
+    fontSize;
+    color;
 }
 exports.TemplateFieldInputDto = TemplateFieldInputDto;
 __decorate([
@@ -50,11 +56,56 @@ __decorate([
     (0, class_validator_1.Max)(4000),
     __metadata("design:type", Number)
 ], TemplateFieldInputDto.prototype, "maxLength", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(0),
+    (0, class_validator_1.Max)(10000),
+    __metadata("design:type", Number)
+], TemplateFieldInputDto.prototype, "x", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(0),
+    (0, class_validator_1.Max)(10000),
+    __metadata("design:type", Number)
+], TemplateFieldInputDto.prototype, "y", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(10000),
+    __metadata("design:type", Number)
+], TemplateFieldInputDto.prototype, "width", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(10000),
+    __metadata("design:type", Number)
+], TemplateFieldInputDto.prototype, "height", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(500),
+    __metadata("design:type", Number)
+], TemplateFieldInputDto.prototype, "fontSize", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^#(?:[0-9a-fA-F]{3}){1,2}$/, {
+        message: 'color must be a hex color',
+    }),
+    __metadata("design:type", String)
+], TemplateFieldInputDto.prototype, "color", void 0);
 class CreateDesignTemplateDto {
     name;
     description;
     category;
     previewImageUrl;
+    canvasWidth;
+    canvasHeight;
     fields;
 }
 exports.CreateDesignTemplateDto = CreateDesignTemplateDto;
@@ -79,6 +130,20 @@ __decorate([
     (0, class_validator_1.MaxLength)(1024),
     __metadata("design:type", String)
 ], CreateDesignTemplateDto.prototype, "previewImageUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(100),
+    (0, class_validator_1.Max)(6000),
+    __metadata("design:type", Number)
+], CreateDesignTemplateDto.prototype, "canvasWidth", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(100),
+    (0, class_validator_1.Max)(6000),
+    __metadata("design:type", Number)
+], CreateDesignTemplateDto.prototype, "canvasHeight", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ArrayMinSize)(1),
