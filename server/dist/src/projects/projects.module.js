@@ -20,6 +20,7 @@ exports.ProjectsModule = ProjectsModule = __decorate([
         imports: [activity_log_module_1.ActivityLogModule, notifications_module_1.NotificationsModule],
         controllers: [projects_controller_1.ProjectsController],
         providers: [projects_service_1.ProjectsService],
+        exports: [projects_service_1.ProjectsService],
     })
 ], ProjectsModule);
 //# sourceMappingURL=projects.module.js.map

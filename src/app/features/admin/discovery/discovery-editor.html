@@ -226,6 +226,83 @@
         }
       </section>
 
+      <section class="handoff plan-drafts">
+        <div class="section-head"><h2>AI planning copilot</h2></div>
+        @if (planDraftError()) {
+          <p class="error" role="alert">{{ planDraftError() }}</p>
+        }
+        <div class="prompt-controls">
+          <button class="btn btn-primary" type="button" (click)="generatePlanDraft()" [disabled]="generatingPlan() || !editing">
+            {{ generatingPlan() ? 'Generating…' : 'Generate plan draft' }}
+          </button>
+        </div>
+        @if (!editing) { <p class="hint">Save the brief once before generating a plan draft.</p> }
+
+        @if (planDrafts().length) {
+          <ul class="plan-draft-list">
+            @for (draft of planDrafts(); track draft.id) {
+              <li class="plan-draft-item">
+                <div class="plan-draft-header">
+                  <span class="plan-draft-status" [class]="'status-' + draft.status.toLowerCase()">
+                    {{ draft.status }}
+                  </span>
+                  <span class="readiness-score">Readiness: {{ draft.readinessScore }}/100</span>
+                </div>
+                <h3>{{ draft.goalTitle }}</h3>
+                <p class="goal-meta">{{ draft.goalPeriod }} {{ draft.goalYear }}</p>
+                @if (draft.goalDescription) { <p>{{ draft.goalDescription }}</p> }
+                <p>{{ draft.summary }}</p>
+                <dl class="plan-draft-fields">
+                  <div>
+                    <dt>Risks &amp; missing information</dt>
+                    <dd class="preserve-lines">{{ draft.risks }}</dd>
+                  </div>
+                  <div>
+                    <dt>Readiness notes</dt>
+                    <dd>{{ draft.readinessNotes }}</dd>
+                  </div>
+                </dl>
+
+                <div class="plan-draft-projects">
+                  @for (project of draft.projects; track project.id) {
+                    <div class="plan-project">
+                      <strong>{{ project.name }}</strong>
+                      @if (project.description) { <p>{{ project.description }}</p> }
+                      <ul class="plan-milestone-list">
+                        @for (milestone of project.milestones; track milestone.id) {
+                          <li>
+                            <span class="milestone-name">{{ milestone.name }}</span>
+                            <ul class="plan-task-list">
+                              @for (task of milestone.tasks; track task) {
+                                <li>{{ task }}</li>
+                              }
+                            </ul>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+
+                @if (draft.status === 'APPLIED') {
+                  <p class="applied-note">Applied by {{ draft.appliedBy?.name }}</p>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="applyPlanDraft(draft)"
+                    [disabled]="applyingPlanDraftId() === draft.id"
+                  >
+                    {{ applyingPlanDraftId() === draft.id ? 'Applying…' : 'Apply plan' }}
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>No plan drafts generated yet.</p>
+        }
+      </section>
+
       <article class="print-brief">
         <header>
           <p>WebInk Graphics · Client Discovery Brief</p>

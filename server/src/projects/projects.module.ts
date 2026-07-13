@@ -8,5 +8,6 @@ import { ProjectsService } from './projects.service';
   imports: [ActivityLogModule, NotificationsModule],
   controllers: [ProjectsController],
   providers: [ProjectsService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

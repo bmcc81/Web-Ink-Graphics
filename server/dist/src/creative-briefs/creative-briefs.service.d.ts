@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
+import { AiUsageService } from '../ai-usage/ai-usage.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { AiUsageService } from './ai-usage.service';
 export declare class CreativeBriefsService {
     private readonly prisma;
     private readonly config;

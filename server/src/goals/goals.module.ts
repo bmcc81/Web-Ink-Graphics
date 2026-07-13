@@ -7,5 +7,6 @@ import { GoalsService } from './goals.service';
   imports: [ActivityLogModule],
   controllers: [GoalsController],
   providers: [GoalsService],
+  exports: [GoalsService],
 })
 export class GoalsModule {}

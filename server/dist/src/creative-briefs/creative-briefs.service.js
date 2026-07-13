@@ -19,8 +19,8 @@ const config_1 = require("@nestjs/config");
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const activity_log_service_1 = require("../activity/activity-log.service");
 const organization_access_1 = require("../organizations/organization-access");
+const ai_usage_service_1 = require("../ai-usage/ai-usage.service");
 const prisma_service_1 = require("../prisma/prisma.service");
-const ai_usage_service_1 = require("./ai-usage.service");
 const HAIKU_MODEL = 'claude-haiku-4-5';
 const briefInclude = {
     createdBy: { select: { id: true, name: true } },

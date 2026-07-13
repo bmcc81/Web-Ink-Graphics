@@ -15,8 +15,8 @@ import {
   MANAGE_ROLES,
   resolveOrganizationRole,
 } from '../organizations/organization-access';
+import { AiUsageService } from '../ai-usage/ai-usage.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { AiUsageService } from './ai-usage.service';
 
 const HAIKU_MODEL = 'claude-haiku-4-5';
 

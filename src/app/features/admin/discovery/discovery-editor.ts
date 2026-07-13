@@ -199,6 +199,10 @@ export class DiscoveryEditor {
   readonly prompt = signal('');
   readonly promptOutputType = signal('IMPLEMENTATION');
   readonly promptHistory = signal<any[]>([]);
+  readonly planDrafts = signal<any[]>([]);
+  readonly planDraftError = signal('');
+  readonly generatingPlan = signal(false);
+  readonly applyingPlanDraftId = signal<string | null>(null);
   readonly approvalDate = signal('');
   readonly autosaveStatus = signal<'idle' | 'unsaved' | 'saving' | 'saved' | 'error'>('idle');
   readonly lastSaved = signal('');
@@ -297,7 +301,12 @@ export class DiscoveryEditor {
     if (this.editing) {
       forkJoin({ client: clientRequest, brief: this.http.get<any>(`/api/clients/briefs/${this.briefId}`) })
         .subscribe({
-          next: ({ client, brief }) => { this.clientName.set(client.companyName); this.populate(brief); this.loading.set(false); },
+          next: ({ client, brief }) => {
+            this.clientName.set(client.companyName);
+            this.populate(brief);
+            this.loading.set(false);
+            this.loadPlanDrafts();
+          },
           error: () => { this.error.set('The discovery brief could not be loaded.'); this.loading.set(false); },
         });
     } else {
@@ -426,6 +435,51 @@ export class DiscoveryEditor {
 
   copyPrompt() {
     void navigator.clipboard.writeText(this.prompt());
+  }
+
+  loadPlanDrafts() {
+    if (!this.editing) return;
+    this.http.get<any[]>(`/api/clients/briefs/${this.briefId}/plan-drafts`)
+      .subscribe({
+        next: (drafts) => this.planDrafts.set(drafts),
+        error: () => this.planDraftError.set('Plan drafts could not be loaded.'),
+      });
+  }
+
+  generatePlanDraft() {
+    if (!this.editing) { this.planDraftError.set('Save the brief before generating a plan.'); return; }
+    this.planDraftError.set('');
+    this.generatingPlan.set(true);
+    this.http.post<any>(`/api/clients/briefs/${this.briefId}/plan-drafts`, {})
+      .pipe(finalize(() => this.generatingPlan.set(false)))
+      .subscribe({
+        next: (draft) => this.planDrafts.update((items) => [draft, ...items]),
+        error: (response) =>
+          this.planDraftError.set(
+            response.error?.message ?? 'The plan draft could not be generated.',
+          ),
+      });
+  }
+
+  applyPlanDraft(draft: any) {
+    if (!confirm(`Apply this plan? This creates a real goal, project(s), milestones, and tasks in "${this.clientName()}"'s workspace.`)) {
+      return;
+    }
+    this.planDraftError.set('');
+    this.applyingPlanDraftId.set(draft.id);
+    this.http.post<any>(`/api/clients/briefs/${this.briefId}/plan-drafts/${draft.id}/apply`, {})
+      .pipe(finalize(() => this.applyingPlanDraftId.set(null)))
+      .subscribe({
+        next: (result) => {
+          this.planDrafts.update((items) =>
+            items.map((item) => (item.id === result.planDraft.id ? result.planDraft : item)),
+          );
+        },
+        error: (response) =>
+          this.planDraftError.set(
+            response.error?.message ?? 'The plan draft could not be applied.',
+          ),
+      });
   }
   printBrief() { window.print(); }
   uploadAttachment(event: Event) {

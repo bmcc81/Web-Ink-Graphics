@@ -6,20 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoalsModule = void 0;
+exports.AiUsageModule = void 0;
 const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const goals_controller_1 = require("./goals.controller");
-const goals_service_1 = require("./goals.service");
-let GoalsModule = class GoalsModule {
+const ai_usage_controller_1 = require("./ai-usage.controller");
+const ai_usage_service_1 = require("./ai-usage.service");
+let AiUsageModule = class AiUsageModule {
 };
-exports.GoalsModule = GoalsModule;
-exports.GoalsModule = GoalsModule = __decorate([
+exports.AiUsageModule = AiUsageModule;
+exports.AiUsageModule = AiUsageModule = __decorate([
     (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [goals_controller_1.GoalsController],
-        providers: [goals_service_1.GoalsService],
-        exports: [goals_service_1.GoalsService],
+        controllers: [ai_usage_controller_1.AiUsageController],
+        providers: [ai_usage_service_1.AiUsageService],
+        exports: [ai_usage_service_1.AiUsageService],
     })
-], GoalsModule);
-//# sourceMappingURL=goals.module.js.map
+], AiUsageModule);
+//# sourceMappingURL=ai-usage.module.js.map

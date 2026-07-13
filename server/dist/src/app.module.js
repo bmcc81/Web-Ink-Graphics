@@ -32,6 +32,8 @@ const templates_module_1 = require("./templates/templates.module");
 const project_assets_module_1 = require("./project-assets/project-assets.module");
 const exports_module_1 = require("./exports/exports.module");
 const creative_briefs_module_1 = require("./creative-briefs/creative-briefs.module");
+const ai_usage_module_1 = require("./ai-usage/ai-usage.module");
+const plan_drafts_module_1 = require("./plan-drafts/plan-drafts.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -57,6 +59,8 @@ exports.AppModule = AppModule = __decorate([
             project_assets_module_1.ProjectAssetsModule,
             exports_module_1.ExportsModule,
             creative_briefs_module_1.CreativeBriefsModule,
+            ai_usage_module_1.AiUsageModule,
+            plan_drafts_module_1.PlanDraftsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

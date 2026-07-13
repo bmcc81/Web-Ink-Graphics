@@ -148,6 +148,7 @@ enum ActivityEntityType {
   BRAND_KIT
   PROJECT_ASSET
   CREATIVE_BRIEF
+  PLAN_DRAFT
 }
 
 model User {
@@ -172,6 +173,8 @@ model User {
   createdCreativeBriefs   CreativeBrief[]          @relation("CreativeBriefCreator")
   approvedCreativeBriefs  CreativeBrief[]          @relation("CreativeBriefApprover")
   aiUsageRequests         AiUsageRecord[]
+  createdPlanDrafts       PlanDraft[]              @relation("PlanDraftCreator")
+  appliedPlanDrafts       PlanDraft[]              @relation("PlanDraftApplier")
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -303,6 +306,7 @@ model DiscoveryBrief {
   openQuestions      BriefQuestion[]
   generatedPrompts   GeneratedPrompt[]
   attachments        BriefAttachment[]
+  planDrafts         PlanDraft[]
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
@@ -811,6 +815,7 @@ model CreativeBriefVariant {
 
 enum AiUsagePurpose {
   CREATIVE_BRIEF
+  PLANNING_COPILOT
 }
 
 model AiUsageRecord {
@@ -827,4 +832,57 @@ model AiUsageRecord {
   createdAt           DateTime       @default(now())
 
   @@index([organizationId, createdAt])
+}
+
+enum PlanDraftStatus {
+  DRAFT
+  APPLIED
+}
+
+model PlanDraft {
+  id               String            @id @default(cuid())
+  discoveryBriefId String
+  discoveryBrief   DiscoveryBrief    @relation(fields: [discoveryBriefId], references: [id], onDelete: Restrict)
+  goalTitle        String
+  goalDescription  String?
+  goalPeriod       GoalPeriod
+  goalYear         Int
+  summary          String
+  risks            String
+  readinessScore   Int
+  readinessNotes   String
+  status           PlanDraftStatus   @default(DRAFT)
+  projects         PlanDraftProject[]
+  createdById      String
+  createdBy        User              @relation("PlanDraftCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  appliedById      String?
+  appliedBy        User?             @relation("PlanDraftApplier", fields: [appliedById], references: [id], onDelete: SetNull)
+  appliedAt        DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([discoveryBriefId, createdAt])
+}
+
+model PlanDraftProject {
+  id          String               @id @default(cuid())
+  planDraftId String
+  planDraft   PlanDraft            @relation(fields: [planDraftId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  sortOrder   Int                  @default(0)
+  milestones  PlanDraftMilestone[]
+
+  @@index([planDraftId, sortOrder])
+}
+
+model PlanDraftMilestone {
+  id                 String           @id @default(cuid())
+  planDraftProjectId String
+  planDraftProject   PlanDraftProject @relation(fields: [planDraftProjectId], references: [id], onDelete: Cascade)
+  name               String
+  tasks              String[]
+  sortOrder          Int              @default(0)
+
+  @@index([planDraftProjectId, sortOrder])
 }

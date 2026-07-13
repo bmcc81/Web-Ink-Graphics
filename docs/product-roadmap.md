@@ -121,11 +121,32 @@ and short-lived access where required.
 
 ## 4. AI planning copilot
 
-- Guided discovery and plan creation
-- Missing-information and risk detection
-- Campaign, task, content, and channel recommendations
-- Explainable readiness scoring with assumptions and confidence
-- Per-organization usage limits and cost reporting
+**Status:** First slice complete
+
+- Guided discovery and plan creation — implemented; from an existing discovery
+  brief, staff (or a permitted org contributor) can generate a starter plan
+  draft via Claude Haiku 4.5: a suggested goal, 1-3 projects, and milestones
+  with concrete task titles for each, built from the brief's project
+  narrative, audience notes, requirements, and open questions
+- Missing-information and risk detection — implemented; each plan draft
+  includes an explicit risks/missing-information list alongside the plan
+- Explainable readiness scoring with assumptions and confidence —
+  implemented; each plan draft includes a 0-100 readiness score and notes
+  explaining what is missing or assumed
+- Per-organization usage limits and cost reporting — implemented; plan
+  drafts share the same per-organization monthly call cap and cost-tracking
+  service used by Release 3C's creative briefs
+- Human review before creating real records — implemented; a generated plan
+  is a reviewable draft only. Applying it (gated to organization owners/
+  managers or staff) creates the real Goal, Project, Milestone, and Task
+  records in one action, and a draft can only be applied once
+- Campaign, task, content, and channel recommendations — deferred; the first
+  slice covers goal/project/milestone/task structure, not channel or content
+  recommendations
+- Missing-information detection as an interactive follow-up flow (e.g.
+  auto-generating open questions on the brief) — deferred; today the risks
+  list is descriptive text on the plan draft, not wired back into the
+  brief's own open-questions tracker
 
 ## 5. Measurement and automation
 

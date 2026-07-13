@@ -23,6 +23,8 @@ import { TemplatesModule } from './templates/templates.module';
 import { ProjectAssetsModule } from './project-assets/project-assets.module';
 import { ExportsModule } from './exports/exports.module';
 import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module';
+import { AiUsageModule } from './ai-usage/ai-usage.module';
+import { PlanDraftsModule } from './plan-drafts/plan-drafts.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module';
     ProjectAssetsModule,
     ExportsModule,
     CreativeBriefsModule,
+    AiUsageModule,
+    PlanDraftsModule,
   ],
   controllers: [AppController],
   providers: [
