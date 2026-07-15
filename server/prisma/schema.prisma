@@ -149,6 +149,7 @@ enum ActivityEntityType {
   PROJECT_ASSET
   CREATIVE_BRIEF
   PLAN_DRAFT
+  CAMPAIGN_METRIC
 }
 
 model User {
@@ -175,6 +176,7 @@ model User {
   aiUsageRequests         AiUsageRecord[]
   createdPlanDrafts       PlanDraft[]              @relation("PlanDraftCreator")
   appliedPlanDrafts       PlanDraft[]              @relation("PlanDraftApplier")
+  recordedCampaignMetrics CampaignMetricEntry[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -466,6 +468,7 @@ model Project {
   designDocuments DesignDocument[]
   assets          ProjectAsset[]
   creativeBriefs  CreativeBrief[]
+  campaignMetrics CampaignMetricEntry[]
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -486,6 +489,32 @@ model Budget {
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum MetricType {
+  IMPRESSIONS
+  CLICKS
+  WEBSITE_VISITS
+  LEADS
+  CONVERSIONS
+  REVENUE
+}
+
+model CampaignMetricEntry {
+  id           String     @id @default(cuid())
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metricType   MetricType
+  periodStart  DateTime
+  periodEnd    DateTime
+  actualValue  Decimal    @db.Decimal(14, 2)
+  plannedValue Decimal?   @db.Decimal(14, 2)
+  notes        String?
+  recordedById String
+  recordedBy   User       @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now())
+
+  @@index([projectId, metricType, periodStart])
 }
 
 model Goal {

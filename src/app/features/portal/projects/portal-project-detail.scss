@@ -166,6 +166,84 @@ button.danger {
   font-weight: 600;
 }
 
+.performance {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+.budget-variance { margin: 0 0 1rem; }
+.variance-badge {
+  margin-left: .5rem;
+  padding: .1rem .5rem;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.variance-badge.variance-good { background: #e3f5e9; color: #1c6b3d; }
+.variance-badge.variance-bad { background: #fbeaea; color: #b3261e; }
+.metrics-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+  font-size: .85rem;
+}
+.metrics-summary-table th {
+  text-align: left;
+  padding: .5rem .6rem;
+  color: var(--muted);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--line);
+}
+.metrics-summary-table td {
+  padding: .5rem .6rem;
+  border-bottom: 1px solid var(--line);
+}
+.metric-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.metric-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.metric-form input,
+.metric-form select {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+.metric-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.metric-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+  padding: .6rem .8rem;
+  background: var(--paper);
+  border-radius: .5rem;
+  font-size: .82rem;
+}
+.metric-type { font-weight: 700; }
+.metric-meta { color: var(--muted); margin-left: auto; }
+.metric-list button { padding: .3rem .8rem; border: 1px solid var(--line); border-radius: 100px; background: white; font-weight: 600; font-size: .78rem; }
+
 .designs {
   padding: 1.5rem;
   background: white;

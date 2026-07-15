@@ -25,6 +25,7 @@ import { ExportsModule } from './exports/exports.module';
 import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module';
 import { AiUsageModule } from './ai-usage/ai-usage.module';
 import { PlanDraftsModule } from './plan-drafts/plan-drafts.module';
+import { CampaignMetricsModule } from './campaign-metrics/campaign-metrics.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { PlanDraftsModule } from './plan-drafts/plan-drafts.module';
     CreativeBriefsModule,
     AiUsageModule,
     PlanDraftsModule,
+    CampaignMetricsModule,
   ],
   controllers: [AppController],
   providers: [

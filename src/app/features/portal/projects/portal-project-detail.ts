@@ -74,6 +74,46 @@ interface Budget {
   notes: string | null;
 }
 
+type MetricType =
+  | 'IMPRESSIONS'
+  | 'CLICKS'
+  | 'WEBSITE_VISITS'
+  | 'LEADS'
+  | 'CONVERSIONS'
+  | 'REVENUE';
+
+interface CampaignMetricEntry {
+  id: string;
+  metricType: MetricType;
+  periodStart: string;
+  periodEnd: string;
+  actualValue: string;
+  plannedValue: string | null;
+  notes: string | null;
+  recordedBy: { id: string; name: string };
+  createdAt: string;
+}
+
+interface MetricSummaryRow {
+  metricType: MetricType;
+  actualTotal: number;
+  plannedTotal: number | null;
+  variance: number | null;
+  entryCount: number;
+}
+
+interface PerformanceSummary {
+  budget: {
+    currency: string;
+    plannedAmount: string | null;
+    approvedAmount: string | null;
+    committedAmount: string | null;
+    actualAmount: string | null;
+    variance: number | null;
+  } | null;
+  metrics: MetricSummaryRow[];
+}
+
 interface DesignVersion {
   id: string;
   thumbnailUrl: string | null;
@@ -213,6 +253,14 @@ export const MILESTONE_STATUSES: MilestoneStatus[] = [
   'COMPLETED',
 ];
 export const TASK_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
+export const METRIC_TYPES: MetricType[] = [
+  'IMPRESSIONS',
+  'CLICKS',
+  'WEBSITE_VISITS',
+  'LEADS',
+  'CONVERSIONS',
+  'REVENUE',
+];
 
 @Component({
   selector: 'app-portal-project-detail',
@@ -261,6 +309,21 @@ export class PortalProjectDetail {
     approvedAmount: [''],
     committedAmount: [''],
     actualAmount: [''],
+    notes: [''],
+  });
+
+  readonly metricEntries = signal<CampaignMetricEntry[]>([]);
+  readonly metricsSummary = signal<PerformanceSummary | null>(null);
+  readonly metricsError = signal('');
+  readonly loggingMetric = signal(false);
+  readonly metricTypes = METRIC_TYPES;
+
+  readonly metricForm = this.formBuilder.nonNullable.group({
+    metricType: ['LEADS' as MetricType],
+    periodStart: ['', Validators.required],
+    periodEnd: ['', Validators.required],
+    actualValue: ['', Validators.required],
+    plannedValue: [''],
     notes: [''],
   });
 
@@ -391,6 +454,8 @@ export class PortalProjectDetail {
           this.loadAssets();
           this.loadCreativeBriefs();
           this.loadAiUsage();
+          this.loadMetrics();
+          this.loadMetricsSummary();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -486,6 +551,84 @@ export class PortalProjectDetail {
           this.budgetForm.reset({ currency: 'USD' });
         },
         error: () => this.budgetError.set('The budget could not be deleted.'),
+      });
+  }
+
+  private loadMetrics() {
+    this.http
+      .get<CampaignMetricEntry[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics`,
+      )
+      .subscribe({
+        next: (entries) => this.metricEntries.set(entries),
+        error: () => this.metricsError.set('Metrics could not be loaded.'),
+      });
+  }
+
+  private loadMetricsSummary() {
+    this.http
+      .get<PerformanceSummary>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics/summary`,
+      )
+      .subscribe({ next: (summary) => this.metricsSummary.set(summary) });
+  }
+
+  logMetric() {
+    if (this.metricForm.invalid || this.loggingMetric()) {
+      this.metricForm.markAllAsTouched();
+      return;
+    }
+    this.metricsError.set('');
+    this.loggingMetric.set(true);
+    const raw = this.metricForm.getRawValue();
+    this.http
+      .post<CampaignMetricEntry>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics`,
+        {
+          metricType: raw.metricType,
+          periodStart: raw.periodStart,
+          periodEnd: raw.periodEnd,
+          actualValue: Number(raw.actualValue),
+          plannedValue: raw.plannedValue ? Number(raw.plannedValue) : undefined,
+          notes: raw.notes || undefined,
+        },
+      )
+      .pipe(finalize(() => this.loggingMetric.set(false)))
+      .subscribe({
+        next: (entry) => {
+          this.metricEntries.update((list) => [entry, ...list]);
+          this.metricForm.reset({
+            metricType: raw.metricType,
+            periodStart: '',
+            periodEnd: '',
+            actualValue: '',
+            plannedValue: '',
+            notes: '',
+          });
+          this.loadMetricsSummary();
+        },
+        error: (response) =>
+          this.metricsError.set(
+            response.error?.message ?? 'The metric could not be logged.',
+          ),
+      });
+  }
+
+  removeMetric(entry: CampaignMetricEntry) {
+    if (!confirm('Remove this metric entry?')) return;
+    this.metricsError.set('');
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics/${entry.id}`,
+      )
+      .subscribe({
+        next: () => {
+          this.metricEntries.update((list) =>
+            list.filter((candidate) => candidate.id !== entry.id),
+          );
+          this.loadMetricsSummary();
+        },
+        error: () => this.metricsError.set('The metric could not be removed.'),
       });
   }
 

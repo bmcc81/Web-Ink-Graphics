@@ -126,6 +126,123 @@
       }
     </section>
 
+    <section class="performance" aria-label="Performance">
+      <h2>Performance</h2>
+      @if (metricsError()) {
+        <p class="error" role="alert">{{ metricsError() }}</p>
+      }
+      @if (metricsSummary(); as summary) {
+        @if (summary.budget) {
+          <p class="budget-variance">
+            Budget: {{ summary.budget.actualAmount ?? '—' }} actual vs
+            {{ summary.budget.plannedAmount ?? '—' }} planned {{ summary.budget.currency }}
+            @if (summary.budget.variance !== null) {
+              <span
+                class="variance-badge"
+                [class.variance-good]="summary.budget.variance <= 0"
+                [class.variance-bad]="summary.budget.variance > 0"
+              >
+                {{ summary.budget.variance > 0 ? '+' : '' }}{{ summary.budget.variance | number: '1.0-2' }}
+              </span>
+            }
+          </p>
+        }
+        @if (summary.metrics.length) {
+          <table class="metrics-summary-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Actual</th>
+                <th>Planned</th>
+                <th>Variance</th>
+                <th>Entries</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of summary.metrics; track row.metricType) {
+                <tr>
+                  <td>{{ row.metricType.replaceAll('_', ' ') }}</td>
+                  <td>{{ row.actualTotal | number }}</td>
+                  <td>{{ row.plannedTotal ?? '—' }}</td>
+                  <td>
+                    @if (row.variance !== null) {
+                      <span
+                        class="variance-badge"
+                        [class.variance-good]="row.variance >= 0"
+                        [class.variance-bad]="row.variance < 0"
+                      >
+                        {{ row.variance > 0 ? '+' : '' }}{{ row.variance | number }}
+                      </span>
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td>{{ row.entryCount }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p>No metrics logged yet.</p>
+        }
+      }
+
+      @if (canContribute()) {
+        <form class="metric-form" [formGroup]="metricForm" (ngSubmit)="logMetric()">
+          <label>
+            Metric
+            <select formControlName="metricType">
+              @for (type of metricTypes; track type) {
+                <option [value]="type">{{ type.replaceAll('_', ' ') }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Period start
+            <input type="date" formControlName="periodStart" />
+          </label>
+          <label>
+            Period end
+            <input type="date" formControlName="periodEnd" />
+          </label>
+          <label>
+            Actual value
+            <input type="number" min="0" step="0.01" formControlName="actualValue" />
+          </label>
+          <label>
+            Planned value (optional)
+            <input type="number" min="0" step="0.01" formControlName="plannedValue" />
+          </label>
+          <label class="notes">
+            Notes
+            <input formControlName="notes" />
+          </label>
+          <button class="btn btn-primary" type="submit" [disabled]="loggingMetric()">
+            {{ loggingMetric() ? 'Logging…' : 'Log metric' }}
+          </button>
+        </form>
+      }
+
+      @if (metricEntries().length) {
+        <ul class="metric-list">
+          @for (entry of metricEntries(); track entry.id) {
+            <li>
+              <span class="metric-type">{{ entry.metricType.replaceAll('_', ' ') }}</span>
+              <span>{{ entry.periodStart | date: 'mediumDate' }} – {{ entry.periodEnd | date: 'mediumDate' }}</span>
+              <span>
+                Actual: {{ entry.actualValue }}
+                @if (entry.plannedValue) { · Planned: {{ entry.plannedValue }} }
+              </span>
+              <span class="metric-meta">by {{ entry.recordedBy.name }}</span>
+              @if (canContribute()) {
+                <button type="button" class="danger" (click)="removeMetric(entry)">Remove</button>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
     <section class="designs" aria-label="Designs">
       <h2>Designs</h2>
       @if (designError()) {

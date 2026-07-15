@@ -150,8 +150,20 @@ and short-lived access where required.
 
 ## 5. Measurement and automation
 
-- Campaign metrics and actual-versus-planned reporting
-- Analytics, search, email, and advertising integrations
-- Recurring marketing activities
-- Performance-informed recommendations
-- Publishing approved completed work to the WebInk portfolio
+**Status:** First slice complete
+
+- Campaign metrics and actual-versus-planned reporting — implemented; a
+  contributor can log campaign metrics (impressions, clicks, website
+  visits, leads, conversions, revenue) per project over a date range, each
+  with an actual value and an optional planned/target value. A summary view
+  aggregates actual vs. planned totals and variance per metric type, and
+  includes the project's existing budget (planned/approved/committed vs.
+  actual spend) in the same report
+- Analytics, search, email, and advertising integrations — deferred; these
+  require real external API credentials (Google Analytics, Search Console,
+  ad platforms) not available in this environment
+- Recurring marketing activities — deferred to a later slice
+- Performance-informed recommendations — deferred; depends on enough
+  logged metrics history to exist first
+- Publishing approved completed work to the WebInk portfolio — deferred to
+  a later slice
