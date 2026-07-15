@@ -76,6 +76,16 @@ describe('ProjectsService', () => {
       upsert: jest.fn(),
       delete: jest.fn(),
     },
+    assetRevision: {
+      count: jest.fn(),
+    },
+    creativeBrief: {
+      count: jest.fn(),
+    },
+    portfolioProject: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+    },
     user: {
       findUnique: jest.fn(),
     },
@@ -480,6 +490,135 @@ describe('ProjectsService', () => {
       await expect(
         service.removeBudget(contributor, organizationId, 'project-1'),
       ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('publishToPortfolio', () => {
+    function completedProject(overrides: Record<string, unknown> = {}) {
+      return {
+        id: 'project-1',
+        name: 'Riverside Cafe Website',
+        description: 'A full site relaunch.',
+        status: 'COMPLETED',
+        portfolioProjectId: null,
+        ...overrides,
+      };
+    }
+
+    it('blocks a customer org owner from publishing (staff-only)', async () => {
+      prisma.project.findFirst.mockResolvedValue(completedProject());
+
+      await expect(
+        service.publishToPortfolio(contributor, organizationId, 'project-1'),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.portfolioProject.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects publishing a project that is not completed', async () => {
+      prisma.project.findFirst.mockResolvedValue(
+        completedProject({ status: 'PRODUCTION' }),
+      );
+
+      await expect(
+        service.publishToPortfolio(staff, organizationId, 'project-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.portfolioProject.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects publishing a project that is already published', async () => {
+      prisma.project.findFirst.mockResolvedValue(
+        completedProject({ portfolioProjectId: 'portfolio-1' }),
+      );
+
+      await expect(
+        service.publishToPortfolio(staff, organizationId, 'project-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.portfolioProject.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects publishing without any approved asset or creative brief', async () => {
+      prisma.project.findFirst.mockResolvedValue(completedProject());
+      prisma.assetRevision.count.mockResolvedValue(0);
+      prisma.creativeBrief.count.mockResolvedValue(0);
+
+      await expect(
+        service.publishToPortfolio(staff, organizationId, 'project-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.portfolioProject.create).not.toHaveBeenCalled();
+    });
+
+    it('creates a draft portfolio project and links it back', async () => {
+      prisma.project.findFirst.mockResolvedValue(completedProject());
+      prisma.assetRevision.count.mockResolvedValue(1);
+      prisma.creativeBrief.count.mockResolvedValue(0);
+      prisma.portfolioProject.findUnique.mockResolvedValue(null);
+      prisma.portfolioProject.create.mockResolvedValue({
+        id: 'portfolio-1',
+        slug: 'riverside-cafe-website',
+      });
+
+      const result = await service.publishToPortfolio(
+        staff,
+        organizationId,
+        'project-1',
+      );
+
+      const createCalls = prisma.portfolioProject.create.mock
+        .calls as unknown as Array<
+        [
+          {
+            data: {
+              slug: string;
+              status: string;
+              completedAt: Date;
+              translations: {
+                create: Array<{
+                  locale: string;
+                  title: string;
+                  summary: string;
+                }>;
+              };
+            };
+          },
+        ]
+      >;
+      expect(createCalls[0][0].data.slug).toBe('riverside-cafe-website');
+      expect(createCalls[0][0].data.status).toBe('DRAFT');
+      expect(createCalls[0][0].data.completedAt).toBeInstanceOf(Date);
+      expect(createCalls[0][0].data.translations.create).toEqual([
+        {
+          locale: 'EN',
+          title: 'Riverside Cafe Website',
+          summary: 'A full site relaunch.',
+        },
+      ]);
+      expect(prisma.project.update).toHaveBeenCalledWith({
+        where: { id: 'project-1' },
+        data: { portfolioProjectId: 'portfolio-1' },
+      });
+      expect(result).toEqual({
+        portfolioProject: { id: 'portfolio-1', slug: 'riverside-cafe-website' },
+      });
+      expect(activityLog.record).toHaveBeenCalled();
+    });
+
+    it('appends a numeric suffix when the slug is already taken', async () => {
+      prisma.project.findFirst.mockResolvedValue(completedProject());
+      prisma.assetRevision.count.mockResolvedValue(1);
+      prisma.creativeBrief.count.mockResolvedValue(0);
+      prisma.portfolioProject.findUnique
+        .mockResolvedValueOnce({ id: 'existing' })
+        .mockResolvedValueOnce(null);
+      prisma.portfolioProject.create.mockResolvedValue({
+        id: 'portfolio-2',
+        slug: 'riverside-cafe-website-2',
+      });
+
+      await service.publishToPortfolio(staff, organizationId, 'project-1');
+
+      const createCalls = prisma.portfolioProject.create.mock
+        .calls as unknown as Array<[{ data: { slug: string } }]>;
+      expect(createCalls[0][0].data.slug).toBe('riverside-cafe-website-2');
     });
   });
 

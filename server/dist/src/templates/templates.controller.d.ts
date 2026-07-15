@@ -13,6 +13,7 @@ export declare class TemplatesController {
             key: string;
             width: number;
             height: number;
+            templateId: string;
             label: string;
             fieldType: import("@prisma/client").$Enums.TemplateFieldType;
             required: boolean;
@@ -20,7 +21,6 @@ export declare class TemplatesController {
             x: number;
             fontSize: number;
             color: string | null;
-            templateId: string;
         }[];
     } & {
         id: string;
@@ -42,6 +42,7 @@ export declare class TemplatesController {
             key: string;
             width: number;
             height: number;
+            templateId: string;
             label: string;
             fieldType: import("@prisma/client").$Enums.TemplateFieldType;
             required: boolean;
@@ -49,7 +50,6 @@ export declare class TemplatesController {
             x: number;
             fontSize: number;
             color: string | null;
-            templateId: string;
         }[];
     } & {
         id: string;
@@ -71,6 +71,7 @@ export declare class TemplatesController {
             key: string;
             width: number;
             height: number;
+            templateId: string;
             label: string;
             fieldType: import("@prisma/client").$Enums.TemplateFieldType;
             required: boolean;
@@ -78,7 +79,6 @@ export declare class TemplatesController {
             x: number;
             fontSize: number;
             color: string | null;
-            templateId: string;
         }[];
     } & {
         id: string;
@@ -100,6 +100,7 @@ export declare class TemplatesController {
             key: string;
             width: number;
             height: number;
+            templateId: string;
             label: string;
             fieldType: import("@prisma/client").$Enums.TemplateFieldType;
             required: boolean;
@@ -107,7 +108,6 @@ export declare class TemplatesController {
             x: number;
             fontSize: number;
             color: string | null;
-            templateId: string;
         }[];
     } & {
         id: string;

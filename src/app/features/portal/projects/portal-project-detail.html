@@ -49,6 +49,21 @@
           </span>
         }
       </div>
+      @if (isStaff() && current.status === 'COMPLETED') {
+        @if (current.portfolioProject) {
+          <span class="status-badge portfolio-badge">
+            Portfolio: {{ current.portfolioProject.status }}
+          </span>
+        } @else {
+          <button
+            type="button"
+            (click)="publishToPortfolio()"
+            [disabled]="publishingToPortfolio()"
+          >
+            {{ publishingToPortfolio() ? 'Publishing…' : 'Publish to portfolio' }}
+          </button>
+        }
+      }
       @if (canManage()) {
         <button type="button" class="danger" (click)="deleteProject()">Delete project</button>
       }

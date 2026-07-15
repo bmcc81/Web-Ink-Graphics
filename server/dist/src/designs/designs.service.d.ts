@@ -29,11 +29,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
         linkedById: string;
-        unlinkedAt: Date | null;
     })[]>;
     attach(user: AuthUser, organizationId: string, projectId: string, dto: CreateDesignDocumentDto): Promise<{
         linkedBy: {
@@ -53,11 +53,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
         linkedById: string;
-        unlinkedAt: Date | null;
     }>;
     sync(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         synced: boolean;
@@ -66,11 +66,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
         linkedById: string;
-        unlinkedAt: Date | null;
     } | {
         synced: boolean;
         linkedBy: {
@@ -89,11 +89,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
         linkedById: string;
-        unlinkedAt: Date | null;
     }>;
     unlink(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         removed: boolean;

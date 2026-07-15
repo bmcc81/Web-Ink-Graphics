@@ -159,11 +159,18 @@ and short-lived access where required.
   aggregates actual vs. planned totals and variance per metric type, and
   includes the project's existing budget (planned/approved/committed vs.
   actual spend) in the same report
+- Publishing approved completed work to the WebInk portfolio — implemented;
+  WebInk staff (not customers) can publish a COMPLETED project that has at
+  least one approved asset or creative brief, in one action. This creates
+  a draft entry in the existing public portfolio admin tool, pre-filled
+  with the project's name and description, linked back to the source
+  project so it can't be published twice. The portfolio entry stays a
+  private draft — staff still add photos and explicitly flip it to
+  published in the existing portfolio editor, so nothing goes live
+  automatically
 - Analytics, search, email, and advertising integrations — deferred; these
   require real external API credentials (Google Analytics, Search Console,
   ad platforms) not available in this environment
 - Recurring marketing activities — deferred to a later slice
 - Performance-informed recommendations — deferred; depends on enough
   logged metrics history to exist first
-- Publishing approved completed work to the WebInk portfolio — deferred to
-  a later slice

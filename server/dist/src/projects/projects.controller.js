@@ -72,6 +72,9 @@ let ProjectsController = class ProjectsController {
     removeBudget(user, organizationId, projectId) {
         return this.projects.removeBudget(user, organizationId, projectId);
     }
+    publishToPortfolio(user, organizationId, projectId) {
+        return this.projects.publishToPortfolio(user, organizationId, projectId);
+    }
     listComments(user, organizationId, projectId, taskId) {
         return this.projects.listComments(user, organizationId, projectId, taskId);
     }
@@ -218,6 +221,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeBudget", null);
+__decorate([
+    (0, common_1.Post)(':projectId/publish-to-portfolio'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('organizationId')),
+    __param(2, (0, common_1.Param)('projectId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "publishToPortfolio", null);
 __decorate([
     (0, common_1.Get)(':projectId/tasks/:taskId/comments'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),

@@ -16,6 +16,7 @@ export declare class ProjectAssetsService {
                 key: string;
                 width: number;
                 height: number;
+                templateId: string;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
@@ -23,7 +24,6 @@ export declare class ProjectAssetsService {
                 x: number;
                 fontSize: number;
                 color: string | null;
-                templateId: string;
             }[];
         } & {
             id: string;
@@ -50,6 +50,7 @@ export declare class ProjectAssetsService {
                     key: string;
                     width: number;
                     height: number;
+                    templateId: string;
                     label: string;
                     fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                     required: boolean;
@@ -57,7 +58,6 @@ export declare class ProjectAssetsService {
                     x: number;
                     fontSize: number;
                     color: string | null;
-                    templateId: string;
                 };
             } & {
                 id: string;
@@ -88,9 +88,9 @@ export declare class ProjectAssetsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
         templateId: string;
         createdById: string;
+        unlinkedAt: Date | null;
     })[]>;
     attach(user: AuthUser, organizationId: string, projectId: string, dto: CreateProjectAssetDto): Promise<{
         template: {
@@ -101,6 +101,7 @@ export declare class ProjectAssetsService {
                 key: string;
                 width: number;
                 height: number;
+                templateId: string;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
@@ -108,7 +109,6 @@ export declare class ProjectAssetsService {
                 x: number;
                 fontSize: number;
                 color: string | null;
-                templateId: string;
             }[];
         } & {
             id: string;
@@ -135,6 +135,7 @@ export declare class ProjectAssetsService {
                     key: string;
                     width: number;
                     height: number;
+                    templateId: string;
                     label: string;
                     fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                     required: boolean;
@@ -142,7 +143,6 @@ export declare class ProjectAssetsService {
                     x: number;
                     fontSize: number;
                     color: string | null;
-                    templateId: string;
                 };
             } & {
                 id: string;
@@ -173,9 +173,9 @@ export declare class ProjectAssetsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
         templateId: string;
         createdById: string;
+        unlinkedAt: Date | null;
     }>;
     listRevisions(user: AuthUser, organizationId: string, projectId: string, assetId: string): Promise<({
         values: ({
@@ -186,6 +186,7 @@ export declare class ProjectAssetsService {
                 key: string;
                 width: number;
                 height: number;
+                templateId: string;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
@@ -193,7 +194,6 @@ export declare class ProjectAssetsService {
                 x: number;
                 fontSize: number;
                 color: string | null;
-                templateId: string;
             };
         } & {
             id: string;
@@ -227,6 +227,7 @@ export declare class ProjectAssetsService {
                 key: string;
                 width: number;
                 height: number;
+                templateId: string;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
@@ -234,7 +235,6 @@ export declare class ProjectAssetsService {
                 x: number;
                 fontSize: number;
                 color: string | null;
-                templateId: string;
             };
         } & {
             id: string;
@@ -268,6 +268,7 @@ export declare class ProjectAssetsService {
                 key: string;
                 width: number;
                 height: number;
+                templateId: string;
                 label: string;
                 fieldType: import("@prisma/client").$Enums.TemplateFieldType;
                 required: boolean;
@@ -275,7 +276,6 @@ export declare class ProjectAssetsService {
                 x: number;
                 fontSize: number;
                 color: string | null;
-                templateId: string;
             };
         } & {
             id: string;

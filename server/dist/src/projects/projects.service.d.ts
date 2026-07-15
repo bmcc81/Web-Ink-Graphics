@@ -26,6 +26,7 @@ export declare class ProjectsService {
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }[]>;
     findOne(user: AuthUser, organizationId: string, projectId: string): Promise<{
         id: string;
@@ -38,6 +39,7 @@ export declare class ProjectsService {
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     create(user: AuthUser, organizationId: string, dto: CreateProjectDto): Promise<{
         id: string;
@@ -50,6 +52,7 @@ export declare class ProjectsService {
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     update(user: AuthUser, organizationId: string, projectId: string, dto: UpdateProjectDto): Promise<{
         id: string;
@@ -62,6 +65,7 @@ export declare class ProjectsService {
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     remove(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
@@ -163,6 +167,21 @@ export declare class ProjectsService {
     removeBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
     }>;
+    publishToPortfolio(user: AuthUser, organizationId: string, projectId: string): Promise<{
+        portfolioProject: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            status: import("@prisma/client").$Enums.ProjectStatus;
+            clientName: string | null;
+            projectUrl: string | null;
+            featured: boolean;
+            displayOrder: number;
+            completedAt: Date | null;
+            publishedAt: Date | null;
+        };
+    }>;
     listComments(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<({
         author: {
             id: string;
@@ -195,6 +214,9 @@ export declare class ProjectsService {
     private assertCanView;
     private assertCanContribute;
     private assertCanManageOwnerLevel;
+    private assertIsStaff;
+    private slugify;
+    private uniquePortfolioSlug;
     private findProjectOrThrow;
     private assertMilestoneBelongsToProject;
     private assertGoalBelongsToOrganization;

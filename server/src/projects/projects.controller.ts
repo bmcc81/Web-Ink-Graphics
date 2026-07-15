@@ -179,6 +179,15 @@ export class ProjectsController {
     return this.projects.removeBudget(user, organizationId, projectId);
   }
 
+  @Post(':projectId/publish-to-portfolio')
+  publishToPortfolio(
+    @CurrentUser() user: AuthUser,
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.projects.publishToPortfolio(user, organizationId, projectId);
+  }
+
   @Get(':projectId/tasks/:taskId/comments')
   listComments(
     @CurrentUser() user: AuthUser,

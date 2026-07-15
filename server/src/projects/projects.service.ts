@@ -9,6 +9,7 @@ import type { AuthUser } from '../auth/auth-user';
 import { NotificationsService } from '../notifications/notifications.service';
 import {
   CONTRIBUTE_ROLES,
+  isStaff,
   MANAGE_ROLES,
   resolveOrganizationRole,
 } from '../organizations/organization-access';
@@ -52,6 +53,7 @@ export class ProjectsService {
         orderBy: { sortOrder: 'asc' as const },
         include: taskInclude,
       },
+      portfolioProject: { select: { id: true, slug: true, status: true } },
     });
   }
 
@@ -404,6 +406,72 @@ export class ProjectsService {
     return { removed: true };
   }
 
+  async publishToPortfolio(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+  ) {
+    this.assertIsStaff(user);
+    const project = await this.findProjectOrThrow(organizationId, projectId);
+    if (project.status !== 'COMPLETED') {
+      throw new BadRequestException(
+        'Only completed projects can be published to the portfolio',
+      );
+    }
+    if (project.portfolioProjectId) {
+      throw new BadRequestException(
+        'This project has already been published to the portfolio',
+      );
+    }
+
+    const [approvedAssetCount, approvedBriefCount] = await Promise.all([
+      this.prisma.assetRevision.count({
+        where: { status: 'APPROVED', projectAsset: { projectId } },
+      }),
+      this.prisma.creativeBrief.count({
+        where: { status: 'APPROVED', projectId },
+      }),
+    ]);
+    if (approvedAssetCount === 0 && approvedBriefCount === 0) {
+      throw new BadRequestException(
+        'The project needs at least one approved asset or creative brief before publishing to the portfolio',
+      );
+    }
+
+    const slug = await this.uniquePortfolioSlug(this.slugify(project.name));
+    const portfolioProject = await this.prisma.portfolioProject.create({
+      data: {
+        slug,
+        status: 'DRAFT',
+        completedAt: new Date(),
+        translations: {
+          create: [
+            {
+              locale: 'EN',
+              title: project.name,
+              summary:
+                project.description?.trim() ||
+                'A completed project delivered by WebInk Graphics.',
+            },
+          ],
+        },
+      },
+    });
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: { portfolioProjectId: portfolioProject.id },
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'PROJECT',
+      entityId: projectId,
+      action: 'UPDATED',
+      summary: `Project published to the portfolio as a draft ("${slug}")`,
+      actorId: user.id,
+    });
+    return { portfolioProject };
+  }
+
   async listComments(
     user: AuthUser,
     organizationId: string,
@@ -518,6 +586,38 @@ export class ProjectsService {
         'Only organization owners and managers can delete a project',
       );
     }
+  }
+
+  private assertIsStaff(user: AuthUser) {
+    if (!isStaff(user)) {
+      throw new ForbiddenException(
+        'Only WebInk staff can publish a project to the portfolio',
+      );
+    }
+  }
+
+  private slugify(value: string): string {
+    const slug = value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return slug || 'project';
+  }
+
+  private async uniquePortfolioSlug(base: string): Promise<string> {
+    let candidate = base;
+    let suffix = 2;
+    while (
+      await this.prisma.portfolioProject.findUnique({
+        where: { slug: candidate },
+        select: { id: true },
+      })
+    ) {
+      candidate = `${base}-${suffix}`;
+      suffix += 1;
+    }
+    return candidate;
   }
 
   private async findProjectOrThrow(

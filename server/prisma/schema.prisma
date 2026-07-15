@@ -389,6 +389,7 @@ model PortfolioProject {
   translations ProjectTranslation[]
   images       PortfolioImage[]
   categories   PortfolioCategory[]
+  sourceProject Project?
 
   @@index([status, displayOrder])
   @@index([featured, status])
@@ -469,6 +470,8 @@ model Project {
   assets          ProjectAsset[]
   creativeBriefs  CreativeBrief[]
   campaignMetrics CampaignMetricEntry[]
+  portfolioProjectId String?            @unique
+  portfolioProject   PortfolioProject?  @relation(fields: [portfolioProjectId], references: [id], onDelete: SetNull)
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 

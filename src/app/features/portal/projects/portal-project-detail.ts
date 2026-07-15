@@ -50,6 +50,7 @@ interface ProjectDetail {
   goal: { id: string; title: string; period: string; year: number } | null;
   milestones: Milestone[];
   tasks: Task[];
+  portfolioProject: { id: string; slug: string; status: string } | null;
 }
 
 interface Member {
@@ -282,6 +283,7 @@ export class PortalProjectDetail {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly actionError = signal('');
+  readonly publishingToPortfolio = signal(false);
 
   readonly projectStatuses = PROJECT_STATUSES;
   readonly milestoneStatuses = MILESTONE_STATUSES;
@@ -289,6 +291,10 @@ export class PortalProjectDetail {
 
   readonly canContribute = computed(() => this.hasRole(CONTRIBUTE_ROLES));
   readonly canManage = computed(() => this.hasRole(MANAGE_ROLES));
+  readonly isStaff = computed(() => {
+    const user = this.auth.user();
+    return user?.role === 'ADMIN' || user?.role === 'EDITOR';
+  });
 
   readonly unassignedTasks = computed(() =>
     (this.project()?.tasks ?? []).filter((task) => !task.milestoneId),
@@ -1255,6 +1261,37 @@ export class PortalProjectDetail {
             current ? { ...current, status: updated.status } : current,
           ),
         error: () => this.actionError.set('The status could not be updated.'),
+      });
+  }
+
+  publishToPortfolio() {
+    const project = this.project();
+    if (!project || this.publishingToPortfolio()) return;
+    if (
+      !confirm(
+        `Publish "${project.name}" to the WebInk portfolio as a draft? You'll still need to add photos and review it before it goes live.`,
+      )
+    ) {
+      return;
+    }
+    this.actionError.set('');
+    this.publishingToPortfolio.set(true);
+    this.http
+      .post<{ portfolioProject: { id: string; slug: string; status: string } }>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/publish-to-portfolio`,
+        {},
+      )
+      .pipe(finalize(() => this.publishingToPortfolio.set(false)))
+      .subscribe({
+        next: ({ portfolioProject }) =>
+          this.project.update((current) =>
+            current ? { ...current, portfolioProject } : current,
+          ),
+        error: (response) =>
+          this.actionError.set(
+            response.error?.message ??
+              'The project could not be published to the portfolio.',
+          ),
       });
   }
 

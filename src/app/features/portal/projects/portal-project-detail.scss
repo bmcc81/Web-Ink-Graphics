@@ -53,6 +53,7 @@ section + section { margin-top: 2.5rem; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   padding: 1.25rem 1.5rem;
   background: white;
   border: 1px solid var(--line);
@@ -81,6 +82,7 @@ section + section { margin-top: 2.5rem; }
   background: var(--paper);
   color: var(--muted);
 }
+.status-badge.portfolio-badge { background: #ede7ff; color: var(--violet); }
 
 select {
   padding: .4rem .6rem;
