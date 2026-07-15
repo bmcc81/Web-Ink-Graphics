@@ -261,7 +261,22 @@
                     <dt>Readiness notes</dt>
                     <dd>{{ draft.readinessNotes }}</dd>
                   </div>
+                  <div>
+                    <dt>Content ideas</dt>
+                    <dd class="preserve-lines">{{ draft.contentIdeas }}</dd>
+                  </div>
                 </dl>
+
+                @if (draft.channelRecommendations?.length) {
+                  <div class="plan-channel-recs">
+                    <strong>Recommended channels</strong>
+                    <ul class="channel-list">
+                      @for (rec of draft.channelRecommendations; track rec.id) {
+                        <li><span class="channel-name">{{ rec.channel }}</span> — {{ rec.rationale }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
 
                 <div class="plan-draft-projects">
                   @for (project of draft.projects; track project.id) {

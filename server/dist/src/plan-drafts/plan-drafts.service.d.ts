@@ -34,6 +34,13 @@ export declare class PlanDraftsService {
             id: string;
             name: string;
         };
+        channelRecommendations: {
+            id: string;
+            sortOrder: number;
+            rationale: string;
+            channel: string;
+            planDraftId: string;
+        }[];
         appliedBy: {
             id: string;
             name: string;
@@ -53,50 +60,72 @@ export declare class PlanDraftsService {
         goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
         goalYear: number;
         risks: string;
+        contentIdeas: string;
         appliedById: string | null;
         appliedAt: Date | null;
     })[]>;
     generate(user: AuthUser, briefId: string): Promise<{
-        projects: ({
-            milestones: {
+        planDraft: {
+            projects: ({
+                milestones: {
+                    id: string;
+                    name: string;
+                    sortOrder: number;
+                    tasks: string[];
+                    planDraftProjectId: string;
+                }[];
+            } & {
                 id: string;
                 name: string;
                 sortOrder: number;
-                tasks: string[];
-                planDraftProjectId: string;
+                description: string | null;
+                planDraftId: string;
+            })[];
+            createdBy: {
+                id: string;
+                name: string;
+            };
+            channelRecommendations: {
+                id: string;
+                sortOrder: number;
+                rationale: string;
+                channel: string;
+                planDraftId: string;
             }[];
+            appliedBy: {
+                id: string;
+                name: string;
+            } | null;
         } & {
             id: string;
-            name: string;
-            sortOrder: number;
-            description: string | null;
-            planDraftId: string;
-        })[];
-        createdBy: {
-            id: string;
-            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.PlanDraftStatus;
+            summary: string;
+            createdById: string;
+            readinessScore: number;
+            readinessNotes: string;
+            discoveryBriefId: string;
+            goalTitle: string;
+            goalDescription: string | null;
+            goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
+            goalYear: number;
+            risks: string;
+            contentIdeas: string;
+            appliedById: string | null;
+            appliedAt: Date | null;
         };
-        appliedBy: {
+        followUpQuestions: {
             id: string;
-            name: string;
-        } | null;
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        status: import("@prisma/client").$Enums.PlanDraftStatus;
-        summary: string;
-        createdById: string;
-        readinessScore: number;
-        readinessNotes: string;
-        discoveryBriefId: string;
-        goalTitle: string;
-        goalDescription: string | null;
-        goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
-        goalYear: number;
-        risks: string;
-        appliedById: string | null;
-        appliedAt: Date | null;
+            priority: import("@prisma/client").$Enums.FollowUpPriority;
+            status: import("@prisma/client").$Enums.QuestionStatus;
+            question: string;
+            answer: string | null;
+            owner: string | null;
+            dueDate: Date | null;
+            sortOrder: number;
+            briefId: string;
+        }[];
     }>;
     apply(user: AuthUser, briefId: string, planDraftId: string): Promise<{
         planDraft: {
@@ -119,6 +148,13 @@ export declare class PlanDraftsService {
                 id: string;
                 name: string;
             };
+            channelRecommendations: {
+                id: string;
+                sortOrder: number;
+                rationale: string;
+                channel: string;
+                planDraftId: string;
+            }[];
             appliedBy: {
                 id: string;
                 name: string;
@@ -138,11 +174,13 @@ export declare class PlanDraftsService {
             goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
             goalYear: number;
             risks: string;
+            contentIdeas: string;
             appliedById: string | null;
             appliedAt: Date | null;
         };
         goalId: string;
     }>;
+    private createFollowUpQuestionsFromRisks;
     private callClaude;
     private parseResponse;
     private normalizePeriod;

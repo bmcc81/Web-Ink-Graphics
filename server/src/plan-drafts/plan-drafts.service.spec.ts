@@ -30,6 +30,7 @@ function planContent(overrides: Record<string, unknown> = {}) {
     goalYear: 2026,
     summary: 'A starter plan to launch the new marketing site.',
     risks: 'Missing final brand assets\nNo analytics access yet',
+    contentIdeas: 'Behind-the-scenes launch teaser\nCustomer FAQ post',
     readinessScore: 70,
     readinessNotes: 'Missing budget confirmation.',
     projects: [
@@ -43,6 +44,10 @@ function planContent(overrides: Record<string, unknown> = {}) {
           },
         ],
       },
+    ],
+    channelRecommendations: [
+      { channel: 'Local SEO', rationale: 'Captures nearby search intent.' },
+      { channel: 'Email', rationale: 'Reaches existing customers directly.' },
     ],
     ...overrides,
   };
@@ -72,6 +77,10 @@ describe('PlanDraftsService', () => {
       create: jest.fn(),
       findFirst: jest.fn(),
       update: jest.fn(),
+    },
+    briefQuestion: {
+      count: jest.fn(),
+      create: jest.fn(),
     },
     organizationMembership: { findUnique: jest.fn() },
   };
@@ -117,6 +126,11 @@ describe('PlanDraftsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    prisma.briefQuestion.count.mockResolvedValue(0);
+    prisma.briefQuestion.create.mockImplementation(
+      ({ data }: { data: Record<string, unknown> }) =>
+        Promise.resolve({ id: 'question-generated', ...data }),
+    );
     service = new PlanDraftsService(
       prisma as never,
       config as never,
@@ -173,7 +187,7 @@ describe('PlanDraftsService', () => {
 
       const result = await service.generate(staffUser, briefId);
 
-      expect(result).toEqual({ id: planDraftId });
+      expect(result.planDraft).toEqual({ id: planDraftId });
       expect(aiUsage.record).toHaveBeenCalledWith(
         organizationId,
         staffUser,
@@ -184,11 +198,81 @@ describe('PlanDraftsService', () => {
       );
       const createCalls = prisma.planDraft.create.mock
         .calls as unknown as Array<
-        [{ data: { readinessScore: number; goalYear: number } }]
+        [
+          {
+            data: {
+              readinessScore: number;
+              goalYear: number;
+              contentIdeas: string;
+              channelRecommendations: {
+                create: Array<{ channel: string; rationale: string }>;
+              };
+            };
+          },
+        ]
       >;
       expect(createCalls[0][0].data.readinessScore).toBe(100);
       expect(createCalls[0][0].data.goalYear).toBe(2100);
+      expect(createCalls[0][0].data.contentIdeas).toBe(
+        'Behind-the-scenes launch teaser\nCustomer FAQ post',
+      );
+      expect(createCalls[0][0].data.channelRecommendations.create).toEqual([
+        {
+          channel: 'Local SEO',
+          rationale: 'Captures nearby search intent.',
+          sortOrder: 0,
+        },
+        {
+          channel: 'Email',
+          rationale: 'Reaches existing customers directly.',
+          sortOrder: 1,
+        },
+      ]);
       expect(activityLog.record).toHaveBeenCalled();
+    });
+
+    it('defaults to an empty channel recommendation list when Claude omits it', async () => {
+      prisma.discoveryBrief.findFirst.mockResolvedValue(briefRecord());
+      config.get.mockReturnValue('fake-api-key');
+      aiUsage.assertWithinCap.mockResolvedValue(undefined);
+      const withoutChannels = { ...planContent() };
+      delete withoutChannels.channelRecommendations;
+      mockCreate.mockResolvedValue(structuredResponse(withoutChannels));
+      prisma.planDraft.create.mockResolvedValue({ id: planDraftId });
+
+      await service.generate(staffUser, briefId);
+
+      const createCalls = prisma.planDraft.create.mock
+        .calls as unknown as Array<
+        [{ data: { channelRecommendations: { create: unknown[] } } }]
+      >;
+      expect(createCalls[0][0].data.channelRecommendations.create).toEqual([]);
+    });
+
+    it('creates deduped follow-up questions from the risks list', async () => {
+      prisma.discoveryBrief.findFirst.mockResolvedValue({
+        ...briefRecord(),
+        openQuestions: [{ question: 'No analytics access yet' }],
+      });
+      config.get.mockReturnValue('fake-api-key');
+      aiUsage.assertWithinCap.mockResolvedValue(undefined);
+      mockCreate.mockResolvedValue(structuredResponse(planContent()));
+      prisma.planDraft.create.mockResolvedValue({ id: planDraftId });
+      prisma.briefQuestion.count.mockResolvedValue(3);
+
+      const result = await service.generate(staffUser, briefId);
+
+      expect(prisma.briefQuestion.create).toHaveBeenCalledTimes(1);
+      expect(prisma.briefQuestion.create).toHaveBeenCalledWith({
+        data: {
+          briefId,
+          question: 'Missing final brand assets',
+          status: 'OPEN',
+          priority: 'HIGH',
+          sortOrder: 3,
+        },
+      });
+      expect(result.followUpQuestions).toHaveLength(1);
     });
 
     it('defaults an invalid goal period to ANNUAL', async () => {

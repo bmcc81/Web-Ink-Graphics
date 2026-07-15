@@ -30,6 +30,7 @@ const planDraftInclude = {
     orderBy: { sortOrder: 'asc' as const },
     include: { milestones: { orderBy: { sortOrder: 'asc' as const } } },
   },
+  channelRecommendations: { orderBy: { sortOrder: 'asc' as const } },
 };
 
 interface GeneratedPlanMilestone {
@@ -43,6 +44,11 @@ interface GeneratedPlanProject {
   milestones: GeneratedPlanMilestone[];
 }
 
+interface GeneratedChannelRecommendation {
+  channel: string;
+  rationale: string;
+}
+
 interface GeneratedPlanContent {
   goalTitle: string;
   goalDescription: string;
@@ -50,9 +56,11 @@ interface GeneratedPlanContent {
   goalYear: number;
   summary: string;
   risks: string;
+  contentIdeas: string;
   readinessScore: number;
   readinessNotes: string;
   projects: GeneratedPlanProject[];
+  channelRecommendations: GeneratedChannelRecommendation[];
 }
 
 @Injectable()
@@ -118,6 +126,7 @@ export class PlanDraftsService {
         goalYear: parsed.goalYear,
         summary: parsed.summary,
         risks: parsed.risks,
+        contentIdeas: parsed.contentIdeas,
         readinessScore: parsed.readinessScore,
         readinessNotes: parsed.readinessNotes,
         createdById: user.id,
@@ -135,6 +144,13 @@ export class PlanDraftsService {
             },
           })),
         },
+        channelRecommendations: {
+          create: parsed.channelRecommendations.map((rec, index) => ({
+            channel: rec.channel,
+            rationale: rec.rationale,
+            sortOrder: index,
+          })),
+        },
       },
       include: planDraftInclude,
     });
@@ -148,7 +164,13 @@ export class PlanDraftsService {
       actorId: user.id,
     });
 
-    return planDraft;
+    const followUpQuestions = await this.createFollowUpQuestionsFromRisks(
+      brief.id,
+      brief.openQuestions,
+      parsed.risks,
+    );
+
+    return { planDraft, followUpQuestions };
   }
 
   async apply(user: AuthUser, briefId: string, planDraftId: string) {
@@ -221,6 +243,40 @@ export class PlanDraftsService {
     return { planDraft: updated, goalId: goal.id };
   }
 
+  private async createFollowUpQuestionsFromRisks(
+    briefId: string,
+    existingOpenQuestions: { question: string }[],
+    risks: string,
+  ) {
+    const existingTexts = new Set(
+      existingOpenQuestions.map((q) => q.question.trim().toLowerCase()),
+    );
+    const riskLines = risks
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !existingTexts.has(line.toLowerCase()));
+    if (!riskLines.length) return [];
+
+    const baseSortOrder = await this.prisma.briefQuestion.count({
+      where: { briefId },
+    });
+    const created = [];
+    for (const [index, line] of riskLines.entries()) {
+      created.push(
+        await this.prisma.briefQuestion.create({
+          data: {
+            briefId,
+            question: line,
+            status: 'OPEN',
+            priority: 'HIGH',
+            sortOrder: baseSortOrder + index,
+          },
+        }),
+      );
+    }
+    return created;
+  }
+
   private async callClaude(apiKey: string, context: string) {
     const client = new Anthropic({ apiKey });
     return client.messages.create({
@@ -265,6 +321,11 @@ export class PlanDraftsService {
                 description:
                   'Key risks and missing information that could affect the plan, one per line',
               },
+              contentIdeas: {
+                type: 'string',
+                description:
+                  '2-4 concrete content ideas or topics that support this plan, one per line',
+              },
               readinessScore: {
                 type: 'integer',
                 description:
@@ -307,6 +368,27 @@ export class PlanDraftsService {
                   additionalProperties: false,
                 },
               },
+              channelRecommendations: {
+                type: 'array',
+                description:
+                  '1-4 recommended marketing channels for this plan, each with a short rationale',
+                items: {
+                  type: 'object',
+                  properties: {
+                    channel: {
+                      type: 'string',
+                      description:
+                        "The channel name, e.g. 'Local SEO', 'Email', 'Instagram'",
+                    },
+                    rationale: {
+                      type: 'string',
+                      description: 'Why this channel fits this plan',
+                    },
+                  },
+                  required: ['channel', 'rationale'],
+                  additionalProperties: false,
+                },
+              },
             },
             required: [
               'goalTitle',
@@ -315,9 +397,11 @@ export class PlanDraftsService {
               'goalYear',
               'summary',
               'risks',
+              'contentIdeas',
               'readinessScore',
               'readinessNotes',
               'projects',
+              'channelRecommendations',
             ],
             additionalProperties: false,
           },
@@ -337,6 +421,9 @@ export class PlanDraftsService {
     }
     const parsed = JSON.parse(textBlock.text) as GeneratedPlanContent;
     const projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+    const channelRecommendations = Array.isArray(parsed.channelRecommendations)
+      ? parsed.channelRecommendations
+      : [];
     return {
       ...parsed,
       goalPeriod: this.normalizePeriod(parsed.goalPeriod),
@@ -354,6 +441,10 @@ export class PlanDraftsService {
               tasks: Array.isArray(milestone.tasks) ? milestone.tasks : [],
             }))
           : [],
+      })),
+      channelRecommendations: channelRecommendations.map((rec) => ({
+        channel: rec.channel,
+        rationale: rec.rationale,
       })),
     };
   }

@@ -450,10 +450,17 @@ export class DiscoveryEditor {
     if (!this.editing) { this.planDraftError.set('Save the brief before generating a plan.'); return; }
     this.planDraftError.set('');
     this.generatingPlan.set(true);
-    this.http.post<any>(`/api/clients/briefs/${this.briefId}/plan-drafts`, {})
+    this.http.post<{ planDraft: any; followUpQuestions: any[] }>(
+      `/api/clients/briefs/${this.briefId}/plan-drafts`,
+      {},
+    )
       .pipe(finalize(() => this.generatingPlan.set(false)))
       .subscribe({
-        next: (draft) => this.planDrafts.update((items) => [draft, ...items]),
+        next: ({ planDraft, followUpQuestions }) => {
+          this.planDrafts.update((items) => [planDraft, ...items]);
+          followUpQuestions.forEach((question) => this.questions.push(this.questionGroup(question)));
+          if (followUpQuestions.length) this.formRevision.update((value) => value + 1);
+        },
         error: (response) =>
           this.planDraftError.set(
             response.error?.message ?? 'The plan draft could not be generated.',

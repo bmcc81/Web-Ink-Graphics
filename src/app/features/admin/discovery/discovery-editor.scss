@@ -29,6 +29,9 @@
 .plan-task-list{margin:.25rem 0 0;padding-left:1.2rem;color:var(--muted);font-size:.85rem}
 .applied-note{margin:0;color:#1c6b3d;font-size:.85rem;font-weight:600}
 .plan-draft-item>button{padding:.5rem 1rem;border:1px solid var(--line);border-radius:100px;background:white;font-weight:600;font-size:.85rem}
+.plan-channel-recs{margin-bottom:1rem}
+.channel-list{margin:.4rem 0 0;padding-left:1.1rem;color:var(--muted);font-size:.85rem}
+.channel-name{font-weight:600;color:var(--ink)}
 @media print{
   :host{background:white}.discovery>header,form>*:not(.print-brief){display:none!important}form{width:100%;padding:0}.print-brief{display:block!important;margin:0;padding:0;color:#181818}.print-brief>header{padding:0 0 1.2rem;border-bottom:3px solid #181818}.print-brief>header p{margin:0 0 .6rem;color:#555;font-size:9pt;text-transform:uppercase;letter-spacing:.12em}.print-brief>header h1{margin:0;font:800 26pt/1 var(--font-display)}.print-brief>header div{display:flex;justify-content:space-between;margin-top:.8rem}.print-brief>header span,.print-brief li span{font-size:8pt;text-transform:uppercase;letter-spacing:.08em}.print-brief section{break-inside:avoid;margin:0;padding:1rem 0;border:0;border-bottom:1px solid #ccc;border-radius:0}.print-brief h2{margin:0 0 .65rem;font-size:13pt}.print-brief dl{display:grid;gap:.6rem;margin:0}.print-brief dl div{display:grid;grid-template-columns:9rem 1fr;gap:1rem}.print-brief dt{font-weight:700}.print-brief dd{margin:0;white-space:pre-wrap}.print-brief ol,.print-brief ul{margin:.4rem 0;padding-left:1.25rem}.print-brief li{margin-bottom:.65rem}.print-brief li p{margin:.2rem 0;white-space:pre-wrap}.print-brief footer{padding-top:1rem}.draft-mark{padding:.7rem;border:2px solid #7a3429;color:#7a3429;font-weight:800;text-align:center;text-transform:uppercase}
 }

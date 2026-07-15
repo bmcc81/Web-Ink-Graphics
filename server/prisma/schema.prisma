@@ -840,21 +840,23 @@ enum PlanDraftStatus {
 }
 
 model PlanDraft {
-  id               String            @id @default(cuid())
-  discoveryBriefId String
-  discoveryBrief   DiscoveryBrief    @relation(fields: [discoveryBriefId], references: [id], onDelete: Restrict)
-  goalTitle        String
-  goalDescription  String?
-  goalPeriod       GoalPeriod
-  goalYear         Int
-  summary          String
-  risks            String
-  readinessScore   Int
-  readinessNotes   String
-  status           PlanDraftStatus   @default(DRAFT)
-  projects         PlanDraftProject[]
-  createdById      String
-  createdBy        User              @relation("PlanDraftCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  id                     String                           @id @default(cuid())
+  discoveryBriefId       String
+  discoveryBrief         DiscoveryBrief                   @relation(fields: [discoveryBriefId], references: [id], onDelete: Restrict)
+  goalTitle              String
+  goalDescription        String?
+  goalPeriod             GoalPeriod
+  goalYear               Int
+  summary                String
+  risks                  String
+  contentIdeas           String
+  readinessScore         Int
+  readinessNotes         String
+  status                 PlanDraftStatus                  @default(DRAFT)
+  projects               PlanDraftProject[]
+  channelRecommendations PlanDraftChannelRecommendation[]
+  createdById            String
+  createdBy              User                             @relation("PlanDraftCreator", fields: [createdById], references: [id], onDelete: Restrict)
   appliedById      String?
   appliedBy        User?             @relation("PlanDraftApplier", fields: [appliedById], references: [id], onDelete: SetNull)
   appliedAt        DateTime?
@@ -885,4 +887,15 @@ model PlanDraftMilestone {
   sortOrder          Int              @default(0)
 
   @@index([planDraftProjectId, sortOrder])
+}
+
+model PlanDraftChannelRecommendation {
+  id          String    @id @default(cuid())
+  planDraftId String
+  planDraft   PlanDraft @relation(fields: [planDraftId], references: [id], onDelete: Cascade)
+  channel     String
+  rationale   String
+  sortOrder   Int       @default(0)
+
+  @@index([planDraftId, sortOrder])
 }
