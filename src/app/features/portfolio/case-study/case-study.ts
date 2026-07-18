@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { DOCUMENT } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiUrlService } from '../../../core/api/api-url.service';
+import { SITE_ORIGIN } from '../../../core/seo/site-origin';
 import {
   localizedContent,
   PortfolioProject,
@@ -21,6 +22,7 @@ export class CaseStudy {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
@@ -69,21 +71,19 @@ export class CaseStudy {
     if (cover) {
       this.meta.updateTag({ property: 'og:image', content: cover.url });
     }
-    const pageUrl = this.document.location?.href;
-    if (pageUrl) {
-      this.meta.updateTag({ property: 'og:url', content: pageUrl });
-      let canonical = this.document.head.querySelector<HTMLLinkElement>(
-        'link[rel="canonical"]',
-      );
-      if (!canonical) {
-        canonical = this.document.createElement('link');
-        canonical.rel = 'canonical';
-        this.document.head.appendChild(canonical);
-      }
-      canonical.href = pageUrl;
-      this.setAlternate('en', pageUrl.replace(/\/fr(?=\/|$)/, ''));
-      this.setAlternate('fr', pageUrl.includes('/fr/') ? pageUrl : pageUrl.replace(/^(https?:\/\/[^/]+)/, '$1/fr'));
+    const pageUrl = `${SITE_ORIGIN}${this.router.url}`;
+    this.meta.updateTag({ property: 'og:url', content: pageUrl });
+    let canonical = this.document.head.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]',
+    );
+    if (!canonical) {
+      canonical = this.document.createElement('link');
+      canonical.rel = 'canonical';
+      this.document.head.appendChild(canonical);
     }
+    canonical.href = pageUrl;
+    this.setAlternate('en', pageUrl.replace(/\/fr(?=\/|$)/, ''));
+    this.setAlternate('fr', pageUrl.includes('/fr/') ? pageUrl : pageUrl.replace(/^(https?:\/\/[^/]+)/, '$1/fr'));
   }
 
   private setAlternate(language: 'en' | 'fr', href: string) {
