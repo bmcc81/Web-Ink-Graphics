@@ -35,6 +35,7 @@ const creative_briefs_module_1 = require("./creative-briefs/creative-briefs.modu
 const ai_usage_module_1 = require("./ai-usage/ai-usage.module");
 const plan_drafts_module_1 = require("./plan-drafts/plan-drafts.module");
 const campaign_metrics_module_1 = require("./campaign-metrics/campaign-metrics.module");
+const performance_recommendations_module_1 = require("./performance-recommendations/performance-recommendations.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -63,6 +64,7 @@ exports.AppModule = AppModule = __decorate([
             ai_usage_module_1.AiUsageModule,
             plan_drafts_module_1.PlanDraftsModule,
             campaign_metrics_module_1.CampaignMetricsModule,
+            performance_recommendations_module_1.PerformanceRecommendationsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

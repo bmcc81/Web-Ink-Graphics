@@ -26,6 +26,7 @@ import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module';
 import { AiUsageModule } from './ai-usage/ai-usage.module';
 import { PlanDraftsModule } from './plan-drafts/plan-drafts.module';
 import { CampaignMetricsModule } from './campaign-metrics/campaign-metrics.module';
+import { PerformanceRecommendationsModule } from './performance-recommendations/performance-recommendations.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CampaignMetricsModule } from './campaign-metrics/campaign-metrics.modul
     AiUsageModule,
     PlanDraftsModule,
     CampaignMetricsModule,
+    PerformanceRecommendationsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -150,7 +150,7 @@ and short-lived access where required.
 
 ## 5. Measurement and automation
 
-**Status:** First slice complete
+**Status:** Complete, except for external integrations blocked on real credentials
 
 - Campaign metrics and actual-versus-planned reporting — implemented; a
   contributor can log campaign metrics (impressions, clicks, website
@@ -179,5 +179,16 @@ and short-lived access where required.
 - Analytics, search, email, and advertising integrations — deferred; these
   require real external API credentials (Google Analytics, Search Console,
   ad platforms) not available in this environment
-- Performance-informed recommendations — deferred; depends on enough
-  logged metrics history to exist first
+- Performance-informed recommendations — implemented; a contributor,
+  manager, or owner can generate an AI-assisted performance review for a
+  project from whatever campaign metrics and budget data are already
+  logged. The recommendation includes a 0-100 confidence score and notes
+  that explicitly call out how sparse or limited the underlying data is,
+  a factual summary of what data was available, and 2-5 concrete,
+  prioritized (low/medium/high) suggestions. Generation requires at least
+  one logged metric or a set budget; it does not require a minimum amount
+  of history, since the model is instructed to reflect data sparsity in
+  its confidence score rather than refuse to run. Recommendations are
+  read-only insight — viewable by any organization member — and share the
+  same per-organization monthly call cap and cost-tracking service used by
+  creative briefs and plan drafts

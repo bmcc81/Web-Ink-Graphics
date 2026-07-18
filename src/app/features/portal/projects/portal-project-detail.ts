@@ -118,6 +118,26 @@ interface PerformanceSummary {
   metrics: MetricSummaryRow[];
 }
 
+type RecommendationPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
+interface PerformanceRecommendationItem {
+  id: string;
+  title: string;
+  rationale: string;
+  priority: RecommendationPriority;
+}
+
+interface PerformanceRecommendation {
+  id: string;
+  summary: string;
+  dataSummary: string;
+  confidenceScore: number;
+  confidenceNotes: string;
+  items: PerformanceRecommendationItem[];
+  createdBy: { id: string; name: string };
+  createdAt: string;
+}
+
 interface DesignVersion {
   id: string;
   thumbnailUrl: string | null;
@@ -327,6 +347,10 @@ export class PortalProjectDetail {
   readonly loggingMetric = signal(false);
   readonly metricTypes = METRIC_TYPES;
 
+  readonly performanceRecommendations = signal<PerformanceRecommendation[]>([]);
+  readonly recommendationsError = signal('');
+  readonly generatingRecommendations = signal(false);
+
   readonly metricForm = this.formBuilder.nonNullable.group({
     metricType: ['LEADS' as MetricType],
     periodStart: ['', Validators.required],
@@ -466,6 +490,7 @@ export class PortalProjectDetail {
           this.loadAiUsage();
           this.loadMetrics();
           this.loadMetricsSummary();
+          this.loadPerformanceRecommendations();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -639,6 +664,45 @@ export class PortalProjectDetail {
           this.loadMetricsSummary();
         },
         error: () => this.metricsError.set('The metric could not be removed.'),
+      });
+  }
+
+  private loadPerformanceRecommendations() {
+    this.http
+      .get<PerformanceRecommendation[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/performance-recommendations`,
+      )
+      .subscribe({
+        next: (recommendations) =>
+          this.performanceRecommendations.set(recommendations),
+        error: () =>
+          this.recommendationsError.set(
+            'Performance recommendations could not be loaded.',
+          ),
+      });
+  }
+
+  generatePerformanceRecommendations() {
+    if (this.generatingRecommendations()) return;
+    this.recommendationsError.set('');
+    this.generatingRecommendations.set(true);
+    this.http
+      .post<PerformanceRecommendation>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/performance-recommendations`,
+        {},
+      )
+      .pipe(finalize(() => this.generatingRecommendations.set(false)))
+      .subscribe({
+        next: (recommendation) =>
+          this.performanceRecommendations.update((list) => [
+            recommendation,
+            ...list,
+          ]),
+        error: (response) =>
+          this.recommendationsError.set(
+            response.error?.message ??
+              'The performance recommendations could not be generated.',
+          ),
       });
   }
 

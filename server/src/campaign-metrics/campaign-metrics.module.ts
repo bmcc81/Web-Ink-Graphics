@@ -7,5 +7,6 @@ import { CampaignMetricsService } from './campaign-metrics.service';
   imports: [ActivityLogModule],
   controllers: [CampaignMetricsController],
   providers: [CampaignMetricsService],
+  exports: [CampaignMetricsService],
 })
 export class CampaignMetricsModule {}

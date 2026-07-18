@@ -256,6 +256,59 @@
           }
         </ul>
       }
+
+      <div class="recommendations-block">
+        <div class="section-subhead">
+          <h3>AI performance recommendations</h3>
+          @if (canContribute()) {
+            <button
+              type="button"
+              (click)="generatePerformanceRecommendations()"
+              [disabled]="generatingRecommendations()"
+            >
+              {{ generatingRecommendations() ? 'Generating…' : 'Generate recommendations' }}
+            </button>
+          }
+        </div>
+        @if (recommendationsError()) {
+          <p class="error" role="alert">{{ recommendationsError() }}</p>
+        }
+        @if (performanceRecommendations().length) {
+          <ul class="recommendation-list">
+            @for (rec of performanceRecommendations(); track rec.id) {
+              <li class="recommendation-item">
+                <div class="recommendation-header">
+                  <span class="status-badge confidence-badge">Confidence: {{ rec.confidenceScore }}/100</span>
+                  <span class="recommendation-meta">
+                    by {{ rec.createdBy.name }} · {{ rec.createdAt | date: 'short' }}
+                  </span>
+                </div>
+                <p>{{ rec.summary }}</p>
+                <p class="data-summary">{{ rec.dataSummary }}</p>
+                <ul class="recommendation-item-list">
+                  @for (item of rec.items; track item.id) {
+                    <li>
+                      <span
+                        class="status-badge"
+                        [class.priority-high]="item.priority === 'HIGH'"
+                        [class.priority-medium]="item.priority === 'MEDIUM'"
+                        [class.priority-low]="item.priority === 'LOW'"
+                      >
+                        {{ item.priority }}
+                      </span>
+                      <strong>{{ item.title }}</strong>
+                      <span>{{ item.rationale }}</span>
+                    </li>
+                  }
+                </ul>
+                <p class="confidence-notes">{{ rec.confidenceNotes }}</p>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>No performance recommendations generated yet.</p>
+        }
+      </div>
     </section>
 
     <section class="designs" aria-label="Designs">

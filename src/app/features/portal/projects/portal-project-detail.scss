@@ -246,6 +246,22 @@ button.danger {
 .metric-meta { color: var(--muted); margin-left: auto; }
 .metric-list button { padding: .3rem .8rem; border: 1px solid var(--line); border-radius: 100px; background: white; font-weight: 600; font-size: .78rem; }
 
+.recommendations-block { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.section-subhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.section-subhead h3 { margin: 0; font: 700 1rem var(--font-display); }
+.section-subhead button { padding: .5rem 1rem; border: 1px solid var(--line); border-radius: 100px; background: white; font-weight: 600; font-size: .85rem; white-space: nowrap; }
+.recommendation-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+.recommendation-item { padding: 1rem; border: 1px solid var(--line); border-radius: .75rem; background: var(--paper); }
+.recommendation-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; }
+.status-badge.confidence-badge { background: #ede7ff; color: var(--violet); }
+.recommendation-meta { color: var(--muted); font-size: .78rem; margin-left: auto; }
+.data-summary, .confidence-notes { color: var(--muted); font-size: .82rem; }
+.recommendation-item-list { list-style: none; padding: 0; margin: .75rem 0; display: flex; flex-direction: column; gap: .5rem; }
+.recommendation-item-list li { display: flex; align-items: baseline; flex-wrap: wrap; gap: .5rem; padding: .5rem .65rem; background: white; border-radius: .5rem; font-size: .85rem; }
+.status-badge.priority-high { background: #fbeaea; color: #b3261e; }
+.status-badge.priority-medium { background: #fff4e0; color: #8a5a00; }
+.status-badge.priority-low { background: #e3f5e9; color: #1c6b3d; }
+
 .designs {
   padding: 1.5rem;
   background: white;

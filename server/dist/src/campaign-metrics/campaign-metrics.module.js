@@ -19,6 +19,7 @@ exports.CampaignMetricsModule = CampaignMetricsModule = __decorate([
         imports: [activity_log_module_1.ActivityLogModule],
         controllers: [campaign_metrics_controller_1.CampaignMetricsController],
         providers: [campaign_metrics_service_1.CampaignMetricsService],
+        exports: [campaign_metrics_service_1.CampaignMetricsService],
     })
 ], CampaignMetricsModule);
 //# sourceMappingURL=campaign-metrics.module.js.map
