@@ -1,4 +1,65 @@
-@use 'bootstrap/scss/bootstrap';
+// Only the app's grid, navbar/nav, and button classes are used anywhere in
+// this codebase (verified by cross-referencing every class used in src/app
+// against Bootstrap's compiled selectors) - forms, cards, tables, modals,
+// and Bootstrap's other ~20 components are never referenced. Importing the
+// full framework was shipping ~225KB of unused CSS to every page.
+//
+// Bootstrap's partials still assume the shared global scope that `@import`
+// provides (this is how bootstrap.scss itself pulls them together), so
+// `@use` on individual partials fails to compile - `@import` here matches
+// Bootstrap's own internal customization pattern.
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+
+// Bootstrap's own utilities.scss builds a $utilities map covering every
+// spacing/color/display/etc. utility across every breakpoint (hundreds of
+// classes). Only position, align-items, and margin-start (ms-*) utilities
+// are used anywhere in the app, so this replaces that file with just the
+// entries utilities/api needs to generate those - the same values used in
+// Bootstrap's own map, just without the rest.
+$utilities: (
+  "position": (
+    property: position,
+    values: static relative absolute fixed sticky,
+  ),
+  "align-items": (
+    responsive: true,
+    property: align-items,
+    values: (
+      start: flex-start,
+      end: flex-end,
+      center: center,
+      baseline: baseline,
+      stretch: stretch,
+    ),
+  ),
+  "margin-start": (
+    responsive: true,
+    property: margin-left,
+    class: ms,
+    values: map-merge($spacers, (auto: auto)),
+  ),
+);
+
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/navbar';
+@import 'bootstrap/scss/buttons';
+
+@import 'bootstrap/scss/utilities/api';
+
+// Only helper actually used; hand-written instead of pulling in the rest of
+// bootstrap/scss/helpers (clearfix, stretched-link, ratio, etc. - unused).
+.visually-hidden {
+  @include visually-hidden();
+}
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
@@ -8,7 +69,7 @@
   --white: #ffffff;
   --lime: #dfff4f;
   --violet: #7657ff;
-  --muted: #74777d;
+  --muted: #5f6268;
   --line: #d9d9d3;
   --font-display: 'Manrope', sans-serif;
   --font-body: 'DM Sans', sans-serif;

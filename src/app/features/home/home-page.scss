@@ -152,7 +152,7 @@ h1 {
 
   small { color: var(--muted); }
   strong { margin: .2rem 0; font: 700 2.2rem var(--font-display); letter-spacing: -.05em; }
-  span { color: #4f8c31; font-size: .72rem; font-weight: 600; }
+  span { color: #46792b; font-size: .72rem; font-weight: 600; }
 }
 
 .visual-sticker {
@@ -325,7 +325,7 @@ h1 {
     border-top: 1px solid var(--line);
 
     &:last-child { border-bottom: 1px solid var(--line); }
-    > span { color: var(--violet); font-size: .75rem; font-weight: 700; }
+    > span { color: #6a4bf0; font-size: .75rem; font-weight: 700; }
     h3 { margin: 0; font-size: 1.4rem; }
     p { margin: .4rem 0 0 !important; font-size: .9rem; }
   }
@@ -349,7 +349,7 @@ h1 {
   h2 em { color: var(--lime); font-family: Georgia, serif; font-weight: 400; }
 }
 
-.contact-heading > p:not(.eyebrow) { max-width: 30rem; color: #d3ccff; line-height: 1.7; }
+.contact-heading > p:not(.eyebrow) { max-width: 30rem; color: #ffffff; line-height: 1.7; }
 .contact-heading > a { display: inline-block; margin-top: 1rem; font-weight: 600; }
 
 @media (max-width: 991.98px) {
