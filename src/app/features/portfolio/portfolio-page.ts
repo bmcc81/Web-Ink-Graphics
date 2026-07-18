@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiUrlService } from '../../core/api/api-url.service';
+import { SeoService } from '../../core/seo/seo.service';
 import { localizedContent, PortfolioProject } from './portfolio.models';
 import { LanguageService } from '../../core/i18n/language.service';
 
@@ -14,6 +15,8 @@ import { LanguageService } from '../../core/i18n/language.service';
 export class PortfolioPage {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly seo = inject(SeoService);
   readonly i18n = inject(LanguageService);
   readonly activeCategory = signal('all');
   readonly projects = signal<PortfolioProject[]>([]);
@@ -38,6 +41,13 @@ export class PortfolioPage {
   });
 
   constructor() {
+    this.seo.set({
+      title: this.route.snapshot.title ?? 'Portfolio | WebInk Graphics',
+      description: this.i18n.french
+        ? 'Découvrez des projets de sites Web, SEO, infolettres et design graphique réalisés par WebInk Graphics pour des entreprises à Montréal.'
+        : 'See website, SEO, newsletter and graphic design projects WebInk Graphics has built for businesses in Montreal.',
+    });
+
     this.http.get<PortfolioProject[]>(this.apiUrl.url('portfolio')).subscribe({
       next: (projects) => {
         this.projects.set(projects);

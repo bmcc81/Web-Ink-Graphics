@@ -1,19 +1,5 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
-
-const staticMarketingPaths = [
-  '',
-  'services/web-design',
-  'services/seo',
-  'services/newsletters',
-  'services/graphic-design',
-  'portfolio',
-  'fr',
-  'fr/services/web-design',
-  'fr/services/seo',
-  'fr/services/newsletters',
-  'fr/services/graphic-design',
-  'fr/portfolio',
-];
+import { staticMarketingPaths } from './core/seo/public-marketing-paths';
 
 async function getPublishedPortfolioSlugs(): Promise<Record<string, string>[]> {
   const apiBase = process.env['API_INTERNAL_URL'] || 'http://localhost:3000';
