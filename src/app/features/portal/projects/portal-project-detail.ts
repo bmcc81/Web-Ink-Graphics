@@ -29,6 +29,8 @@ interface Milestone {
   dueDate: string | null;
 }
 
+type RecurrenceRule = 'WEEKLY' | 'MONTHLY';
+
 interface Task {
   id: string;
   title: string;
@@ -37,6 +39,7 @@ interface Task {
   dueDate: string | null;
   milestoneId: string | null;
   assignee: Assignee | null;
+  recurrenceRule: RecurrenceRule | null;
   _count: { comments: number };
 }
 
@@ -413,6 +416,7 @@ export class PortalProjectDetail {
     milestoneId: [''],
     assigneeId: [''],
     dueDate: [''],
+    recurrenceRule: [''],
   });
 
   constructor() {
@@ -1393,7 +1397,8 @@ export class PortalProjectDetail {
       return;
     }
     this.actionError.set('');
-    const { title, milestoneId, assigneeId, dueDate } = this.taskForm.getRawValue();
+    const { title, milestoneId, assigneeId, dueDate, recurrenceRule } =
+      this.taskForm.getRawValue();
     this.http
       .post<Task>(
         `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks`,
@@ -1402,6 +1407,7 @@ export class PortalProjectDetail {
           milestoneId: milestoneId || undefined,
           assigneeId: assigneeId || undefined,
           dueDate: dueDate || undefined,
+          recurrenceRule: recurrenceRule || undefined,
         },
       )
       .subscribe({
@@ -1414,6 +1420,7 @@ export class PortalProjectDetail {
             milestoneId: '',
             assigneeId: '',
             dueDate: '',
+            recurrenceRule: '',
           });
         },
         error: () => this.actionError.set('The task could not be created.'),
@@ -1431,19 +1438,22 @@ export class PortalProjectDetail {
   private updateTask(task: Task, data: Partial<{ status: TaskStatus; assigneeId: string | null }>) {
     this.actionError.set('');
     this.http
-      .patch<Task>(
+      .patch<Task & { recurrenceChild?: Task }>(
         `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks/${task.id}`,
         data,
       )
       .subscribe({
-        next: (updated) =>
+        next: ({ recurrenceChild, ...updated }) =>
           this.project.update((current) =>
             current
               ? {
                   ...current,
-                  tasks: current.tasks.map((candidate) =>
-                    candidate.id === updated.id ? updated : candidate,
-                  ),
+                  tasks: [
+                    ...current.tasks.map((candidate) =>
+                      candidate.id === updated.id ? updated : candidate,
+                    ),
+                    ...(recurrenceChild ? [recurrenceChild] : []),
+                  ],
                 }
               : current,
           ),

@@ -779,6 +779,16 @@ button.danger {
   gap: .75rem;
 }
 .task-title { font-weight: 600; margin-right: auto; }
+.recurrence-badge {
+  padding: .1rem .5rem;
+  border-radius: 100px;
+  background: #ede7ff;
+  color: var(--violet);
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
 .assignee { color: var(--muted); font-size: .85rem; }
 .comments-toggle {
   padding: .3rem .75rem;

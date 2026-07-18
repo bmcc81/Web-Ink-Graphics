@@ -204,6 +204,7 @@ let ProjectsService = class ProjectsService {
                 projectId,
                 milestoneId: dto.milestoneId ?? undefined,
                 assigneeId: dto.assigneeId ?? undefined,
+                recurrenceRule: dto.recurrenceRule ?? undefined,
             },
             include: taskInclude,
         });
@@ -239,6 +240,9 @@ let ProjectsService = class ProjectsService {
                 dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
                 milestoneId: dto.milestoneId === null ? null : (dto.milestoneId ?? undefined),
                 assigneeId: dto.assigneeId === null ? null : (dto.assigneeId ?? undefined),
+                recurrenceRule: dto.recurrenceRule === null
+                    ? null
+                    : (dto.recurrenceRule ?? undefined),
             },
             include: taskInclude,
         });
@@ -256,7 +260,52 @@ let ProjectsService = class ProjectsService {
         if (dto.assigneeId && dto.assigneeId !== existing.assigneeId) {
             await this.notifyAssignee(dto.assigneeId, user, project.name, updated.title);
         }
-        return updated;
+        let recurrenceChild;
+        if (statusChanged && updated.status === 'DONE' && updated.recurrenceRule) {
+            recurrenceChild = await this.generateNextOccurrence(organizationId, updated, user);
+        }
+        return recurrenceChild ? { ...updated, recurrenceChild } : updated;
+    }
+    async generateNextOccurrence(organizationId, task, user) {
+        const existingChild = await this.prisma.task.findFirst({
+            where: { recurrenceParentId: task.id },
+        });
+        if (existingChild)
+            return undefined;
+        const nextDueDate = new Date(task.dueDate ?? new Date());
+        if (task.recurrenceRule === 'MONTHLY') {
+            nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+        }
+        else {
+            nextDueDate.setDate(nextDueDate.getDate() + 7);
+        }
+        const sortOrder = await this.prisma.task.count({
+            where: { projectId: task.projectId },
+        });
+        const created = await this.prisma.task.create({
+            data: {
+                title: task.title,
+                description: task.description,
+                status: 'TODO',
+                dueDate: nextDueDate,
+                sortOrder,
+                projectId: task.projectId,
+                milestoneId: task.milestoneId ?? undefined,
+                assigneeId: task.assigneeId ?? undefined,
+                recurrenceRule: task.recurrenceRule,
+                recurrenceParentId: task.id,
+            },
+            include: taskInclude,
+        });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'TASK',
+            entityId: created.id,
+            action: 'CREATED',
+            summary: `Recurring task "${created.title}" created for ${nextDueDate.toDateString()}`,
+            actorId: user.id,
+        });
+        return created;
     }
     async removeTask(user, organizationId, projectId, taskId) {
         await this.assertCanContribute(user, organizationId);

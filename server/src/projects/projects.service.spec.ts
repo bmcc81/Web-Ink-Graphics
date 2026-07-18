@@ -622,6 +622,212 @@ describe('ProjectsService', () => {
     });
   });
 
+  describe('recurring tasks', () => {
+    beforeEach(() => {
+      prisma.task.findFirst.mockReset();
+      prisma.task.create.mockReset();
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({
+        id: 'project-1',
+        name: 'Launch',
+      });
+    });
+
+    it('does not create a next occurrence for a non-recurring task marked done', async () => {
+      prisma.task.findFirst
+        .mockResolvedValueOnce({
+          id: 'task-1',
+          status: 'TODO',
+          recurrenceRule: null,
+        })
+        .mockResolvedValueOnce(null);
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'One-off task',
+        status: 'DONE',
+        recurrenceRule: null,
+        dueDate: null,
+        projectId: 'project-1',
+        milestoneId: null,
+        assigneeId: null,
+      });
+
+      const result = await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { status: 'DONE' },
+      );
+
+      expect(prisma.task.create).not.toHaveBeenCalled();
+      expect(result).not.toHaveProperty('recurrenceChild');
+    });
+
+    it('does not create a next occurrence when status is unchanged', async () => {
+      prisma.task.findFirst.mockResolvedValueOnce({
+        id: 'task-1',
+        status: 'DONE',
+        recurrenceRule: 'WEEKLY',
+      });
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'Weekly newsletter',
+        status: 'DONE',
+        recurrenceRule: 'WEEKLY',
+        dueDate: null,
+        projectId: 'project-1',
+        milestoneId: null,
+        assigneeId: null,
+      });
+
+      await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { title: 'Weekly newsletter (edited)' },
+      );
+
+      expect(prisma.task.create).not.toHaveBeenCalled();
+    });
+
+    it('creates a next weekly occurrence one week after the due date', async () => {
+      prisma.task.findFirst
+        .mockResolvedValueOnce({
+          id: 'task-1',
+          status: 'TODO',
+          recurrenceRule: 'WEEKLY',
+        })
+        .mockResolvedValueOnce(null);
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'Weekly newsletter',
+        description: null,
+        status: 'DONE',
+        recurrenceRule: 'WEEKLY',
+        dueDate: new Date('2026-01-01T00:00:00.000Z'),
+        projectId: 'project-1',
+        milestoneId: 'milestone-1',
+        assigneeId: 'user-viewer',
+      });
+      prisma.task.count.mockResolvedValue(3);
+      prisma.task.create.mockResolvedValue({
+        id: 'task-2',
+        title: 'Weekly newsletter',
+      });
+
+      const result = await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { status: 'DONE' },
+      );
+
+      const createCalls = prisma.task.create.mock.calls as unknown as Array<
+        [
+          {
+            data: {
+              title: string;
+              status: string;
+              dueDate: Date;
+              sortOrder: number;
+              milestoneId: string;
+              assigneeId: string;
+              recurrenceRule: string;
+              recurrenceParentId: string;
+            };
+          },
+        ]
+      >;
+      expect(createCalls[0][0].data.title).toBe('Weekly newsletter');
+      expect(createCalls[0][0].data.status).toBe('TODO');
+      expect(createCalls[0][0].data.dueDate.toISOString()).toBe(
+        '2026-01-08T00:00:00.000Z',
+      );
+      expect(createCalls[0][0].data.milestoneId).toBe('milestone-1');
+      expect(createCalls[0][0].data.assigneeId).toBe('user-viewer');
+      expect(createCalls[0][0].data.recurrenceRule).toBe('WEEKLY');
+      expect(createCalls[0][0].data.recurrenceParentId).toBe('task-1');
+      expect(result).toHaveProperty('recurrenceChild');
+      expect(activityLog.record).toHaveBeenCalled();
+    });
+
+    it('creates a next monthly occurrence one month after the due date', async () => {
+      prisma.task.findFirst
+        .mockResolvedValueOnce({
+          id: 'task-1',
+          status: 'TODO',
+          recurrenceRule: 'MONTHLY',
+        })
+        .mockResolvedValueOnce(null);
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'Monthly report',
+        description: null,
+        status: 'DONE',
+        recurrenceRule: 'MONTHLY',
+        dueDate: new Date('2026-01-15T00:00:00.000Z'),
+        projectId: 'project-1',
+        milestoneId: null,
+        assigneeId: null,
+      });
+      prisma.task.count.mockResolvedValue(1);
+      prisma.task.create.mockResolvedValue({
+        id: 'task-2',
+        title: 'Monthly report',
+      });
+
+      await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { status: 'DONE' },
+      );
+
+      const createCalls = prisma.task.create.mock.calls as unknown as Array<
+        [{ data: { dueDate: Date } }]
+      >;
+      expect(createCalls[0][0].data.dueDate.toISOString()).toBe(
+        '2026-02-15T00:00:00.000Z',
+      );
+    });
+
+    it('does not create a duplicate next occurrence if one already exists', async () => {
+      prisma.task.findFirst
+        .mockResolvedValueOnce({
+          id: 'task-1',
+          status: 'TODO',
+          recurrenceRule: 'WEEKLY',
+        })
+        .mockResolvedValueOnce({ id: 'task-2', recurrenceParentId: 'task-1' });
+      prisma.task.update.mockResolvedValue({
+        id: 'task-1',
+        title: 'Weekly newsletter',
+        description: null,
+        status: 'DONE',
+        recurrenceRule: 'WEEKLY',
+        dueDate: new Date('2026-01-01T00:00:00.000Z'),
+        projectId: 'project-1',
+        milestoneId: null,
+        assigneeId: null,
+      });
+
+      const result = await service.updateTask(
+        contributor,
+        organizationId,
+        'project-1',
+        'task-1',
+        { status: 'DONE' },
+      );
+
+      expect(prisma.task.create).not.toHaveBeenCalled();
+      expect(result).not.toHaveProperty('recurrenceChild');
+    });
+  });
+
   describe('task comments', () => {
     it('lets any member view comments', async () => {
       actorMembership(OrganizationRole.VIEWER);

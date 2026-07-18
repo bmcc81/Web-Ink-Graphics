@@ -19,6 +19,7 @@ class CreateTaskDto {
     milestoneId;
     assigneeId;
     dueDate;
+    recurrenceRule;
 }
 exports.CreateTaskDto = CreateTaskDto;
 __decorate([
@@ -52,4 +53,9 @@ __decorate([
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], CreateTaskDto.prototype, "dueDate", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(client_1.RecurrenceRule),
+    __metadata("design:type", Object)
+], CreateTaskDto.prototype, "recurrenceRule", void 0);
 //# sourceMappingURL=create-task.dto.js.map

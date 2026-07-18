@@ -843,6 +843,9 @@
                   <li>
                     <div class="task-row">
                       <span class="task-title">{{ task.title }}</span>
+                      @if (task.recurrenceRule) {
+                        <span class="recurrence-badge">{{ task.recurrenceRule === 'WEEKLY' ? 'Weekly' : 'Monthly' }}</span>
+                      }
                       @if (task.dueDate) {
                         <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
                       }
@@ -902,6 +905,9 @@
             <li>
               <div class="task-row">
                 <span class="task-title">{{ task.title }}</span>
+                @if (task.recurrenceRule) {
+                  <span class="recurrence-badge">{{ task.recurrenceRule === 'WEEKLY' ? 'Weekly' : 'Monthly' }}</span>
+                }
                 @if (task.dueDate) {
                   <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
                 }
@@ -988,6 +994,14 @@
           <label>
             Due date
             <input formControlName="dueDate" type="date" />
+          </label>
+          <label>
+            Repeats
+            <select formControlName="recurrenceRule">
+              <option value="">Does not repeat</option>
+              <option value="WEEKLY">Weekly</option>
+              <option value="MONTHLY">Monthly</option>
+            </select>
           </label>
           <button class="btn btn-primary" type="submit">Add task</button>
         </form>

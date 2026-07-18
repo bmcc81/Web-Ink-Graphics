@@ -168,9 +168,16 @@ and short-lived access where required.
   private draft — staff still add photos and explicitly flip it to
   published in the existing portfolio editor, so nothing goes live
   automatically
+- Recurring marketing activities — implemented; a task (e.g. "Post to
+  Instagram", "Send newsletter") can be marked to repeat weekly or monthly.
+  When a recurring task is marked done, the next occurrence is created
+  automatically with a due date one week or one month after the completed
+  task's due date, carrying over the same title, milestone, and assignee.
+  Each task tracks its previous occurrence so a recurring series can't
+  accidentally generate duplicate next-occurrences. Recurring milestones
+  are not covered by this slice
 - Analytics, search, email, and advertising integrations — deferred; these
   require real external API credentials (Google Analytics, Search Console,
   ad platforms) not available in this environment
-- Recurring marketing activities — deferred to a later slice
 - Performance-informed recommendations — deferred; depends on enough
   logged metrics history to exist first

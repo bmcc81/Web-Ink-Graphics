@@ -1,4 +1,4 @@
-import { TaskStatus } from '@prisma/client';
+import { RecurrenceRule, TaskStatus } from '@prisma/client';
 import {
   IsDateString,
   IsEnum,
@@ -33,4 +33,8 @@ export class CreateTaskDto {
   @IsOptional()
   @IsDateString()
   dueDate?: string;
+
+  @IsOptional()
+  @IsEnum(RecurrenceRule)
+  recurrenceRule?: RecurrenceRule | null;
 }

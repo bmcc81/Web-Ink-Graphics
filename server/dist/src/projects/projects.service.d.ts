@@ -115,8 +115,10 @@ export declare class ProjectsService {
         description: string | null;
         milestoneId: string | null;
         assigneeId: string | null;
+        recurrenceRule: import("@prisma/client").$Enums.RecurrenceRule | null;
+        recurrenceParentId: string | null;
     }>;
-    updateTask(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: UpdateTaskDto): Promise<{
+    updateTask(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: UpdateTaskDto): Promise<({
         _count: {
             comments: number;
         };
@@ -136,7 +138,54 @@ export declare class ProjectsService {
         description: string | null;
         milestoneId: string | null;
         assigneeId: string | null;
+        recurrenceRule: import("@prisma/client").$Enums.RecurrenceRule | null;
+        recurrenceParentId: string | null;
+    }) | {
+        recurrenceChild: {
+            _count: {
+                comments: number;
+            };
+            assignee: {
+                id: string;
+                name: string;
+            } | null;
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.TaskStatus;
+            dueDate: Date | null;
+            sortOrder: number;
+            title: string;
+            projectId: string;
+            description: string | null;
+            milestoneId: string | null;
+            assigneeId: string | null;
+            recurrenceRule: import("@prisma/client").$Enums.RecurrenceRule | null;
+            recurrenceParentId: string | null;
+        };
+        _count: {
+            comments: number;
+        };
+        assignee: {
+            id: string;
+            name: string;
+        } | null;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.TaskStatus;
+        dueDate: Date | null;
+        sortOrder: number;
+        title: string;
+        projectId: string;
+        description: string | null;
+        milestoneId: string | null;
+        assigneeId: string | null;
+        recurrenceRule: import("@prisma/client").$Enums.RecurrenceRule | null;
+        recurrenceParentId: string | null;
     }>;
+    private generateNextOccurrence;
     removeTask(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<{
         removed: boolean;
     }>;
