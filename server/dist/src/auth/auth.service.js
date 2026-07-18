@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcryptjs_1 = require("bcryptjs");
 const prisma_service_1 = require("../prisma/prisma.service");
+const DUMMY_PASSWORD_HASH = (0, bcryptjs_1.hashSync)('not-a-real-password', 12);
 let AuthService = class AuthService {
     prisma;
     jwt;
@@ -32,7 +33,8 @@ let AuthService = class AuthService {
                 },
             },
         });
-        if (!user || !(await (0, bcryptjs_1.compare)(credentials.password, user.passwordHash))) {
+        const passwordMatches = await (0, bcryptjs_1.compare)(credentials.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+        if (!user || !passwordMatches) {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
         const payload = {

@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import type { AuthUser } from './auth-user';
 import { CurrentUser } from './current-user.decorator';
@@ -19,6 +20,8 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   login(@Body() credentials: LoginDto) {
     return this.auth.login(credentials);
   }

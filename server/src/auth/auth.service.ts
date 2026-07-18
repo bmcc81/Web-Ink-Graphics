@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
-import { compare } from 'bcryptjs';
+import { compare, hashSync } from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -12,6 +12,12 @@ type UserWithOrganizations = Prisma.UserGetPayload<{
     };
   };
 }>;
+
+// Compared against when no account matches the submitted email, so a login
+// attempt for an unknown address takes the same bcrypt-compare time as one
+// for a known address with the wrong password - otherwise response timing
+// would let an attacker enumerate which emails have an account.
+const DUMMY_PASSWORD_HASH = hashSync('not-a-real-password', 12);
 
 @Injectable()
 export class AuthService {
@@ -32,7 +38,11 @@ export class AuthService {
       },
     });
 
-    if (!user || !(await compare(credentials.password, user.passwordHash))) {
+    const passwordMatches = await compare(
+      credentials.password,
+      user?.passwordHash ?? DUMMY_PASSWORD_HASH,
+    );
+    if (!user || !passwordMatches) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
