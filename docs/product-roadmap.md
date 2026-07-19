@@ -192,3 +192,115 @@ and short-lived access where required.
   read-only insight — viewable by any organization member — and share the
   same per-organization monthly call cap and cost-tracking service used by
   creative briefs and plan drafts
+
+## 6. Client commercial operations
+
+**Status:** Not started
+
+- Client-facing progress reports — a shareable, read-only summary of a
+  project or a full quarter (goals and their status, budget planned vs.
+  actual, campaign metrics, completed milestones), presented for an
+  audience outside the day-to-day workspace — the client's own
+  stakeholders, not just the org member logged into the portal. Two
+  delivery shapes worth deciding between during implementation: a
+  generated PDF, or a public read-only link scoped to one report snapshot
+  (no login required, similar in spirit to the existing public portfolio
+  pages)
+- Invoicing — turn a project's existing `Budget` (planned/approved/
+  committed/actual) into a real invoice: line items, currency, due date,
+  and payment status (draft, sent, paid, overdue). Use Stripe Invoicing or
+  Stripe Payment Links for actual collection so card data never needs to
+  be stored directly
+- Payment status alongside budget — the existing budget view gains a
+  running "amount invoiced" / "amount paid" figure, so a project's
+  commercial state doesn't require a separate tool
+- Automatic reminders for overdue invoices — reuses the existing
+  `NotificationsService`/email pattern already used for task assignments
+  and comments
+
+### Suggested backend concepts
+
+```text
+Invoice
+InvoiceLineItem
+Payment
+ReportSnapshot
+```
+
+### Acceptance criteria
+
+- An invoice always belongs to exactly one organization and one project's
+  budget; totals are computed from line items, never hand-edited
+  independently of them.
+- A client-facing report/invoice link that requires no login must not leak
+  anything beyond what that specific snapshot explicitly includes — no
+  path from a snapshot ID to browsing the rest of the organization's
+  workspace.
+- Payment status changes (e.g. a Stripe webhook marking an invoice paid)
+  are recorded in the same immutable activity history used everywhere
+  else in the app.
+
+## 7. Workspace experience and branding
+
+**Status:** Not started
+
+- Portal localization (EN/FR) — the customer-facing portal (dashboard,
+  projects, goals, brand kit, members, activity) gains the same bilingual
+  support the public marketing site already has; a member picks a
+  language once and every portal page respects it, not a page-by-page
+  text swap
+- Portal white-labeling — the portal shell (header, accent color) reflects
+  each organization's own `BrandKit` (logo, primary/secondary/accent
+  colors) — already used for template exports — instead of every
+  organization seeing WebInk's own branding while working in their own
+  workspace
+- Per-organization custom domain — noted as a stretch goal, not a
+  commitment: an organization's portal reachable at their own subdomain
+  rather than a shared webinkgraphics.com portal path
+
+### Acceptance criteria
+
+- Switching language or applying a brand kit must never change what data
+  is visible to a user — these are presentation-layer changes only,
+  layered on top of the per-organization authorization that already
+  exists.
+- A missing or incomplete `BrandKit` (an org that never set one up) falls
+  back to WebInk's own default branding, not a broken or unstyled page.
+
+## 8. Agency operations and integrations
+
+**Status:** Not started
+
+- Staff workload and capacity view — an internal (WebInk staff only) view
+  across every organization's open tasks, milestones, and assigned
+  reviewers, so a manager can see who's overloaded before assigning new
+  work. Built entirely from data that already exists (tasks, assignees,
+  milestone due dates); no new customer-facing surface
+- Public API and webhooks — a scoped API token an organization can
+  generate for their own external tools (a BI dashboard, a Zapier/Make
+  automation) to read their own goals/projects/metrics, plus outbound
+  webhooks for key events (task completed, budget updated, creative brief
+  approved). Reuses the same organization-role authorization already
+  enforced on every internal endpoint — an API token is just another way
+  to authenticate as a specific role, not a new trust boundary
+- Analytics, search, email, and advertising platform integrations —
+  carried forward from Phase 5; still blocked on real external API
+  credentials not available in this environment
+
+### Suggested backend concepts
+
+```text
+ApiToken (scoped to one organization + role, revocable)
+WebhookSubscription
+WebhookDelivery (with retry/backoff and a delivery log)
+```
+
+### Acceptance criteria
+
+- An API token can only ever see or do what that same role could already
+  do through the normal authenticated UI — no separate, wider-reaching
+  authorization path.
+- A revoked token stops working immediately; nothing caches an old
+  token's validity.
+- Webhook payloads never include anything a member of that role couldn't
+  already see through the API.
