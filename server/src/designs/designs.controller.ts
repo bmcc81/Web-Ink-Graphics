@@ -8,14 +8,14 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateDesignCommentDto } from './dto/create-design-comment.dto';
-import { CreateDesignDocumentDto } from './dto/create-design-document.dto';
-import { CreateDesignReviewDto } from './dto/create-design-review.dto';
-import { DecideDesignReviewDto } from './dto/decide-design-review.dto';
-import { DesignsService } from './designs.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateDesignCommentDto } from './dto/create-design-comment.dto.js';
+import { CreateDesignDocumentDto } from './dto/create-design-document.dto.js';
+import { CreateDesignReviewDto } from './dto/create-design-review.dto.js';
+import { DecideDesignReviewDto } from './dto/decide-design-review.dto.js';
+import { DesignsService } from './designs.service.js';
 
 @Controller('organizations/:organizationId/projects/:projectId/designs')
 @UseGuards(JwtAuthGuard)

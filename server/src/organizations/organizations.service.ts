@@ -7,16 +7,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OrganizationRole, Role } from '@prisma/client';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
 import { compare, hash } from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { AcceptInvitationDto } from './dto/accept-invitation.dto';
-import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
-import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto.js';
+import { CreateInvitationDto } from './dto/create-invitation.dto.js';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto.js';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto.js';
 
 @Injectable()
 export class OrganizationsService {

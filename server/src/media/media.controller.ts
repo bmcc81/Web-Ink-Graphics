@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { MediaService } from './media.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { CreateUploadDto } from './dto/create-upload.dto.js';
+import { MediaService } from './media.service.js';
 
 @Controller('media')
 @UseGuards(JwtAuthGuard)

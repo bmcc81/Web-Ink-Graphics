@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { GoalsController } from './goals.controller';
-import { GoalsService } from './goals.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { GoalsController } from './goals.controller.js';
+import { GoalsService } from './goals.service.js';
 
 @Module({
   imports: [ActivityLogModule],

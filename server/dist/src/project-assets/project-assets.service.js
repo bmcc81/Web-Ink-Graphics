@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,12 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectAssetsService = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CONTRIBUTE_ROLES, MANAGE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
 const revisionInclude = {
     values: { include: { templateField: true } },
@@ -53,7 +50,7 @@ let ProjectAssetsService = class ProjectAssetsService {
             include: { fields: true },
         });
         if (!template)
-            throw new common_1.NotFoundException('Template not found');
+            throw new NotFoundException('Template not found');
         const brandKit = await this.prisma.brandKit.findUnique({
             where: { organizationId },
         });
@@ -173,9 +170,9 @@ let ProjectAssetsService = class ProjectAssetsService {
             include: { values: true },
         });
         if (!latest)
-            throw new common_1.NotFoundException('No revision to approve');
+            throw new NotFoundException('No revision to approve');
         if (latest.status === 'APPROVED') {
-            throw new common_1.BadRequestException('This revision has already been approved');
+            throw new BadRequestException('This revision has already been approved');
         }
         const template = await this.prisma.designTemplate.findUniqueOrThrow({
             where: { id: asset.templateId },
@@ -184,7 +181,7 @@ let ProjectAssetsService = class ProjectAssetsService {
         const valueByFieldId = new Map(latest.values.map((value) => [value.templateFieldId, value.value]));
         const missingRequired = template.fields.filter((field) => field.required && !valueByFieldId.get(field.id)?.trim());
         if (missingRequired.length) {
-            throw new common_1.BadRequestException(`Missing required fields: ${missingRequired.map((field) => field.label).join(', ')}`);
+            throw new BadRequestException(`Missing required fields: ${missingRequired.map((field) => field.label).join(', ')}`);
         }
         const revision = await this.prisma.assetRevision.update({
             where: { id: latest.id },
@@ -229,19 +226,19 @@ let ProjectAssetsService = class ProjectAssetsService {
         return inputs.map((input) => {
             const field = fieldByKey.get(input.key);
             if (!field) {
-                throw new common_1.BadRequestException(`Unknown field "${input.key}" for this template`);
+                throw new BadRequestException(`Unknown field "${input.key}" for this template`);
             }
             if (seen.has(field.id)) {
-                throw new common_1.BadRequestException(`Duplicate value for field "${input.key}"`);
+                throw new BadRequestException(`Duplicate value for field "${input.key}"`);
             }
             seen.add(field.id);
             const value = input.value.trim();
             if (field.maxLength && value.length > field.maxLength) {
-                throw new common_1.BadRequestException(`"${field.label}" must be at most ${field.maxLength} characters`);
+                throw new BadRequestException(`"${field.label}" must be at most ${field.maxLength} characters`);
             }
             if (field.fieldType === 'COLOR' && value) {
                 if (!HEX_COLOR.test(value)) {
-                    throw new common_1.BadRequestException(`"${field.label}" must be a hex color`);
+                    throw new BadRequestException(`"${field.label}" must be a hex color`);
                 }
                 const brandColors = brandKit
                     ? [
@@ -252,7 +249,7 @@ let ProjectAssetsService = class ProjectAssetsService {
                     : [];
                 if (brandColors.length &&
                     !brandColors.some((color) => color.toLowerCase() === value.toLowerCase())) {
-                    throw new common_1.BadRequestException(`"${field.label}" must match one of the organization's brand kit colors`);
+                    throw new BadRequestException(`"${field.label}" must match one of the organization's brand kit colors`);
                 }
             }
             if (field.fieldType === 'CTA_URL' && value) {
@@ -260,32 +257,32 @@ let ProjectAssetsService = class ProjectAssetsService {
                     new URL(value);
                 }
                 catch {
-                    throw new common_1.BadRequestException(`"${field.label}" must be a valid URL`);
+                    throw new BadRequestException(`"${field.label}" must be a valid URL`);
                 }
             }
             return { templateFieldId: field.id, value };
         });
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can manage project assets');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can manage project assets');
         }
         return role;
     }
     async assertCanManage(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.MANAGE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only organization owners and managers can approve assets');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !MANAGE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only organization owners and managers can approve assets');
         }
         return role;
     }
@@ -295,7 +292,7 @@ let ProjectAssetsService = class ProjectAssetsService {
             select: { id: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
     async findAssetOrThrow(projectId, assetId) {
@@ -303,14 +300,14 @@ let ProjectAssetsService = class ProjectAssetsService {
             where: { id: assetId, projectId, unlinkedAt: null },
         });
         if (!asset)
-            throw new common_1.NotFoundException('Asset not found');
+            throw new NotFoundException('Asset not found');
         return asset;
     }
 };
-exports.ProjectAssetsService = ProjectAssetsService;
-exports.ProjectAssetsService = ProjectAssetsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService])
+ProjectAssetsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ActivityLogService])
 ], ProjectAssetsService);
+export { ProjectAssetsService };
 //# sourceMappingURL=project-assets.service.js.map

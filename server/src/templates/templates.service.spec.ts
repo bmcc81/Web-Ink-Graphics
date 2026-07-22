@@ -1,7 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Role, TemplateCategory, TemplateFieldType } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { TemplatesService } from './templates.service';
+import {
+  Role,
+  TemplateCategory,
+  TemplateFieldType,
+} from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { TemplatesService } from './templates.service.js';
 
 describe('TemplatesService', () => {
   const staff: AuthUser = {

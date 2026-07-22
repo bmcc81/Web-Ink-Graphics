@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { AiUsageService } from '../ai-usage/ai-usage.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 export declare class CreativeBriefsService {
     private readonly prisma;
     private readonly config;
@@ -23,17 +23,17 @@ export declare class CreativeBriefsService {
             id: string;
             sortOrder: number;
             label: string;
+            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
-            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.CreativeBriefStatus;
-        approvedAt: Date | null;
         summary: string;
+        status: import("../generated/prisma/enums.js").CreativeBriefStatus;
+        approvedAt: Date | null;
         projectId: string;
         createdById: string;
         approvedById: string | null;
@@ -56,17 +56,17 @@ export declare class CreativeBriefsService {
             id: string;
             sortOrder: number;
             label: string;
+            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
-            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.CreativeBriefStatus;
-        approvedAt: Date | null;
         summary: string;
+        status: import("../generated/prisma/enums.js").CreativeBriefStatus;
+        approvedAt: Date | null;
         projectId: string;
         createdById: string;
         approvedById: string | null;
@@ -89,17 +89,17 @@ export declare class CreativeBriefsService {
             id: string;
             sortOrder: number;
             label: string;
+            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
-            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.CreativeBriefStatus;
-        approvedAt: Date | null;
         summary: string;
+        status: import("../generated/prisma/enums.js").CreativeBriefStatus;
+        approvedAt: Date | null;
         projectId: string;
         createdById: string;
         approvedById: string | null;

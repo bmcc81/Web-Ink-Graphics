@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport } from 'nodemailer';
-import { CreateContactDto } from './dto/create-contact.dto';
+import { CreateContactDto } from './dto/create-contact.dto.js';
 
 @Injectable()
 export class ContactMailerService {

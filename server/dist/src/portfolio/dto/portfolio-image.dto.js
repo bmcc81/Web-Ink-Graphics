@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,10 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PortfolioImageDto = void 0;
-const class_validator_1 = require("class-validator");
-class PortfolioImageDto {
+import { IsBoolean, IsInt, IsOptional, IsString, IsUrl, Min, } from 'class-validator';
+export class PortfolioImageDto {
     url;
     altTextEn;
     altTextFr;
@@ -20,41 +17,40 @@ class PortfolioImageDto {
     sortOrder;
     isCover;
 }
-exports.PortfolioImageDto = PortfolioImageDto;
 __decorate([
-    (0, class_validator_1.IsUrl)({ require_tld: false }),
+    IsUrl({ require_tld: false }),
     __metadata("design:type", String)
 ], PortfolioImageDto.prototype, "url", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    IsString(),
     __metadata("design:type", String)
 ], PortfolioImageDto.prototype, "altTextEn", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
+    IsOptional(),
+    IsString(),
     __metadata("design:type", String)
 ], PortfolioImageDto.prototype, "altTextFr", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
+    IsOptional(),
+    IsInt(),
+    Min(1),
     __metadata("design:type", Number)
 ], PortfolioImageDto.prototype, "width", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
+    IsOptional(),
+    IsInt(),
+    Min(1),
     __metadata("design:type", Number)
 ], PortfolioImageDto.prototype, "height", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(0),
+    IsOptional(),
+    IsInt(),
+    Min(0),
     __metadata("design:type", Number)
 ], PortfolioImageDto.prototype, "sortOrder", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
+    IsOptional(),
+    IsBoolean(),
     __metadata("design:type", Boolean)
 ], PortfolioImageDto.prototype, "isCover", void 0);
 //# sourceMappingURL=portfolio-image.dto.js.map

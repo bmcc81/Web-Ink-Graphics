@@ -4,10 +4,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
 import { hash } from 'bcryptjs';
-import type { AuthUser } from '../auth/auth-user';
-import { OrganizationsService } from './organizations.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { OrganizationsService } from './organizations.service.js';
 
 describe('OrganizationsService invitation acceptance', () => {
   const token = 'a'.repeat(43);

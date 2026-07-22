@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { CampaignMetricsController } from './campaign-metrics.controller';
-import { CampaignMetricsService } from './campaign-metrics.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { CampaignMetricsController } from './campaign-metrics.controller.js';
+import { CampaignMetricsService } from './campaign-metrics.service.js';
 
 @Module({
   imports: [ActivityLogModule],

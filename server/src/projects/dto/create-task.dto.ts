@@ -1,4 +1,4 @@
-import { RecurrenceRule, TaskStatus } from '@prisma/client';
+import { RecurrenceRule, TaskStatus } from '../../generated/prisma/client.js';
 import {
   IsDateString,
   IsEnum,

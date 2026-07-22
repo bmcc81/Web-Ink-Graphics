@@ -9,18 +9,18 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateMilestoneDto } from './dto/create-milestone.dto';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateMilestoneDto } from './dto/update-milestone.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { UpsertBudgetDto } from './dto/upsert-budget.dto';
-import { ProjectsService } from './projects.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateMilestoneDto } from './dto/create-milestone.dto.js';
+import { CreateProjectDto } from './dto/create-project.dto.js';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto.js';
+import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateMilestoneDto } from './dto/update-milestone.dto.js';
+import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto.js';
+import { ProjectsService } from './projects.service.js';
 
 @Controller('organizations/:organizationId/projects')
 @UseGuards(JwtAuthGuard)

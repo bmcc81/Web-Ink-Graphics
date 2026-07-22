@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Role } from '../generated/prisma/client.js';
 import { hash } from 'bcryptjs';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth.service.js';
 
 describe('AuthService', () => {
   const prisma = {

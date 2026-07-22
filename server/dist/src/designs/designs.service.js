@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,14 +7,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DesignsService = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
-const decide_design_review_dto_1 = require("./dto/decide-design-review.dto");
-const figma_service_1 = require("./figma.service");
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CONTRIBUTE_ROLES, MANAGE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { DesignReviewDecision, } from './dto/decide-design-review.dto.js';
+import { FigmaService } from './figma.service.js';
 const designInclude = {
     linkedBy: { select: { id: true, name: true } },
     versions: { orderBy: { syncedAt: 'desc' }, take: 1 },
@@ -147,7 +144,7 @@ let DesignsService = class DesignsService {
             select: { id: true },
         });
         if (!reviewer) {
-            throw new common_1.BadRequestException('The reviewer must be a member of this organization');
+            throw new BadRequestException('The reviewer must be a member of this organization');
         }
         const review = await this.prisma.designReview.create({
             data: {
@@ -176,14 +173,14 @@ let DesignsService = class DesignsService {
             where: { id: reviewId, designDocumentId: designId },
         });
         if (!review)
-            throw new common_1.NotFoundException('Review not found');
+            throw new NotFoundException('Review not found');
         const isAssignedReviewer = review.reviewerId === user.id;
-        const canOverride = role === 'STAFF' || organization_access_1.MANAGE_ROLES.includes(role);
+        const canOverride = role === 'STAFF' || MANAGE_ROLES.includes(role);
         if (!isAssignedReviewer && !canOverride) {
-            throw new common_1.ForbiddenException('Only the assigned reviewer or an organization owner/manager can decide this review');
+            throw new ForbiddenException('Only the assigned reviewer or an organization owner/manager can decide this review');
         }
         if (review.status === 'APPROVED') {
-            throw new common_1.BadRequestException('This review has already been approved and cannot be changed');
+            throw new BadRequestException('This review has already been approved and cannot be changed');
         }
         const latestVersion = await this.prisma.designVersion.findFirst({
             where: { designDocumentId: designId },
@@ -205,7 +202,7 @@ let DesignsService = class DesignsService {
             entityType: 'DESIGN_DOCUMENT',
             entityId: designId,
             action: 'STATUS_CHANGED',
-            summary: dto.decision === decide_design_review_dto_1.DesignReviewDecision.APPROVED
+            summary: dto.decision === DesignReviewDecision.APPROVED
                 ? `${updated.reviewer.name} approved "${design.name}"`
                 : `${updated.reviewer.name} requested changes on "${design.name}"`,
             actorId: user.id,
@@ -240,26 +237,26 @@ let DesignsService = class DesignsService {
             select: { authorId: true },
         });
         if (!comment)
-            throw new common_1.NotFoundException('Comment not found');
+            throw new NotFoundException('Comment not found');
         const isAuthor = comment.authorId === user.id;
-        const canModerate = role === 'STAFF' || organization_access_1.MANAGE_ROLES.includes(role);
+        const canModerate = role === 'STAFF' || MANAGE_ROLES.includes(role);
         if (!isAuthor && !canModerate) {
-            throw new common_1.ForbiddenException('Only the author or an organization owner/manager can delete this comment');
+            throw new ForbiddenException('Only the author or an organization owner/manager can delete this comment');
         }
         await this.prisma.designComment.delete({ where: { id: commentId } });
         return { removed: true };
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can manage designs');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can manage designs');
         }
         return role;
     }
@@ -269,7 +266,7 @@ let DesignsService = class DesignsService {
             select: { id: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
     async findDesignOrThrow(projectId, designId) {
@@ -277,15 +274,15 @@ let DesignsService = class DesignsService {
             where: { id: designId, projectId, unlinkedAt: null },
         });
         if (!design)
-            throw new common_1.NotFoundException('Design not found');
+            throw new NotFoundException('Design not found');
         return design;
     }
 };
-exports.DesignsService = DesignsService;
-exports.DesignsService = DesignsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService,
-        figma_service_1.FigmaService])
+DesignsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ActivityLogService,
+        FigmaService])
 ], DesignsService);
+export { DesignsService };
 //# sourceMappingURL=designs.service.js.map

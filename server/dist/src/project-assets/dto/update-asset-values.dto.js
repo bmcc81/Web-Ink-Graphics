@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,20 +7,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateAssetValuesDto = void 0;
-const class_transformer_1 = require("class-transformer");
-const class_validator_1 = require("class-validator");
-const create_project_asset_dto_1 = require("./create-project-asset.dto");
-class UpdateAssetValuesDto {
+import { Type } from 'class-transformer';
+import { ArrayMinSize, IsArray, ValidateNested } from 'class-validator';
+import { AssetFieldValueInputDto } from './create-project-asset.dto.js';
+export class UpdateAssetValuesDto {
     values;
 }
-exports.UpdateAssetValuesDto = UpdateAssetValuesDto;
 __decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.ArrayMinSize)(1),
-    (0, class_validator_1.ValidateNested)({ each: true }),
-    (0, class_transformer_1.Type)(() => create_project_asset_dto_1.AssetFieldValueInputDto),
+    IsArray(),
+    ArrayMinSize(1),
+    ValidateNested({ each: true }),
+    Type(() => AssetFieldValueInputDto),
     __metadata("design:type", Array)
 ], UpdateAssetValuesDto.prototype, "values", void 0);
 //# sourceMappingURL=update-asset-values.dto.js.map

@@ -1,6 +1,6 @@
-import { AuthService } from './auth.service';
-import type { AuthUser } from './auth-user';
-import { LoginDto } from './dto/login.dto';
+import { AuthService } from './auth.service.js';
+import type { AuthUser } from './auth-user.js';
+import { LoginDto } from './dto/login.dto.js';
 export declare class AuthController {
     private readonly auth;
     constructor(auth: AuthService);
@@ -10,12 +10,12 @@ export declare class AuthController {
             sub: string;
             email: string;
             name: string;
-            role: import("@prisma/client").$Enums.Role;
+            role: import("../generated/prisma/enums.js").Role;
             organizations: {
                 id: string;
                 name: string;
                 slug: string;
-                role: import("@prisma/client").$Enums.OrganizationRole;
+                role: import("../generated/prisma/enums.js").OrganizationRole;
             }[];
         };
     }>;
@@ -23,12 +23,12 @@ export declare class AuthController {
         sub: string;
         email: string;
         name: string;
-        role: import("@prisma/client").$Enums.Role;
+        role: import("../generated/prisma/enums.js").Role;
         organizations: {
             id: string;
             name: string;
             slug: string;
-            role: import("@prisma/client").$Enums.OrganizationRole;
+            role: import("../generated/prisma/enums.js").OrganizationRole;
         }[];
     }>;
 }

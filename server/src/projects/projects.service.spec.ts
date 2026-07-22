@@ -3,9 +3,9 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { ProjectsService } from './projects.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { ProjectsService } from './projects.service.js';
 
 describe('ProjectsService', () => {
   const organizationId = 'organization-1';

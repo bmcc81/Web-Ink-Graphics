@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,9 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateContactDto = void 0;
-const class_validator_1 = require("class-validator");
+import { IsEmail, IsEmpty, IsIn, IsOptional, IsString, IsUrl, Length, MaxLength, } from 'class-validator';
 const services = [
     'website',
     'redesign',
@@ -21,7 +18,7 @@ const services = [
     'web-application',
     'not-sure',
 ];
-class CreateContactDto {
+export class CreateContactDto {
     name;
     company;
     email;
@@ -34,64 +31,63 @@ class CreateContactDto {
     source;
     fax;
 }
-exports.CreateContactDto = CreateContactDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(2, 100),
+    IsString(),
+    Length(2, 100),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(120),
+    IsOptional(),
+    IsString(),
+    MaxLength(120),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "company", void 0);
 __decorate([
-    (0, class_validator_1.IsEmail)(),
-    (0, class_validator_1.MaxLength)(180),
+    IsEmail(),
+    MaxLength(180),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "email", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(40),
+    IsOptional(),
+    IsString(),
+    MaxLength(40),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "phone", void 0);
 __decorate([
-    (0, class_validator_1.IsIn)(services),
+    IsIn(services),
     __metadata("design:type", Object)
 ], CreateContactDto.prototype, "service", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(80),
+    IsOptional(),
+    IsString(),
+    MaxLength(80),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "budget", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(80),
+    IsOptional(),
+    IsString(),
+    MaxLength(80),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "launchDate", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUrl)({ require_tld: false }),
-    (0, class_validator_1.MaxLength)(300),
+    IsOptional(),
+    IsUrl({ require_tld: false }),
+    MaxLength(300),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "website", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(20, 4000),
+    IsString(),
+    Length(20, 4000),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "message", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(300),
+    IsOptional(),
+    IsString(),
+    MaxLength(300),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "source", void 0);
 __decorate([
-    (0, class_validator_1.IsEmpty)({ message: 'Spam validation failed' }),
+    IsEmpty({ message: 'Spam validation failed' }),
     __metadata("design:type", String)
 ], CreateContactDto.prototype, "fax", void 0);
 //# sourceMappingURL=create-contact.dto.js.map

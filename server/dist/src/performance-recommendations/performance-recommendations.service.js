@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,20 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var PerformanceRecommendationsService_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PerformanceRecommendationsService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const activity_log_service_1 = require("../activity/activity-log.service");
-const ai_usage_service_1 = require("../ai-usage/ai-usage.service");
-const campaign_metrics_service_1 = require("../campaign-metrics/campaign-metrics.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import Anthropic from '@anthropic-ai/sdk';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import { CampaignMetricsService } from '../campaign-metrics/campaign-metrics.service.js';
+import { CONTRIBUTE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const HAIKU_MODEL = 'claude-haiku-4-5';
 const recommendationInclude = {
     createdBy: { select: { id: true, name: true } },
@@ -33,7 +27,7 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
     activityLog;
     aiUsage;
     campaignMetrics;
-    logger = new common_1.Logger(PerformanceRecommendationsService_1.name);
+    logger = new Logger(PerformanceRecommendationsService_1.name);
     constructor(prisma, config, activityLog, aiUsage, campaignMetrics) {
         this.prisma = prisma;
         this.config = config;
@@ -55,11 +49,11 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
         const project = await this.findProjectWithContext(organizationId, projectId);
         const apiKey = this.config.get('ANTHROPIC_API_KEY');
         if (!apiKey) {
-            throw new common_1.ServiceUnavailableException('AI-assisted recommendations are not configured for this environment.');
+            throw new ServiceUnavailableException('AI-assisted recommendations are not configured for this environment.');
         }
         const summary = await this.campaignMetrics.summary(user, organizationId, projectId);
         if (!summary.budget && summary.metrics.length === 0) {
-            throw new common_1.BadRequestException('Log at least one campaign metric or set a budget before generating performance recommendations.');
+            throw new BadRequestException('Log at least one campaign metric or set a budget before generating performance recommendations.');
         }
         await this.aiUsage.assertWithinCap(organizationId);
         const context = this.buildContext(project, summary);
@@ -69,7 +63,7 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
         }
         catch (error) {
             this.logger.error('Performance recommendation generation failed', error);
-            throw new common_1.ServiceUnavailableException('The performance recommendations could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The performance recommendations could not be generated right now. Try again shortly.');
         }
         const parsed = this.parseResponse(response);
         await this.aiUsage.record(organizationId, user, 'PERFORMANCE_RECOMMENDATIONS', HAIKU_MODEL, response.usage.input_tokens, response.usage.output_tokens);
@@ -103,7 +97,7 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
         return recommendation;
     }
     async callClaude(apiKey, context) {
-        const client = new sdk_1.default({ apiKey });
+        const client = new Anthropic({ apiKey });
         return client.messages.create({
             model: HAIKU_MODEL,
             max_tokens: 2000,
@@ -170,7 +164,7 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
     parseResponse(response) {
         const textBlock = response.content.find((block) => block.type === 'text');
         if (!textBlock) {
-            throw new common_1.ServiceUnavailableException('The performance recommendations could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The performance recommendations could not be generated right now. Try again shortly.');
         }
         const parsed = JSON.parse(textBlock.text);
         const items = Array.isArray(parsed.items) ? parsed.items : [];
@@ -228,16 +222,16 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
         return lines.join('\n');
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can generate performance recommendations');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can generate performance recommendations');
         }
         return role;
     }
@@ -247,7 +241,7 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
             select: { id: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
     async findProjectWithContext(organizationId, projectId) {
@@ -261,17 +255,17 @@ let PerformanceRecommendationsService = PerformanceRecommendationsService_1 = cl
             },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
 };
-exports.PerformanceRecommendationsService = PerformanceRecommendationsService;
-exports.PerformanceRecommendationsService = PerformanceRecommendationsService = PerformanceRecommendationsService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService,
-        activity_log_service_1.ActivityLogService,
-        ai_usage_service_1.AiUsageService,
-        campaign_metrics_service_1.CampaignMetricsService])
+PerformanceRecommendationsService = PerformanceRecommendationsService_1 = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService,
+        ActivityLogService,
+        AiUsageService,
+        CampaignMetricsService])
 ], PerformanceRecommendationsService);
+export { PerformanceRecommendationsService };
 //# sourceMappingURL=performance-recommendations.service.js.map

@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PerformanceRecommendationsService } from './performance-recommendations.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { PerformanceRecommendationsService } from './performance-recommendations.service.js';
 
 @Controller(
   'organizations/:organizationId/projects/:projectId/performance-recommendations',

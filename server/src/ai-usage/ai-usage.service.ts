@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AiUsagePurpose } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
+import { AiUsagePurpose } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 const HAIKU_INPUT_MICROS_PER_TOKEN = 1; // $1.00 / 1M input tokens
 const HAIKU_OUTPUT_MICROS_PER_TOKEN = 5; // $5.00 / 1M output tokens

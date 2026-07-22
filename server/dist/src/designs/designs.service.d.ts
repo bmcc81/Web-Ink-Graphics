@@ -1,11 +1,11 @@
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateDesignCommentDto } from './dto/create-design-comment.dto';
-import { CreateDesignDocumentDto } from './dto/create-design-document.dto';
-import { CreateDesignReviewDto } from './dto/create-design-review.dto';
-import { DecideDesignReviewDto } from './dto/decide-design-review.dto';
-import { FigmaService } from './figma.service';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateDesignCommentDto } from './dto/create-design-comment.dto.js';
+import { CreateDesignDocumentDto } from './dto/create-design-document.dto.js';
+import { CreateDesignReviewDto } from './dto/create-design-review.dto.js';
+import { DecideDesignReviewDto } from './dto/decide-design-review.dto.js';
+import { FigmaService } from './figma.service.js';
 export declare class DesignsService {
     private readonly prisma;
     private readonly activityLog;
@@ -18,10 +18,10 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -29,11 +29,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
+        unlinkedAt: Date | null;
     })[]>;
     attach(user: AuthUser, organizationId: string, projectId: string, dto: CreateDesignDocumentDto): Promise<{
         linkedBy: {
@@ -42,10 +42,10 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -53,11 +53,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
+        unlinkedAt: Date | null;
     }>;
     sync(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         synced: boolean;
@@ -66,11 +66,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
+        unlinkedAt: Date | null;
     } | {
         synced: boolean;
         linkedBy: {
@@ -79,21 +79,21 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
         id: string;
         name: string;
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        unlinkedAt: Date | null;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
+        unlinkedAt: Date | null;
     }>;
     unlink(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         removed: boolean;
@@ -115,10 +115,10 @@ export declare class DesignsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -141,10 +141,10 @@ export declare class DesignsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -167,10 +167,10 @@ export declare class DesignsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;

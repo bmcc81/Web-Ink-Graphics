@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { SeoService } from './seo.service';
+import { SeoService } from './seo.service.js';
 
 @Controller()
 export class SeoController {

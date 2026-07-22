@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -9,17 +8,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ExportsService_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExportsService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const client_1 = require("@prisma/client");
-const client_s3_1 = require("@aws-sdk/client-s3");
-const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
-const playwright_1 = require("playwright");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ExportFormat, } from '../generated/prisma/client.js';
+import { GetObjectCommand, PutObjectCommand, S3Client, } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { chromium } from 'playwright';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CONTRIBUTE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const exportInclude = {
     requestedBy: { select: { id: true, name: true } },
 };
@@ -27,7 +24,7 @@ let ExportsService = ExportsService_1 = class ExportsService {
     prisma;
     config;
     activityLog;
-    logger = new common_1.Logger(ExportsService_1.name);
+    logger = new Logger(ExportsService_1.name);
     constructor(prisma, config, activityLog) {
         this.prisma = prisma;
         this.config = config;
@@ -51,7 +48,7 @@ let ExportsService = ExportsService_1 = class ExportsService {
             include: { values: true },
         });
         if (!latest || latest.status !== 'APPROVED') {
-            throw new common_1.BadRequestException('Only an approved revision can be exported');
+            throw new BadRequestException('Only an approved revision can be exported');
         }
         const template = await this.prisma.designTemplate.findUniqueOrThrow({
             where: { id: asset.templateId },
@@ -71,7 +68,7 @@ let ExportsService = ExportsService_1 = class ExportsService {
                 canvasHeight: template.canvasHeight,
                 format: dto.format,
             });
-            const objectKey = `exports/${organizationId}/${exportRecord.id}.${dto.format === client_1.ExportFormat.PDF ? 'pdf' : 'png'}`;
+            const objectKey = `exports/${organizationId}/${exportRecord.id}.${dto.format === ExportFormat.PDF ? 'pdf' : 'png'}`;
             await this.uploadToS3(objectKey, buffer, dto.format);
             const ready = await this.prisma.assetExport.update({
                 where: { id: exportRecord.id },
@@ -108,9 +105,9 @@ let ExportsService = ExportsService_1 = class ExportsService {
             where: { id: exportId, assetRevision: { projectAssetId: assetId } },
         });
         if (!record || record.status !== 'READY' || !record.objectKey) {
-            throw new common_1.NotFoundException('Export not found');
+            throw new NotFoundException('Export not found');
         }
-        const downloadUrl = await (0, s3_request_presigner_1.getSignedUrl)(this.client(), new client_s3_1.GetObjectCommand({
+        const downloadUrl = await getSignedUrl(this.client(), new GetObjectCommand({
             Bucket: this.config.getOrThrow('S3_BUCKET'),
             Key: record.objectKey,
         }), { expiresIn: 300 });
@@ -118,7 +115,7 @@ let ExportsService = ExportsService_1 = class ExportsService {
     }
     async render(fields, values, options) {
         const html = this.buildHtml(fields, values, options);
-        const browser = await playwright_1.chromium.launch({
+        const browser = await chromium.launch({
             executablePath: '/opt/pw-browsers/chromium',
         });
         try {
@@ -126,7 +123,7 @@ let ExportsService = ExportsService_1 = class ExportsService {
                 viewport: { width: options.canvasWidth, height: options.canvasHeight },
             });
             await page.setContent(html, { waitUntil: 'networkidle' });
-            if (options.format === client_1.ExportFormat.PDF) {
+            if (options.format === ExportFormat.PDF) {
                 return await page.pdf({
                     width: `${options.canvasWidth}px`,
                     height: `${options.canvasHeight}px`,
@@ -169,16 +166,16 @@ let ExportsService = ExportsService_1 = class ExportsService {
         return value.replace(/"/g, '&quot;');
     }
     async uploadToS3(objectKey, buffer, format) {
-        await this.client().send(new client_s3_1.PutObjectCommand({
+        await this.client().send(new PutObjectCommand({
             Bucket: this.config.getOrThrow('S3_BUCKET'),
             Key: objectKey,
             Body: buffer,
-            ContentType: format === client_1.ExportFormat.PDF ? 'application/pdf' : 'image/png',
+            ContentType: format === ExportFormat.PDF ? 'application/pdf' : 'image/png',
             CacheControl: 'private, no-store',
         }));
     }
     client() {
-        return new client_s3_1.S3Client({
+        return new S3Client({
             region: this.config.get('S3_REGION') ?? 'auto',
             endpoint: this.config.get('S3_ENDPOINT') || undefined,
             forcePathStyle: this.config.get('S3_FORCE_PATH_STYLE') === 'true',
@@ -189,16 +186,16 @@ let ExportsService = ExportsService_1 = class ExportsService {
         });
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can export assets');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can export assets');
         }
         return role;
     }
@@ -208,20 +205,20 @@ let ExportsService = ExportsService_1 = class ExportsService {
             select: { id: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         const asset = await this.prisma.projectAsset.findFirst({
             where: { id: assetId, projectId, unlinkedAt: null },
         });
         if (!asset)
-            throw new common_1.NotFoundException('Asset not found');
+            throw new NotFoundException('Asset not found');
         return asset;
     }
 };
-exports.ExportsService = ExportsService;
-exports.ExportsService = ExportsService = ExportsService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService,
-        activity_log_service_1.ActivityLogService])
+ExportsService = ExportsService_1 = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService,
+        ActivityLogService])
 ], ExportsService);
+export { ExportsService };
 //# sourceMappingURL=exports.service.js.map

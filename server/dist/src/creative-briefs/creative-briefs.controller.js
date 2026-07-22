@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,12 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreativeBriefsController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const creative_briefs_service_1 = require("./creative-briefs.service");
+import { Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreativeBriefsService } from './creative-briefs.service.js';
 let CreativeBriefsController = class CreativeBriefsController {
     creativeBriefs;
     constructor(creativeBriefs) {
@@ -32,38 +29,38 @@ let CreativeBriefsController = class CreativeBriefsController {
         return this.creativeBriefs.approve(user, organizationId, projectId, briefId);
     }
 };
-exports.CreativeBriefsController = CreativeBriefsController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], CreativeBriefsController.prototype, "list", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Post(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], CreativeBriefsController.prototype, "generate", null);
 __decorate([
-    (0, common_1.Patch)(':briefId/approve'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('briefId')),
+    Patch(':briefId/approve'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('briefId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], CreativeBriefsController.prototype, "approve", null);
-exports.CreativeBriefsController = CreativeBriefsController = __decorate([
-    (0, common_1.Controller)('organizations/:organizationId/projects/:projectId/creative-briefs'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [creative_briefs_service_1.CreativeBriefsService])
+CreativeBriefsController = __decorate([
+    Controller('organizations/:organizationId/projects/:projectId/creative-briefs'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [CreativeBriefsService])
 ], CreativeBriefsController);
+export { CreativeBriefsController };
 //# sourceMappingURL=creative-briefs.controller.js.map

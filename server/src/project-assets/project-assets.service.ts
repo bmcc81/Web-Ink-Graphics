@@ -4,20 +4,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { BrandKit, TemplateField } from '@prisma/client';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
+import type { BrandKit, TemplateField } from '../generated/prisma/client.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   MANAGE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import {
   AssetFieldValueInputDto,
   CreateProjectAssetDto,
-} from './dto/create-project-asset.dto';
-import { UpdateAssetValuesDto } from './dto/update-asset-values.dto';
+} from './dto/create-project-asset.dto.js';
+import { UpdateAssetValuesDto } from './dto/update-asset-values.dto.js';
 
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
 

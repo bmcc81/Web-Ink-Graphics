@@ -1,0 +1,1077 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as $Enums from "../enums.js";
+import type * as Prisma from "../internal/prismaNamespace.js";
+export type AssetRevisionModel = runtime.Types.Result.DefaultSelection<Prisma.$AssetRevisionPayload>;
+export type AggregateAssetRevision = {
+    _count: AssetRevisionCountAggregateOutputType | null;
+    _min: AssetRevisionMinAggregateOutputType | null;
+    _max: AssetRevisionMaxAggregateOutputType | null;
+};
+export type AssetRevisionMinAggregateOutputType = {
+    id: string | null;
+    projectAssetId: string | null;
+    status: $Enums.AssetRevisionStatus | null;
+    createdById: string | null;
+    approvedById: string | null;
+    approvedAt: Date | null;
+    createdAt: Date | null;
+};
+export type AssetRevisionMaxAggregateOutputType = {
+    id: string | null;
+    projectAssetId: string | null;
+    status: $Enums.AssetRevisionStatus | null;
+    createdById: string | null;
+    approvedById: string | null;
+    approvedAt: Date | null;
+    createdAt: Date | null;
+};
+export type AssetRevisionCountAggregateOutputType = {
+    id: number;
+    projectAssetId: number;
+    status: number;
+    createdById: number;
+    approvedById: number;
+    approvedAt: number;
+    createdAt: number;
+    _all: number;
+};
+export type AssetRevisionMinAggregateInputType = {
+    id?: true;
+    projectAssetId?: true;
+    status?: true;
+    createdById?: true;
+    approvedById?: true;
+    approvedAt?: true;
+    createdAt?: true;
+};
+export type AssetRevisionMaxAggregateInputType = {
+    id?: true;
+    projectAssetId?: true;
+    status?: true;
+    createdById?: true;
+    approvedById?: true;
+    approvedAt?: true;
+    createdAt?: true;
+};
+export type AssetRevisionCountAggregateInputType = {
+    id?: true;
+    projectAssetId?: true;
+    status?: true;
+    createdById?: true;
+    approvedById?: true;
+    approvedAt?: true;
+    createdAt?: true;
+    _all?: true;
+};
+export type AssetRevisionAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AssetRevisionWhereInput;
+    orderBy?: Prisma.AssetRevisionOrderByWithRelationInput | Prisma.AssetRevisionOrderByWithRelationInput[];
+    cursor?: Prisma.AssetRevisionWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    _count?: true | AssetRevisionCountAggregateInputType;
+    _min?: AssetRevisionMinAggregateInputType;
+    _max?: AssetRevisionMaxAggregateInputType;
+};
+export type GetAssetRevisionAggregateType<T extends AssetRevisionAggregateArgs> = {
+    [P in keyof T & keyof AggregateAssetRevision]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateAssetRevision[P]> : Prisma.GetScalarType<T[P], AggregateAssetRevision[P]>;
+};
+export type AssetRevisionGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AssetRevisionWhereInput;
+    orderBy?: Prisma.AssetRevisionOrderByWithAggregationInput | Prisma.AssetRevisionOrderByWithAggregationInput[];
+    by: Prisma.AssetRevisionScalarFieldEnum[] | Prisma.AssetRevisionScalarFieldEnum;
+    having?: Prisma.AssetRevisionScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: AssetRevisionCountAggregateInputType | true;
+    _min?: AssetRevisionMinAggregateInputType;
+    _max?: AssetRevisionMaxAggregateInputType;
+};
+export type AssetRevisionGroupByOutputType = {
+    id: string;
+    projectAssetId: string;
+    status: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById: string | null;
+    approvedAt: Date | null;
+    createdAt: Date;
+    _count: AssetRevisionCountAggregateOutputType | null;
+    _min: AssetRevisionMinAggregateOutputType | null;
+    _max: AssetRevisionMaxAggregateOutputType | null;
+};
+export type GetAssetRevisionGroupByPayload<T extends AssetRevisionGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<AssetRevisionGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof AssetRevisionGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], AssetRevisionGroupByOutputType[P]> : Prisma.GetScalarType<T[P], AssetRevisionGroupByOutputType[P]>;
+}>>;
+export type AssetRevisionWhereInput = {
+    AND?: Prisma.AssetRevisionWhereInput | Prisma.AssetRevisionWhereInput[];
+    OR?: Prisma.AssetRevisionWhereInput[];
+    NOT?: Prisma.AssetRevisionWhereInput | Prisma.AssetRevisionWhereInput[];
+    id?: Prisma.StringFilter<"AssetRevision"> | string;
+    projectAssetId?: Prisma.StringFilter<"AssetRevision"> | string;
+    status?: Prisma.EnumAssetRevisionStatusFilter<"AssetRevision"> | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFilter<"AssetRevision"> | string;
+    approvedById?: Prisma.StringNullableFilter<"AssetRevision"> | string | null;
+    approvedAt?: Prisma.DateTimeNullableFilter<"AssetRevision"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AssetRevision"> | Date | string;
+    projectAsset?: Prisma.XOR<Prisma.ProjectAssetScalarRelationFilter, Prisma.ProjectAssetWhereInput>;
+    values?: Prisma.AssetFieldValueListRelationFilter;
+    exports?: Prisma.AssetExportListRelationFilter;
+    createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+};
+export type AssetRevisionOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    projectAssetId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    createdById?: Prisma.SortOrder;
+    approvedById?: Prisma.SortOrderInput | Prisma.SortOrder;
+    approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    projectAsset?: Prisma.ProjectAssetOrderByWithRelationInput;
+    values?: Prisma.AssetFieldValueOrderByRelationAggregateInput;
+    exports?: Prisma.AssetExportOrderByRelationAggregateInput;
+    createdBy?: Prisma.UserOrderByWithRelationInput;
+    approvedBy?: Prisma.UserOrderByWithRelationInput;
+};
+export type AssetRevisionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string;
+    AND?: Prisma.AssetRevisionWhereInput | Prisma.AssetRevisionWhereInput[];
+    OR?: Prisma.AssetRevisionWhereInput[];
+    NOT?: Prisma.AssetRevisionWhereInput | Prisma.AssetRevisionWhereInput[];
+    projectAssetId?: Prisma.StringFilter<"AssetRevision"> | string;
+    status?: Prisma.EnumAssetRevisionStatusFilter<"AssetRevision"> | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFilter<"AssetRevision"> | string;
+    approvedById?: Prisma.StringNullableFilter<"AssetRevision"> | string | null;
+    approvedAt?: Prisma.DateTimeNullableFilter<"AssetRevision"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AssetRevision"> | Date | string;
+    projectAsset?: Prisma.XOR<Prisma.ProjectAssetScalarRelationFilter, Prisma.ProjectAssetWhereInput>;
+    values?: Prisma.AssetFieldValueListRelationFilter;
+    exports?: Prisma.AssetExportListRelationFilter;
+    createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+}, "id">;
+export type AssetRevisionOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    projectAssetId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    createdById?: Prisma.SortOrder;
+    approvedById?: Prisma.SortOrderInput | Prisma.SortOrder;
+    approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    _count?: Prisma.AssetRevisionCountOrderByAggregateInput;
+    _max?: Prisma.AssetRevisionMaxOrderByAggregateInput;
+    _min?: Prisma.AssetRevisionMinOrderByAggregateInput;
+};
+export type AssetRevisionScalarWhereWithAggregatesInput = {
+    AND?: Prisma.AssetRevisionScalarWhereWithAggregatesInput | Prisma.AssetRevisionScalarWhereWithAggregatesInput[];
+    OR?: Prisma.AssetRevisionScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.AssetRevisionScalarWhereWithAggregatesInput | Prisma.AssetRevisionScalarWhereWithAggregatesInput[];
+    id?: Prisma.StringWithAggregatesFilter<"AssetRevision"> | string;
+    projectAssetId?: Prisma.StringWithAggregatesFilter<"AssetRevision"> | string;
+    status?: Prisma.EnumAssetRevisionStatusWithAggregatesFilter<"AssetRevision"> | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringWithAggregatesFilter<"AssetRevision"> | string;
+    approvedById?: Prisma.StringNullableWithAggregatesFilter<"AssetRevision"> | string | null;
+    approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AssetRevision"> | Date | string | null;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"AssetRevision"> | Date | string;
+};
+export type AssetRevisionCreateInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    projectAsset: Prisma.ProjectAssetCreateNestedOneWithoutRevisionsInput;
+    values?: Prisma.AssetFieldValueCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportCreateNestedManyWithoutAssetRevisionInput;
+    createdBy: Prisma.UserCreateNestedOneWithoutCreatedAssetRevisionsInput;
+    approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueUncheckedCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportUncheckedCreateNestedManyWithoutAssetRevisionInput;
+};
+export type AssetRevisionUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    projectAsset?: Prisma.ProjectAssetUpdateOneRequiredWithoutRevisionsNestedInput;
+    values?: Prisma.AssetFieldValueUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUpdateManyWithoutAssetRevisionNestedInput;
+    createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedAssetRevisionsNestedInput;
+    approvedBy?: Prisma.UserUpdateOneWithoutApprovedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUncheckedUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUncheckedUpdateManyWithoutAssetRevisionNestedInput;
+};
+export type AssetRevisionCreateManyInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type AssetRevisionUpdateManyMutationInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AssetRevisionUncheckedUpdateManyInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AssetRevisionListRelationFilter = {
+    every?: Prisma.AssetRevisionWhereInput;
+    some?: Prisma.AssetRevisionWhereInput;
+    none?: Prisma.AssetRevisionWhereInput;
+};
+export type AssetRevisionOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type AssetRevisionCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    projectAssetId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    createdById?: Prisma.SortOrder;
+    approvedById?: Prisma.SortOrder;
+    approvedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+};
+export type AssetRevisionMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    projectAssetId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    createdById?: Prisma.SortOrder;
+    approvedById?: Prisma.SortOrder;
+    approvedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+};
+export type AssetRevisionMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    projectAssetId?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    createdById?: Prisma.SortOrder;
+    approvedById?: Prisma.SortOrder;
+    approvedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+};
+export type AssetRevisionScalarRelationFilter = {
+    is?: Prisma.AssetRevisionWhereInput;
+    isNot?: Prisma.AssetRevisionWhereInput;
+};
+export type AssetRevisionCreateNestedManyWithoutCreatedByInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput> | Prisma.AssetRevisionCreateWithoutCreatedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput | Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyCreatedByInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionCreateNestedManyWithoutApprovedByInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput> | Prisma.AssetRevisionCreateWithoutApprovedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput | Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyApprovedByInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput> | Prisma.AssetRevisionCreateWithoutCreatedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput | Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyCreatedByInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionUncheckedCreateNestedManyWithoutApprovedByInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput> | Prisma.AssetRevisionCreateWithoutApprovedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput | Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyApprovedByInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionUpdateManyWithoutCreatedByNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput> | Prisma.AssetRevisionCreateWithoutCreatedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput | Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutCreatedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyCreatedByInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutCreatedByInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutCreatedByInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutCreatedByInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type AssetRevisionUpdateManyWithoutApprovedByNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput> | Prisma.AssetRevisionCreateWithoutApprovedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput | Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutApprovedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyApprovedByInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutApprovedByInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutApprovedByInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutApprovedByInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type AssetRevisionUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput> | Prisma.AssetRevisionCreateWithoutCreatedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput | Prisma.AssetRevisionCreateOrConnectWithoutCreatedByInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutCreatedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyCreatedByInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutCreatedByInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutCreatedByInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutCreatedByInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type AssetRevisionUncheckedUpdateManyWithoutApprovedByNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput> | Prisma.AssetRevisionCreateWithoutApprovedByInput[] | Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput | Prisma.AssetRevisionCreateOrConnectWithoutApprovedByInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutApprovedByInput[];
+    createMany?: Prisma.AssetRevisionCreateManyApprovedByInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutApprovedByInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutApprovedByInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutApprovedByInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type AssetRevisionCreateNestedManyWithoutProjectAssetInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput> | Prisma.AssetRevisionCreateWithoutProjectAssetInput[] | Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput | Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput[];
+    createMany?: Prisma.AssetRevisionCreateManyProjectAssetInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionUncheckedCreateNestedManyWithoutProjectAssetInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput> | Prisma.AssetRevisionCreateWithoutProjectAssetInput[] | Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput | Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput[];
+    createMany?: Prisma.AssetRevisionCreateManyProjectAssetInputEnvelope;
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+};
+export type AssetRevisionUpdateManyWithoutProjectAssetNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput> | Prisma.AssetRevisionCreateWithoutProjectAssetInput[] | Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput | Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutProjectAssetInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutProjectAssetInput[];
+    createMany?: Prisma.AssetRevisionCreateManyProjectAssetInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutProjectAssetInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutProjectAssetInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutProjectAssetInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutProjectAssetInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type AssetRevisionUncheckedUpdateManyWithoutProjectAssetNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput> | Prisma.AssetRevisionCreateWithoutProjectAssetInput[] | Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput[];
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput | Prisma.AssetRevisionCreateOrConnectWithoutProjectAssetInput[];
+    upsert?: Prisma.AssetRevisionUpsertWithWhereUniqueWithoutProjectAssetInput | Prisma.AssetRevisionUpsertWithWhereUniqueWithoutProjectAssetInput[];
+    createMany?: Prisma.AssetRevisionCreateManyProjectAssetInputEnvelope;
+    set?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    disconnect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    delete?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    connect?: Prisma.AssetRevisionWhereUniqueInput | Prisma.AssetRevisionWhereUniqueInput[];
+    update?: Prisma.AssetRevisionUpdateWithWhereUniqueWithoutProjectAssetInput | Prisma.AssetRevisionUpdateWithWhereUniqueWithoutProjectAssetInput[];
+    updateMany?: Prisma.AssetRevisionUpdateManyWithWhereWithoutProjectAssetInput | Prisma.AssetRevisionUpdateManyWithWhereWithoutProjectAssetInput[];
+    deleteMany?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+};
+export type EnumAssetRevisionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AssetRevisionStatus;
+};
+export type AssetRevisionCreateNestedOneWithoutValuesInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutValuesInput, Prisma.AssetRevisionUncheckedCreateWithoutValuesInput>;
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutValuesInput;
+    connect?: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionUpdateOneRequiredWithoutValuesNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutValuesInput, Prisma.AssetRevisionUncheckedCreateWithoutValuesInput>;
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutValuesInput;
+    upsert?: Prisma.AssetRevisionUpsertWithoutValuesInput;
+    connect?: Prisma.AssetRevisionWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.AssetRevisionUpdateToOneWithWhereWithoutValuesInput, Prisma.AssetRevisionUpdateWithoutValuesInput>, Prisma.AssetRevisionUncheckedUpdateWithoutValuesInput>;
+};
+export type AssetRevisionCreateNestedOneWithoutExportsInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutExportsInput, Prisma.AssetRevisionUncheckedCreateWithoutExportsInput>;
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutExportsInput;
+    connect?: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionUpdateOneRequiredWithoutExportsNestedInput = {
+    create?: Prisma.XOR<Prisma.AssetRevisionCreateWithoutExportsInput, Prisma.AssetRevisionUncheckedCreateWithoutExportsInput>;
+    connectOrCreate?: Prisma.AssetRevisionCreateOrConnectWithoutExportsInput;
+    upsert?: Prisma.AssetRevisionUpsertWithoutExportsInput;
+    connect?: Prisma.AssetRevisionWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.AssetRevisionUpdateToOneWithWhereWithoutExportsInput, Prisma.AssetRevisionUpdateWithoutExportsInput>, Prisma.AssetRevisionUncheckedUpdateWithoutExportsInput>;
+};
+export type AssetRevisionCreateWithoutCreatedByInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    projectAsset: Prisma.ProjectAssetCreateNestedOneWithoutRevisionsInput;
+    values?: Prisma.AssetFieldValueCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportCreateNestedManyWithoutAssetRevisionInput;
+    approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateWithoutCreatedByInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueUncheckedCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportUncheckedCreateNestedManyWithoutAssetRevisionInput;
+};
+export type AssetRevisionCreateOrConnectWithoutCreatedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput>;
+};
+export type AssetRevisionCreateManyCreatedByInputEnvelope = {
+    data: Prisma.AssetRevisionCreateManyCreatedByInput | Prisma.AssetRevisionCreateManyCreatedByInput[];
+    skipDuplicates?: boolean;
+};
+export type AssetRevisionCreateWithoutApprovedByInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    projectAsset: Prisma.ProjectAssetCreateNestedOneWithoutRevisionsInput;
+    values?: Prisma.AssetFieldValueCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportCreateNestedManyWithoutAssetRevisionInput;
+    createdBy: Prisma.UserCreateNestedOneWithoutCreatedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateWithoutApprovedByInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueUncheckedCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportUncheckedCreateNestedManyWithoutAssetRevisionInput;
+};
+export type AssetRevisionCreateOrConnectWithoutApprovedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput>;
+};
+export type AssetRevisionCreateManyApprovedByInputEnvelope = {
+    data: Prisma.AssetRevisionCreateManyApprovedByInput | Prisma.AssetRevisionCreateManyApprovedByInput[];
+    skipDuplicates?: boolean;
+};
+export type AssetRevisionUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedUpdateWithoutCreatedByInput>;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedCreateWithoutCreatedByInput>;
+};
+export type AssetRevisionUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutCreatedByInput, Prisma.AssetRevisionUncheckedUpdateWithoutCreatedByInput>;
+};
+export type AssetRevisionUpdateManyWithWhereWithoutCreatedByInput = {
+    where: Prisma.AssetRevisionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateManyMutationInput, Prisma.AssetRevisionUncheckedUpdateManyWithoutCreatedByInput>;
+};
+export type AssetRevisionScalarWhereInput = {
+    AND?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+    OR?: Prisma.AssetRevisionScalarWhereInput[];
+    NOT?: Prisma.AssetRevisionScalarWhereInput | Prisma.AssetRevisionScalarWhereInput[];
+    id?: Prisma.StringFilter<"AssetRevision"> | string;
+    projectAssetId?: Prisma.StringFilter<"AssetRevision"> | string;
+    status?: Prisma.EnumAssetRevisionStatusFilter<"AssetRevision"> | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFilter<"AssetRevision"> | string;
+    approvedById?: Prisma.StringNullableFilter<"AssetRevision"> | string | null;
+    approvedAt?: Prisma.DateTimeNullableFilter<"AssetRevision"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"AssetRevision"> | Date | string;
+};
+export type AssetRevisionUpsertWithWhereUniqueWithoutApprovedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedUpdateWithoutApprovedByInput>;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedCreateWithoutApprovedByInput>;
+};
+export type AssetRevisionUpdateWithWhereUniqueWithoutApprovedByInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutApprovedByInput, Prisma.AssetRevisionUncheckedUpdateWithoutApprovedByInput>;
+};
+export type AssetRevisionUpdateManyWithWhereWithoutApprovedByInput = {
+    where: Prisma.AssetRevisionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateManyMutationInput, Prisma.AssetRevisionUncheckedUpdateManyWithoutApprovedByInput>;
+};
+export type AssetRevisionCreateWithoutProjectAssetInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportCreateNestedManyWithoutAssetRevisionInput;
+    createdBy: Prisma.UserCreateNestedOneWithoutCreatedAssetRevisionsInput;
+    approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateWithoutProjectAssetInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueUncheckedCreateNestedManyWithoutRevisionInput;
+    exports?: Prisma.AssetExportUncheckedCreateNestedManyWithoutAssetRevisionInput;
+};
+export type AssetRevisionCreateOrConnectWithoutProjectAssetInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput>;
+};
+export type AssetRevisionCreateManyProjectAssetInputEnvelope = {
+    data: Prisma.AssetRevisionCreateManyProjectAssetInput | Prisma.AssetRevisionCreateManyProjectAssetInput[];
+    skipDuplicates?: boolean;
+};
+export type AssetRevisionUpsertWithWhereUniqueWithoutProjectAssetInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedUpdateWithoutProjectAssetInput>;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedCreateWithoutProjectAssetInput>;
+};
+export type AssetRevisionUpdateWithWhereUniqueWithoutProjectAssetInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutProjectAssetInput, Prisma.AssetRevisionUncheckedUpdateWithoutProjectAssetInput>;
+};
+export type AssetRevisionUpdateManyWithWhereWithoutProjectAssetInput = {
+    where: Prisma.AssetRevisionScalarWhereInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateManyMutationInput, Prisma.AssetRevisionUncheckedUpdateManyWithoutProjectAssetInput>;
+};
+export type AssetRevisionCreateWithoutValuesInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    projectAsset: Prisma.ProjectAssetCreateNestedOneWithoutRevisionsInput;
+    exports?: Prisma.AssetExportCreateNestedManyWithoutAssetRevisionInput;
+    createdBy: Prisma.UserCreateNestedOneWithoutCreatedAssetRevisionsInput;
+    approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateWithoutValuesInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    exports?: Prisma.AssetExportUncheckedCreateNestedManyWithoutAssetRevisionInput;
+};
+export type AssetRevisionCreateOrConnectWithoutValuesInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutValuesInput, Prisma.AssetRevisionUncheckedCreateWithoutValuesInput>;
+};
+export type AssetRevisionUpsertWithoutValuesInput = {
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutValuesInput, Prisma.AssetRevisionUncheckedUpdateWithoutValuesInput>;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutValuesInput, Prisma.AssetRevisionUncheckedCreateWithoutValuesInput>;
+    where?: Prisma.AssetRevisionWhereInput;
+};
+export type AssetRevisionUpdateToOneWithWhereWithoutValuesInput = {
+    where?: Prisma.AssetRevisionWhereInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutValuesInput, Prisma.AssetRevisionUncheckedUpdateWithoutValuesInput>;
+};
+export type AssetRevisionUpdateWithoutValuesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    projectAsset?: Prisma.ProjectAssetUpdateOneRequiredWithoutRevisionsNestedInput;
+    exports?: Prisma.AssetExportUpdateManyWithoutAssetRevisionNestedInput;
+    createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedAssetRevisionsNestedInput;
+    approvedBy?: Prisma.UserUpdateOneWithoutApprovedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateWithoutValuesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    exports?: Prisma.AssetExportUncheckedUpdateManyWithoutAssetRevisionNestedInput;
+};
+export type AssetRevisionCreateWithoutExportsInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    projectAsset: Prisma.ProjectAssetCreateNestedOneWithoutRevisionsInput;
+    values?: Prisma.AssetFieldValueCreateNestedManyWithoutRevisionInput;
+    createdBy: Prisma.UserCreateNestedOneWithoutCreatedAssetRevisionsInput;
+    approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedAssetRevisionsInput;
+};
+export type AssetRevisionUncheckedCreateWithoutExportsInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+    values?: Prisma.AssetFieldValueUncheckedCreateNestedManyWithoutRevisionInput;
+};
+export type AssetRevisionCreateOrConnectWithoutExportsInput = {
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutExportsInput, Prisma.AssetRevisionUncheckedCreateWithoutExportsInput>;
+};
+export type AssetRevisionUpsertWithoutExportsInput = {
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutExportsInput, Prisma.AssetRevisionUncheckedUpdateWithoutExportsInput>;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateWithoutExportsInput, Prisma.AssetRevisionUncheckedCreateWithoutExportsInput>;
+    where?: Prisma.AssetRevisionWhereInput;
+};
+export type AssetRevisionUpdateToOneWithWhereWithoutExportsInput = {
+    where?: Prisma.AssetRevisionWhereInput;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateWithoutExportsInput, Prisma.AssetRevisionUncheckedUpdateWithoutExportsInput>;
+};
+export type AssetRevisionUpdateWithoutExportsInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    projectAsset?: Prisma.ProjectAssetUpdateOneRequiredWithoutRevisionsNestedInput;
+    values?: Prisma.AssetFieldValueUpdateManyWithoutRevisionNestedInput;
+    createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedAssetRevisionsNestedInput;
+    approvedBy?: Prisma.UserUpdateOneWithoutApprovedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateWithoutExportsInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUncheckedUpdateManyWithoutRevisionNestedInput;
+};
+export type AssetRevisionCreateManyCreatedByInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type AssetRevisionCreateManyApprovedByInput = {
+    id?: string;
+    projectAssetId: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type AssetRevisionUpdateWithoutCreatedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    projectAsset?: Prisma.ProjectAssetUpdateOneRequiredWithoutRevisionsNestedInput;
+    values?: Prisma.AssetFieldValueUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUpdateManyWithoutAssetRevisionNestedInput;
+    approvedBy?: Prisma.UserUpdateOneWithoutApprovedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateWithoutCreatedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUncheckedUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUncheckedUpdateManyWithoutAssetRevisionNestedInput;
+};
+export type AssetRevisionUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AssetRevisionUpdateWithoutApprovedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    projectAsset?: Prisma.ProjectAssetUpdateOneRequiredWithoutRevisionsNestedInput;
+    values?: Prisma.AssetFieldValueUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUpdateManyWithoutAssetRevisionNestedInput;
+    createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateWithoutApprovedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUncheckedUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUncheckedUpdateManyWithoutAssetRevisionNestedInput;
+};
+export type AssetRevisionUncheckedUpdateManyWithoutApprovedByInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    projectAssetId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AssetRevisionCreateManyProjectAssetInput = {
+    id?: string;
+    status?: $Enums.AssetRevisionStatus;
+    createdById: string;
+    approvedById?: string | null;
+    approvedAt?: Date | string | null;
+    createdAt?: Date | string;
+};
+export type AssetRevisionUpdateWithoutProjectAssetInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUpdateManyWithoutAssetRevisionNestedInput;
+    createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedAssetRevisionsNestedInput;
+    approvedBy?: Prisma.UserUpdateOneWithoutApprovedAssetRevisionsNestedInput;
+};
+export type AssetRevisionUncheckedUpdateWithoutProjectAssetInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    values?: Prisma.AssetFieldValueUncheckedUpdateManyWithoutRevisionNestedInput;
+    exports?: Prisma.AssetExportUncheckedUpdateManyWithoutAssetRevisionNestedInput;
+};
+export type AssetRevisionUncheckedUpdateManyWithoutProjectAssetInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumAssetRevisionStatusFieldUpdateOperationsInput | $Enums.AssetRevisionStatus;
+    createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+    approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type AssetRevisionCountOutputType = {
+    values: number;
+    exports: number;
+};
+export type AssetRevisionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    values?: boolean | AssetRevisionCountOutputTypeCountValuesArgs;
+    exports?: boolean | AssetRevisionCountOutputTypeCountExportsArgs;
+};
+export type AssetRevisionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionCountOutputTypeSelect<ExtArgs> | null;
+};
+export type AssetRevisionCountOutputTypeCountValuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AssetFieldValueWhereInput;
+};
+export type AssetRevisionCountOutputTypeCountExportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AssetExportWhereInput;
+};
+export type AssetRevisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    projectAssetId?: boolean;
+    status?: boolean;
+    createdById?: boolean;
+    approvedById?: boolean;
+    approvedAt?: boolean;
+    createdAt?: boolean;
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    values?: boolean | Prisma.AssetRevision$valuesArgs<ExtArgs>;
+    exports?: boolean | Prisma.AssetRevision$exportsArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+    _count?: boolean | Prisma.AssetRevisionCountOutputTypeDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["assetRevision"]>;
+export type AssetRevisionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    projectAssetId?: boolean;
+    status?: boolean;
+    createdById?: boolean;
+    approvedById?: boolean;
+    approvedAt?: boolean;
+    createdAt?: boolean;
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+}, ExtArgs["result"]["assetRevision"]>;
+export type AssetRevisionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    projectAssetId?: boolean;
+    status?: boolean;
+    createdById?: boolean;
+    approvedById?: boolean;
+    approvedAt?: boolean;
+    createdAt?: boolean;
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+}, ExtArgs["result"]["assetRevision"]>;
+export type AssetRevisionSelectScalar = {
+    id?: boolean;
+    projectAssetId?: boolean;
+    status?: boolean;
+    createdById?: boolean;
+    approvedById?: boolean;
+    approvedAt?: boolean;
+    createdAt?: boolean;
+};
+export type AssetRevisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectAssetId" | "status" | "createdById" | "approvedById" | "approvedAt" | "createdAt", ExtArgs["result"]["assetRevision"]>;
+export type AssetRevisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    values?: boolean | Prisma.AssetRevision$valuesArgs<ExtArgs>;
+    exports?: boolean | Prisma.AssetRevision$exportsArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+    _count?: boolean | Prisma.AssetRevisionCountOutputTypeDefaultArgs<ExtArgs>;
+};
+export type AssetRevisionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+};
+export type AssetRevisionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    projectAsset?: boolean | Prisma.ProjectAssetDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    approvedBy?: boolean | Prisma.AssetRevision$approvedByArgs<ExtArgs>;
+};
+export type $AssetRevisionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "AssetRevision";
+    objects: {
+        projectAsset: Prisma.$ProjectAssetPayload<ExtArgs>;
+        values: Prisma.$AssetFieldValuePayload<ExtArgs>[];
+        exports: Prisma.$AssetExportPayload<ExtArgs>[];
+        createdBy: Prisma.$UserPayload<ExtArgs>;
+        approvedBy: Prisma.$UserPayload<ExtArgs> | null;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: string;
+        projectAssetId: string;
+        status: $Enums.AssetRevisionStatus;
+        createdById: string;
+        approvedById: string | null;
+        approvedAt: Date | null;
+        createdAt: Date;
+    }, ExtArgs["result"]["assetRevision"]>;
+    composites: {};
+};
+export type AssetRevisionGetPayload<S extends boolean | null | undefined | AssetRevisionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload, S>;
+export type AssetRevisionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<AssetRevisionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: AssetRevisionCountAggregateInputType | true;
+};
+export interface AssetRevisionDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['AssetRevision'];
+        meta: {
+            name: 'AssetRevision';
+        };
+    };
+    findUnique<T extends AssetRevisionFindUniqueArgs>(args: Prisma.SelectSubset<T, AssetRevisionFindUniqueArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    findUniqueOrThrow<T extends AssetRevisionFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, AssetRevisionFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    findFirst<T extends AssetRevisionFindFirstArgs>(args?: Prisma.SelectSubset<T, AssetRevisionFindFirstArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    findFirstOrThrow<T extends AssetRevisionFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, AssetRevisionFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    findMany<T extends AssetRevisionFindManyArgs>(args?: Prisma.SelectSubset<T, AssetRevisionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    create<T extends AssetRevisionCreateArgs>(args: Prisma.SelectSubset<T, AssetRevisionCreateArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    createMany<T extends AssetRevisionCreateManyArgs>(args?: Prisma.SelectSubset<T, AssetRevisionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    createManyAndReturn<T extends AssetRevisionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, AssetRevisionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    delete<T extends AssetRevisionDeleteArgs>(args: Prisma.SelectSubset<T, AssetRevisionDeleteArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    update<T extends AssetRevisionUpdateArgs>(args: Prisma.SelectSubset<T, AssetRevisionUpdateArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    deleteMany<T extends AssetRevisionDeleteManyArgs>(args?: Prisma.SelectSubset<T, AssetRevisionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    updateMany<T extends AssetRevisionUpdateManyArgs>(args: Prisma.SelectSubset<T, AssetRevisionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    updateManyAndReturn<T extends AssetRevisionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, AssetRevisionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    upsert<T extends AssetRevisionUpsertArgs>(args: Prisma.SelectSubset<T, AssetRevisionUpsertArgs<ExtArgs>>): Prisma.Prisma__AssetRevisionClient<runtime.Types.Result.GetResult<Prisma.$AssetRevisionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    count<T extends AssetRevisionCountArgs>(args?: Prisma.Subset<T, AssetRevisionCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], AssetRevisionCountAggregateOutputType> : number>;
+    aggregate<T extends AssetRevisionAggregateArgs>(args: Prisma.Subset<T, AssetRevisionAggregateArgs>): Prisma.PrismaPromise<GetAssetRevisionAggregateType<T>>;
+    groupBy<T extends AssetRevisionGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: AssetRevisionGroupByArgs['orderBy'];
+    } : {
+        orderBy?: AssetRevisionGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, AssetRevisionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssetRevisionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    readonly fields: AssetRevisionFieldRefs;
+}
+export interface Prisma__AssetRevisionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    projectAsset<T extends Prisma.ProjectAssetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectAssetDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectAssetClient<runtime.Types.Result.GetResult<Prisma.$ProjectAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    values<T extends Prisma.AssetRevision$valuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetRevision$valuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetFieldValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    exports<T extends Prisma.AssetRevision$exportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetRevision$exportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetExportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    approvedBy<T extends Prisma.AssetRevision$approvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssetRevision$approvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+export interface AssetRevisionFieldRefs {
+    readonly id: Prisma.FieldRef<"AssetRevision", 'String'>;
+    readonly projectAssetId: Prisma.FieldRef<"AssetRevision", 'String'>;
+    readonly status: Prisma.FieldRef<"AssetRevision", 'AssetRevisionStatus'>;
+    readonly createdById: Prisma.FieldRef<"AssetRevision", 'String'>;
+    readonly approvedById: Prisma.FieldRef<"AssetRevision", 'String'>;
+    readonly approvedAt: Prisma.FieldRef<"AssetRevision", 'DateTime'>;
+    readonly createdAt: Prisma.FieldRef<"AssetRevision", 'DateTime'>;
+}
+export type AssetRevisionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where?: Prisma.AssetRevisionWhereInput;
+    orderBy?: Prisma.AssetRevisionOrderByWithRelationInput | Prisma.AssetRevisionOrderByWithRelationInput[];
+    cursor?: Prisma.AssetRevisionWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AssetRevisionScalarFieldEnum | Prisma.AssetRevisionScalarFieldEnum[];
+};
+export type AssetRevisionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where?: Prisma.AssetRevisionWhereInput;
+    orderBy?: Prisma.AssetRevisionOrderByWithRelationInput | Prisma.AssetRevisionOrderByWithRelationInput[];
+    cursor?: Prisma.AssetRevisionWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AssetRevisionScalarFieldEnum | Prisma.AssetRevisionScalarFieldEnum[];
+};
+export type AssetRevisionFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where?: Prisma.AssetRevisionWhereInput;
+    orderBy?: Prisma.AssetRevisionOrderByWithRelationInput | Prisma.AssetRevisionOrderByWithRelationInput[];
+    cursor?: Prisma.AssetRevisionWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AssetRevisionScalarFieldEnum | Prisma.AssetRevisionScalarFieldEnum[];
+};
+export type AssetRevisionCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.AssetRevisionCreateInput, Prisma.AssetRevisionUncheckedCreateInput>;
+};
+export type AssetRevisionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    data: Prisma.AssetRevisionCreateManyInput | Prisma.AssetRevisionCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+export type AssetRevisionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelectCreateManyAndReturn<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    data: Prisma.AssetRevisionCreateManyInput | Prisma.AssetRevisionCreateManyInput[];
+    skipDuplicates?: boolean;
+    include?: Prisma.AssetRevisionIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+export type AssetRevisionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateInput, Prisma.AssetRevisionUncheckedUpdateInput>;
+    where: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateManyMutationInput, Prisma.AssetRevisionUncheckedUpdateManyInput>;
+    where?: Prisma.AssetRevisionWhereInput;
+    limit?: number;
+};
+export type AssetRevisionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelectUpdateManyAndReturn<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.AssetRevisionUpdateManyMutationInput, Prisma.AssetRevisionUncheckedUpdateManyInput>;
+    where?: Prisma.AssetRevisionWhereInput;
+    limit?: number;
+    include?: Prisma.AssetRevisionIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+export type AssetRevisionUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where: Prisma.AssetRevisionWhereUniqueInput;
+    create: Prisma.XOR<Prisma.AssetRevisionCreateInput, Prisma.AssetRevisionUncheckedCreateInput>;
+    update: Prisma.XOR<Prisma.AssetRevisionUpdateInput, Prisma.AssetRevisionUncheckedUpdateInput>;
+};
+export type AssetRevisionDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+    where: Prisma.AssetRevisionWhereUniqueInput;
+};
+export type AssetRevisionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.AssetRevisionWhereInput;
+    limit?: number;
+};
+export type AssetRevision$valuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetFieldValueSelect<ExtArgs> | null;
+    omit?: Prisma.AssetFieldValueOmit<ExtArgs> | null;
+    include?: Prisma.AssetFieldValueInclude<ExtArgs> | null;
+    where?: Prisma.AssetFieldValueWhereInput;
+    orderBy?: Prisma.AssetFieldValueOrderByWithRelationInput | Prisma.AssetFieldValueOrderByWithRelationInput[];
+    cursor?: Prisma.AssetFieldValueWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AssetFieldValueScalarFieldEnum | Prisma.AssetFieldValueScalarFieldEnum[];
+};
+export type AssetRevision$exportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetExportSelect<ExtArgs> | null;
+    omit?: Prisma.AssetExportOmit<ExtArgs> | null;
+    include?: Prisma.AssetExportInclude<ExtArgs> | null;
+    where?: Prisma.AssetExportWhereInput;
+    orderBy?: Prisma.AssetExportOrderByWithRelationInput | Prisma.AssetExportOrderByWithRelationInput[];
+    cursor?: Prisma.AssetExportWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.AssetExportScalarFieldEnum | Prisma.AssetExportScalarFieldEnum[];
+};
+export type AssetRevision$approvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.UserSelect<ExtArgs> | null;
+    omit?: Prisma.UserOmit<ExtArgs> | null;
+    include?: Prisma.UserInclude<ExtArgs> | null;
+    where?: Prisma.UserWhereInput;
+};
+export type AssetRevisionDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.AssetRevisionSelect<ExtArgs> | null;
+    omit?: Prisma.AssetRevisionOmit<ExtArgs> | null;
+    include?: Prisma.AssetRevisionInclude<ExtArgs> | null;
+};

@@ -1,6 +1,6 @@
-import type { AuthUser } from '../auth/auth-user';
-import { CampaignMetricsService } from './campaign-metrics.service';
-import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CampaignMetricsService } from './campaign-metrics.service.js';
+import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto.js';
 export declare class CampaignMetricsController {
     private readonly metrics;
     constructor(metrics: CampaignMetricsService);
@@ -14,20 +14,20 @@ export declare class CampaignMetricsController {
         createdAt: Date;
         projectId: string;
         notes: string | null;
-        metricType: import("@prisma/client").$Enums.MetricType;
+        metricType: import("../generated/prisma/enums.js").MetricType;
         periodStart: Date;
         periodEnd: Date;
-        actualValue: import("@prisma/client/runtime/library").Decimal;
-        plannedValue: import("@prisma/client/runtime/library").Decimal | null;
+        actualValue: import("@prisma/client-runtime-utils").Decimal;
+        plannedValue: import("@prisma/client-runtime-utils").Decimal | null;
         recordedById: string;
     })[]>;
     summary(user: AuthUser, organizationId: string, projectId: string): Promise<{
         budget: {
             currency: string;
-            plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
-            approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
-            committedAmount: import("@prisma/client/runtime/library").Decimal | null;
-            actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+            plannedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+            approvedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+            committedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+            actualAmount: import("@prisma/client-runtime-utils").Decimal | null;
             variance: number | null;
         } | null;
         metrics: {
@@ -48,11 +48,11 @@ export declare class CampaignMetricsController {
         createdAt: Date;
         projectId: string;
         notes: string | null;
-        metricType: import("@prisma/client").$Enums.MetricType;
+        metricType: import("../generated/prisma/enums.js").MetricType;
         periodStart: Date;
         periodEnd: Date;
-        actualValue: import("@prisma/client/runtime/library").Decimal;
-        plannedValue: import("@prisma/client/runtime/library").Decimal | null;
+        actualValue: import("@prisma/client-runtime-utils").Decimal;
+        plannedValue: import("@prisma/client-runtime-utils").Decimal | null;
         recordedById: string;
     }>;
     remove(user: AuthUser, organizationId: string, projectId: string, metricId: string): Promise<void>;

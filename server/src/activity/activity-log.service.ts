@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ActivityAction, ActivityEntityType } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { resolveOrganizationRole } from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  ActivityAction,
+  ActivityEntityType,
+} from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { resolveOrganizationRole } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 interface RecordActivityInput {
   organizationId: string;

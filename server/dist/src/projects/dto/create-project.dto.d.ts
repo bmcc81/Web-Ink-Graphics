@@ -1,4 +1,4 @@
-import { ProjectWorkflowStatus } from '@prisma/client';
+import { ProjectWorkflowStatus } from '../../generated/prisma/client.js';
 export declare class CreateProjectDto {
     name: string;
     description?: string;

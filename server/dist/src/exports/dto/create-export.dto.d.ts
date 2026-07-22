@@ -1,4 +1,4 @@
-import { ExportFormat } from '@prisma/client';
+import { ExportFormat } from '../../generated/prisma/client.js';
 export declare class CreateExportDto {
     format: ExportFormat;
 }

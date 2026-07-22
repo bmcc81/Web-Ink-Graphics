@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,18 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContactController = void 0;
-const common_1 = require("@nestjs/common");
-const throttler_1 = require("@nestjs/throttler");
-const client_1 = require("@prisma/client");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const roles_decorator_1 = require("../auth/roles.decorator");
-const roles_guard_1 = require("../auth/roles.guard");
-const contact_service_1 = require("./contact.service");
-const contact_query_dto_1 = require("./dto/contact-query.dto");
-const create_contact_dto_1 = require("./dto/create-contact.dto");
-const update_contact_status_dto_1 = require("./dto/update-contact-status.dto");
+import { Body, Controller, Get, Param, Patch, Post, Query, Res, UseGuards, } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Role } from '../generated/prisma/client.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { ContactService } from './contact.service.js';
+import { ContactQueryDto } from './dto/contact-query.dto.js';
+import { CreateContactDto } from './dto/create-contact.dto.js';
+import { UpdateContactStatusDto } from './dto/update-contact-status.dto.js';
 let ContactController = class ContactController {
     contact;
     constructor(contact) {
@@ -45,47 +42,47 @@ let ContactController = class ContactController {
         return this.contact.updateStatus(id, status.contacted);
     }
 };
-exports.ContactController = ContactController;
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(throttler_1.ThrottlerGuard),
-    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60_000 } }),
-    __param(0, (0, common_1.Body)()),
+    Post(),
+    UseGuards(ThrottlerGuard),
+    Throttle({ default: { limit: 5, ttl: 60_000 } }),
+    __param(0, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_contact_dto_1.CreateContactDto]),
+    __metadata("design:paramtypes", [CreateContactDto]),
     __metadata("design:returntype", void 0)
 ], ContactController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)('admin/export'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Query)()),
-    __param(1, (0, common_1.Res)()),
+    Get('admin/export'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Query()),
+    __param(1, Res()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [contact_query_dto_1.ContactQueryDto, Object]),
+    __metadata("design:paramtypes", [ContactQueryDto, Object]),
     __metadata("design:returntype", Promise)
 ], ContactController.prototype, "export", null);
 __decorate([
-    (0, common_1.Get)('admin'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Query)()),
+    Get('admin'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [contact_query_dto_1.ContactQueryDto]),
+    __metadata("design:paramtypes", [ContactQueryDto]),
     __metadata("design:returntype", void 0)
 ], ContactController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Patch)('admin/:id/status'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    Patch('admin/:id/status'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Param('id')),
+    __param(1, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_contact_status_dto_1.UpdateContactStatusDto]),
+    __metadata("design:paramtypes", [String, UpdateContactStatusDto]),
     __metadata("design:returntype", void 0)
 ], ContactController.prototype, "updateStatus", null);
-exports.ContactController = ContactController = __decorate([
-    (0, common_1.Controller)('contact'),
-    __metadata("design:paramtypes", [contact_service_1.ContactService])
+ContactController = __decorate([
+    Controller('contact'),
+    __metadata("design:paramtypes", [ContactService])
 ], ContactController);
+export { ContactController };
 //# sourceMappingURL=contact.controller.js.map

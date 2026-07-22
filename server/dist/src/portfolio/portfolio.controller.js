@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,17 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PortfolioController = void 0;
-const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const roles_decorator_1 = require("../auth/roles.decorator");
-const roles_guard_1 = require("../auth/roles.guard");
-const create_portfolio_project_dto_1 = require("./dto/create-portfolio-project.dto");
-const portfolio_query_dto_1 = require("./dto/portfolio-query.dto");
-const update_portfolio_project_dto_1 = require("./dto/update-portfolio-project.dto");
-const portfolio_service_1 = require("./portfolio.service");
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, } from '@nestjs/common';
+import { Role } from '../generated/prisma/client.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto.js';
+import { PortfolioQueryDto } from './dto/portfolio-query.dto.js';
+import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto.js';
+import { PortfolioService } from './portfolio.service.js';
 let PortfolioController = class PortfolioController {
     portfolio;
     constructor(portfolio) {
@@ -55,83 +52,83 @@ let PortfolioController = class PortfolioController {
         return this.portfolio.archive(slug);
     }
 };
-exports.PortfolioController = PortfolioController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)()),
+    Get(),
+    __param(0, Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [portfolio_query_dto_1.PortfolioQueryDto]),
+    __metadata("design:paramtypes", [PortfolioQueryDto]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('featured'),
+    Get('featured'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findFeatured", null);
 __decorate([
-    (0, common_1.Get)('admin/all'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Query)()),
+    Get('admin/all'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [portfolio_query_dto_1.PortfolioQueryDto]),
+    __metadata("design:paramtypes", [PortfolioQueryDto]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findAllForAdmin", null);
 __decorate([
-    (0, common_1.Get)('admin/categories'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
+    Get('admin/categories'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findCategories", null);
 __decorate([
-    (0, common_1.Get)('admin/:slug'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Param)('slug')),
+    Get('admin/:slug'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Param('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findOneForAdmin", null);
 __decorate([
-    (0, common_1.Get)(':slug'),
-    __param(0, (0, common_1.Param)('slug')),
+    Get(':slug'),
+    __param(0, Param('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Body)()),
+    Post(),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_portfolio_project_dto_1.CreatePortfolioProjectDto]),
+    __metadata("design:paramtypes", [CreatePortfolioProjectDto]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "create", null);
 __decorate([
-    (0, common_1.Patch)(':slug'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Param)('slug')),
-    __param(1, (0, common_1.Body)()),
+    Patch(':slug'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Param('slug')),
+    __param(1, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_portfolio_project_dto_1.UpdatePortfolioProjectDto]),
+    __metadata("design:paramtypes", [String, UpdatePortfolioProjectDto]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':slug'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
-    __param(0, (0, common_1.Param)('slug')),
+    Delete(':slug'),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN),
+    __param(0, Param('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PortfolioController.prototype, "archive", null);
-exports.PortfolioController = PortfolioController = __decorate([
-    (0, common_1.Controller)('portfolio'),
-    __metadata("design:paramtypes", [portfolio_service_1.PortfolioService])
+PortfolioController = __decorate([
+    Controller('portfolio'),
+    __metadata("design:paramtypes", [PortfolioService])
 ], PortfolioController);
+export { PortfolioController };
 //# sourceMappingURL=portfolio.controller.js.map

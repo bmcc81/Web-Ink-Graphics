@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PortfolioService = void 0;
-const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, Injectable, NotFoundException, } from '@nestjs/common';
+import { Locale, ProjectStatus } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const projectInclude = {
     translations: true,
     images: { orderBy: { sortOrder: 'asc' } },
@@ -30,7 +27,7 @@ let PortfolioService = class PortfolioService {
     }
     findFeatured() {
         return this.prisma.portfolioProject.findMany({
-            where: { status: client_1.ProjectStatus.PUBLISHED, featured: true },
+            where: { status: ProjectStatus.PUBLISHED, featured: true },
             include: projectInclude,
             orderBy: [{ displayOrder: 'asc' }, { publishedAt: 'desc' }],
             take: 4,
@@ -38,7 +35,7 @@ let PortfolioService = class PortfolioService {
     }
     findAll(query, includeUnpublished = false) {
         const where = {
-            status: includeUnpublished ? query.status : client_1.ProjectStatus.PUBLISHED,
+            status: includeUnpublished ? query.status : ProjectStatus.PUBLISHED,
             categories: query.category
                 ? { some: { slug: query.category } }
                 : undefined,
@@ -55,17 +52,17 @@ let PortfolioService = class PortfolioService {
             include: projectInclude,
         });
         if (!project) {
-            throw new common_1.NotFoundException(`Portfolio project "${slug}" was not found`);
+            throw new NotFoundException(`Portfolio project "${slug}" was not found`);
         }
         return project;
     }
     async findPublished(slug) {
         const project = await this.prisma.portfolioProject.findFirst({
-            where: { slug, status: client_1.ProjectStatus.PUBLISHED },
+            where: { slug, status: ProjectStatus.PUBLISHED },
             include: projectInclude,
         });
         if (!project) {
-            throw new common_1.NotFoundException(`Portfolio project "${slug}" was not found`);
+            throw new NotFoundException(`Portfolio project "${slug}" was not found`);
         }
         return project;
     }
@@ -76,7 +73,7 @@ let PortfolioService = class PortfolioService {
             data: {
                 ...project,
                 completedAt: completedAt ? new Date(completedAt) : undefined,
-                publishedAt: project.status === client_1.ProjectStatus.PUBLISHED ? new Date() : undefined,
+                publishedAt: project.status === ProjectStatus.PUBLISHED ? new Date() : undefined,
                 translations: { create: translations },
                 images: images ? { create: images } : undefined,
                 categories: categoryIds
@@ -101,7 +98,7 @@ let PortfolioService = class PortfolioService {
             data: {
                 ...project,
                 completedAt: completedAt ? new Date(completedAt) : undefined,
-                publishedAt: project.status === client_1.ProjectStatus.PUBLISHED
+                publishedAt: project.status === ProjectStatus.PUBLISHED
                     ? new Date()
                     : project.status
                         ? null
@@ -137,32 +134,32 @@ let PortfolioService = class PortfolioService {
         await this.findOne(slug);
         return this.prisma.portfolioProject.update({
             where: { slug },
-            data: { status: client_1.ProjectStatus.ARCHIVED, publishedAt: null },
+            data: { status: ProjectStatus.ARCHIVED, publishedAt: null },
             include: projectInclude,
         });
     }
     validateContent(status, translations, images) {
         const locales = translations.map((translation) => translation.locale);
-        if (!locales.includes(client_1.Locale.EN)) {
-            throw new common_1.BadRequestException('An English title and summary are required.');
+        if (!locales.includes(Locale.EN)) {
+            throw new BadRequestException('An English title and summary are required.');
         }
         if (new Set(locales).size !== locales.length) {
-            throw new common_1.BadRequestException('Only one translation per language is allowed.');
+            throw new BadRequestException('Only one translation per language is allowed.');
         }
-        if (status !== client_1.ProjectStatus.PUBLISHED) {
+        if (status !== ProjectStatus.PUBLISHED) {
             return;
         }
-        if (!locales.includes(client_1.Locale.FR)) {
-            throw new common_1.BadRequestException('A French title and summary are required before publishing.');
+        if (!locales.includes(Locale.FR)) {
+            throw new BadRequestException('A French title and summary are required before publishing.');
         }
         if (images.some((image) => !image.altTextEn.trim() || !image.altTextFr?.trim())) {
-            throw new common_1.BadRequestException('Published images require English and French alt text.');
+            throw new BadRequestException('Published images require English and French alt text.');
         }
     }
 };
-exports.PortfolioService = PortfolioService;
-exports.PortfolioService = PortfolioService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+PortfolioService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService])
 ], PortfolioService);
+export { PortfolioService };
 //# sourceMappingURL=portfolio.service.js.map

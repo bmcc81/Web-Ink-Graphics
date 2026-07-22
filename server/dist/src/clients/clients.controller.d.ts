@@ -1,25 +1,25 @@
-import type { AuthUser } from '../auth/auth-user';
-import { ClientsService } from './clients.service';
-import { CreateClientDto } from './dto/create-client.dto';
-import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
-import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto';
-import { GeneratePromptDto } from './dto/generate-prompt.dto';
-import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto';
+import type { AuthUser } from '../auth/auth-user.js';
+import { ClientsService } from './clients.service.js';
+import { CreateClientDto } from './dto/create-client.dto.js';
+import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto.js';
+import { UpdateClientDto } from './dto/update-client.dto.js';
+import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto.js';
+import { GeneratePromptDto } from './dto/generate-prompt.dto.js';
+import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto.js';
 export declare class ClientsController {
     private readonly clients;
     constructor(clients: ClientsService);
-    findAll(user: AuthUser): import("@prisma/client").Prisma.PrismaPromise<({
+    findAll(user: AuthUser): import("../generated/prisma/internal/prismaNamespace.js").PrismaPromise<({
         _count: {
             discoveryBriefs: number;
         };
         discoveryBriefs: {
             id: string;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.BriefStatus;
+            status: import("../generated/prisma/enums.js").BriefStatus;
             title: string;
             openQuestions: {
-                priority: import("@prisma/client").$Enums.FollowUpPriority;
+                priority: import("../generated/prisma/enums.js").FollowUpPriority;
                 dueDate: Date | null;
             }[];
             _count: {
@@ -31,11 +31,11 @@ export declare class ClientsController {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        website: string | null;
-        status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
         industry: string | null;
+        website: string | null;
         serviceArea: string | null;
+        status: import("../generated/prisma/enums.js").ClientStatus;
         contactName: string | null;
         contactEmail: string | null;
         contactPhone: string | null;
@@ -46,11 +46,11 @@ export declare class ClientsController {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        website: string | null;
-        status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
         industry: string | null;
+        website: string | null;
         serviceArea: string | null;
+        status: import("../generated/prisma/enums.js").ClientStatus;
         contactName: string | null;
         contactEmail: string | null;
         contactPhone: string | null;
@@ -62,11 +62,11 @@ export declare class ClientsController {
             createdAt: Date;
             updatedAt: Date;
             organizationId: string;
-            website: string | null;
-            status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
             industry: string | null;
+            website: string | null;
             serviceArea: string | null;
+            status: import("../generated/prisma/enums.js").ClientStatus;
             contactName: string | null;
             contactEmail: string | null;
             contactPhone: string | null;
@@ -75,36 +75,36 @@ export declare class ClientsController {
         attachments: {
             id: string;
             createdAt: Date;
-            category: import("@prisma/client").$Enums.AttachmentCategory;
             fileName: string;
+            objectKey: string;
             contentType: string;
             fileSize: number;
+            category: import("../generated/prisma/enums.js").AttachmentCategory;
             briefId: string;
-            objectKey: string;
         }[];
         requirements: {
             id: string;
-            priority: import("@prisma/client").$Enums.RequirementPriority;
-            status: import("@prisma/client").$Enums.RequirementStatus;
-            sortOrder: number;
-            referenceCode: string | null;
-            category: import("@prisma/client").$Enums.RequirementCategory;
+            status: import("../generated/prisma/enums.js").RequirementStatus;
             title: string;
+            category: import("../generated/prisma/enums.js").RequirementCategory;
+            briefId: string;
+            referenceCode: string | null;
+            priority: import("../generated/prisma/enums.js").RequirementPriority;
             details: string | null;
             rationale: string | null;
             acceptanceCriteria: string | null;
-            briefId: string;
+            sortOrder: number;
         }[];
         openQuestions: {
             id: string;
-            priority: import("@prisma/client").$Enums.FollowUpPriority;
-            status: import("@prisma/client").$Enums.QuestionStatus;
+            status: import("../generated/prisma/enums.js").QuestionStatus;
+            briefId: string;
+            priority: import("../generated/prisma/enums.js").FollowUpPriority;
+            sortOrder: number;
             question: string;
             answer: string | null;
             owner: string | null;
             dueDate: Date | null;
-            sortOrder: number;
-            briefId: string;
         }[];
         generatedPrompts: {
             id: string;
@@ -116,8 +116,7 @@ export declare class ClientsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        budget: string | null;
-        status: import("@prisma/client").$Enums.BriefStatus;
+        status: import("../generated/prisma/enums.js").BriefStatus;
         title: string;
         meetingAt: Date | null;
         projectType: string;
@@ -126,6 +125,7 @@ export declare class ClientsController {
         currentProblems: string | null;
         successDefinition: string | null;
         targetLaunch: string | null;
+        budget: string | null;
         decisionMakers: string | null;
         primaryAudience: string | null;
         secondaryAudiences: string | null;
@@ -156,11 +156,11 @@ export declare class ClientsController {
             createdAt: Date;
             updatedAt: Date;
             organizationId: string;
-            website: string | null;
-            status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
             industry: string | null;
+            website: string | null;
             serviceArea: string | null;
+            status: import("../generated/prisma/enums.js").ClientStatus;
             contactName: string | null;
             contactEmail: string | null;
             contactPhone: string | null;
@@ -169,36 +169,36 @@ export declare class ClientsController {
         attachments: {
             id: string;
             createdAt: Date;
-            category: import("@prisma/client").$Enums.AttachmentCategory;
             fileName: string;
+            objectKey: string;
             contentType: string;
             fileSize: number;
+            category: import("../generated/prisma/enums.js").AttachmentCategory;
             briefId: string;
-            objectKey: string;
         }[];
         requirements: {
             id: string;
-            priority: import("@prisma/client").$Enums.RequirementPriority;
-            status: import("@prisma/client").$Enums.RequirementStatus;
-            sortOrder: number;
-            referenceCode: string | null;
-            category: import("@prisma/client").$Enums.RequirementCategory;
+            status: import("../generated/prisma/enums.js").RequirementStatus;
             title: string;
+            category: import("../generated/prisma/enums.js").RequirementCategory;
+            briefId: string;
+            referenceCode: string | null;
+            priority: import("../generated/prisma/enums.js").RequirementPriority;
             details: string | null;
             rationale: string | null;
             acceptanceCriteria: string | null;
-            briefId: string;
+            sortOrder: number;
         }[];
         openQuestions: {
             id: string;
-            priority: import("@prisma/client").$Enums.FollowUpPriority;
-            status: import("@prisma/client").$Enums.QuestionStatus;
+            status: import("../generated/prisma/enums.js").QuestionStatus;
+            briefId: string;
+            priority: import("../generated/prisma/enums.js").FollowUpPriority;
+            sortOrder: number;
             question: string;
             answer: string | null;
             owner: string | null;
             dueDate: Date | null;
-            sortOrder: number;
-            briefId: string;
         }[];
         generatedPrompts: {
             id: string;
@@ -210,8 +210,7 @@ export declare class ClientsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        budget: string | null;
-        status: import("@prisma/client").$Enums.BriefStatus;
+        status: import("../generated/prisma/enums.js").BriefStatus;
         title: string;
         meetingAt: Date | null;
         projectType: string;
@@ -220,6 +219,7 @@ export declare class ClientsController {
         currentProblems: string | null;
         successDefinition: string | null;
         targetLaunch: string | null;
+        budget: string | null;
         decisionMakers: string | null;
         primaryAudience: string | null;
         secondaryAudiences: string | null;
@@ -253,12 +253,12 @@ export declare class ClientsController {
     addAttachment(user: AuthUser, briefId: string, dto: CreateBriefAttachmentDto): Promise<{
         id: string;
         createdAt: Date;
-        category: import("@prisma/client").$Enums.AttachmentCategory;
         fileName: string;
+        objectKey: string;
         contentType: string;
         fileSize: number;
+        category: import("../generated/prisma/enums.js").AttachmentCategory;
         briefId: string;
-        objectKey: string;
     }>;
     attachmentDownload(user: AuthUser, attachmentId: string): Promise<{
         downloadUrl: string;
@@ -272,8 +272,7 @@ export declare class ClientsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            budget: string | null;
-            status: import("@prisma/client").$Enums.BriefStatus;
+            status: import("../generated/prisma/enums.js").BriefStatus;
             title: string;
             meetingAt: Date | null;
             projectType: string;
@@ -282,6 +281,7 @@ export declare class ClientsController {
             currentProblems: string | null;
             successDefinition: string | null;
             targetLaunch: string | null;
+            budget: string | null;
             decisionMakers: string | null;
             primaryAudience: string | null;
             secondaryAudiences: string | null;
@@ -311,11 +311,11 @@ export declare class ClientsController {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        website: string | null;
-        status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
         industry: string | null;
+        website: string | null;
         serviceArea: string | null;
+        status: import("../generated/prisma/enums.js").ClientStatus;
         contactName: string | null;
         contactEmail: string | null;
         contactPhone: string | null;
@@ -326,11 +326,11 @@ export declare class ClientsController {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        website: string | null;
-        status: import("@prisma/client").$Enums.ClientStatus;
         companyName: string;
         industry: string | null;
+        website: string | null;
         serviceArea: string | null;
+        status: import("../generated/prisma/enums.js").ClientStatus;
         contactName: string | null;
         contactEmail: string | null;
         contactPhone: string | null;
@@ -342,11 +342,11 @@ export declare class ClientsController {
             createdAt: Date;
             updatedAt: Date;
             organizationId: string;
-            website: string | null;
-            status: import("@prisma/client").$Enums.ClientStatus;
             companyName: string;
             industry: string | null;
+            website: string | null;
             serviceArea: string | null;
+            status: import("../generated/prisma/enums.js").ClientStatus;
             contactName: string | null;
             contactEmail: string | null;
             contactPhone: string | null;
@@ -355,36 +355,36 @@ export declare class ClientsController {
         attachments: {
             id: string;
             createdAt: Date;
-            category: import("@prisma/client").$Enums.AttachmentCategory;
             fileName: string;
+            objectKey: string;
             contentType: string;
             fileSize: number;
+            category: import("../generated/prisma/enums.js").AttachmentCategory;
             briefId: string;
-            objectKey: string;
         }[];
         requirements: {
             id: string;
-            priority: import("@prisma/client").$Enums.RequirementPriority;
-            status: import("@prisma/client").$Enums.RequirementStatus;
-            sortOrder: number;
-            referenceCode: string | null;
-            category: import("@prisma/client").$Enums.RequirementCategory;
+            status: import("../generated/prisma/enums.js").RequirementStatus;
             title: string;
+            category: import("../generated/prisma/enums.js").RequirementCategory;
+            briefId: string;
+            referenceCode: string | null;
+            priority: import("../generated/prisma/enums.js").RequirementPriority;
             details: string | null;
             rationale: string | null;
             acceptanceCriteria: string | null;
-            briefId: string;
+            sortOrder: number;
         }[];
         openQuestions: {
             id: string;
-            priority: import("@prisma/client").$Enums.FollowUpPriority;
-            status: import("@prisma/client").$Enums.QuestionStatus;
+            status: import("../generated/prisma/enums.js").QuestionStatus;
+            briefId: string;
+            priority: import("../generated/prisma/enums.js").FollowUpPriority;
+            sortOrder: number;
             question: string;
             answer: string | null;
             owner: string | null;
             dueDate: Date | null;
-            sortOrder: number;
-            briefId: string;
         }[];
         generatedPrompts: {
             id: string;
@@ -396,8 +396,7 @@ export declare class ClientsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        budget: string | null;
-        status: import("@prisma/client").$Enums.BriefStatus;
+        status: import("../generated/prisma/enums.js").BriefStatus;
         title: string;
         meetingAt: Date | null;
         projectType: string;
@@ -406,6 +405,7 @@ export declare class ClientsController {
         currentProblems: string | null;
         successDefinition: string | null;
         targetLaunch: string | null;
+        budget: string | null;
         decisionMakers: string | null;
         primaryAudience: string | null;
         secondaryAudiences: string | null;

@@ -1,25 +1,22 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DesignsModule = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const designs_controller_1 = require("./designs.controller");
-const designs_service_1 = require("./designs.service");
-const figma_service_1 = require("./figma.service");
+import { Module } from '@nestjs/common';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { DesignsController } from './designs.controller.js';
+import { DesignsService } from './designs.service.js';
+import { FigmaService } from './figma.service.js';
 let DesignsModule = class DesignsModule {
 };
-exports.DesignsModule = DesignsModule;
-exports.DesignsModule = DesignsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [designs_controller_1.DesignsController],
-        providers: [designs_service_1.DesignsService, figma_service_1.FigmaService],
+DesignsModule = __decorate([
+    Module({
+        imports: [ActivityLogModule],
+        controllers: [DesignsController],
+        providers: [DesignsService, FigmaService],
     })
 ], DesignsModule);
+export { DesignsModule };
 //# sourceMappingURL=designs.module.js.map

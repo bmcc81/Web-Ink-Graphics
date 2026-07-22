@@ -1,4 +1,4 @@
-import { MetricType } from '@prisma/client';
+import { MetricType } from '../../generated/prisma/client.js';
 import {
   IsDateString,
   IsEnum,

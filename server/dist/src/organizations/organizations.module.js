@@ -1,25 +1,22 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrganizationsModule = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const invitations_controller_1 = require("./invitations.controller");
-const organizations_controller_1 = require("./organizations.controller");
-const organizations_service_1 = require("./organizations.service");
+import { Module } from '@nestjs/common';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { InvitationsController } from './invitations.controller.js';
+import { OrganizationsController } from './organizations.controller.js';
+import { OrganizationsService } from './organizations.service.js';
 let OrganizationsModule = class OrganizationsModule {
 };
-exports.OrganizationsModule = OrganizationsModule;
-exports.OrganizationsModule = OrganizationsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [organizations_controller_1.OrganizationsController, invitations_controller_1.InvitationsController],
-        providers: [organizations_service_1.OrganizationsService],
+OrganizationsModule = __decorate([
+    Module({
+        imports: [ActivityLogModule],
+        controllers: [OrganizationsController, InvitationsController],
+        providers: [OrganizationsService],
     })
 ], OrganizationsModule);
+export { OrganizationsModule };
 //# sourceMappingURL=organizations.module.js.map

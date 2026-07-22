@@ -1,4 +1,4 @@
-import { ProjectStatus } from '@prisma/client';
+import { ProjectStatus } from '../../generated/prisma/client.js';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -16,8 +16,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { PortfolioImageDto } from './portfolio-image.dto';
-import { ProjectTranslationDto } from './project-translation.dto';
+import { PortfolioImageDto } from './portfolio-image.dto.js';
+import { ProjectTranslationDto } from './project-translation.dto.js';
 
 export class CreatePortfolioProjectDto {
   @IsString()

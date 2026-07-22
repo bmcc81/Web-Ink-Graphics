@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { isStaff } from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateDesignTemplateDto } from './dto/create-design-template.dto';
-import { UpdateDesignTemplateDto } from './dto/update-design-template.dto';
+import type { AuthUser } from '../auth/auth-user.js';
+import { isStaff } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateDesignTemplateDto } from './dto/create-design-template.dto.js';
+import { UpdateDesignTemplateDto } from './dto/update-design-template.dto.js';
 
 const templateInclude = {
   fields: { orderBy: { sortOrder: 'asc' as const } },

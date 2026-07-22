@@ -3,15 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateGoalDto } from './dto/create-goal.dto.js';
+import { UpdateGoalDto } from './dto/update-goal.dto.js';
 
 @Injectable()
 export class GoalsService {

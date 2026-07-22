@@ -1,19 +1,22 @@
+import { jest as jestGlobals } from '@jest/globals';
 import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { PlanDraftsService } from './plan-drafts.service';
+import { Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
 
 const mockCreate = jest.fn();
-jest.mock('@anthropic-ai/sdk', () => {
-  return jest.fn().mockImplementation(() => ({
+jestGlobals.unstable_mockModule('@anthropic-ai/sdk', () => ({
+  default: jest.fn().mockImplementation(() => ({
     messages: { create: mockCreate },
-  }));
-});
+  })),
+}));
+
+const { PlanDraftsService } = await import('./plan-drafts.service.js');
+type PlanDraftsService = InstanceType<typeof PlanDraftsService>;
 
 function structuredResponse(content: Record<string, unknown>) {
   return {

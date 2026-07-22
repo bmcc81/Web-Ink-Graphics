@@ -1,11 +1,15 @@
+import { jest as jestGlobals } from '@jest/globals';
 import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { ExportFormat, OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { ExportsService } from './exports.service';
+import {
+  ExportFormat,
+  OrganizationRole,
+  Role,
+} from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
 
 const mockScreenshot = jest.fn<Promise<Buffer>, []>();
 const mockPdf = jest.fn<Promise<Buffer>, []>();
@@ -14,12 +18,12 @@ const mockNewPage = jest.fn<Promise<unknown>, []>();
 const mockClose = jest.fn<Promise<void>, []>();
 const mockLaunch = jest.fn<Promise<unknown>, []>();
 
-jest.mock('playwright', () => ({
+jestGlobals.unstable_mockModule('playwright', () => ({
   chromium: { launch: (): Promise<unknown> => mockLaunch() },
 }));
 
 const mockS3Send = jest.fn<Promise<unknown>, []>();
-jest.mock('@aws-sdk/client-s3', () => ({
+jestGlobals.unstable_mockModule('@aws-sdk/client-s3', () => ({
   S3Client: jest.fn().mockImplementation(() => ({ send: mockS3Send })),
   PutObjectCommand: jest
     .fn()
@@ -30,9 +34,12 @@ jest.mock('@aws-sdk/client-s3', () => ({
 }));
 
 const mockGetSignedUrl = jest.fn<Promise<string>, []>();
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
+jestGlobals.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: (): Promise<string> => mockGetSignedUrl(),
 }));
+
+const { ExportsService } = await import('./exports.service.js');
+type ExportsService = InstanceType<typeof ExportsService>;
 
 describe('ExportsService', () => {
   const organizationId = 'organization-1';

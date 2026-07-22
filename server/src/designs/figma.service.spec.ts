@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { FigmaService } from './figma.service';
+import { FigmaService } from './figma.service.js';
 
 describe('FigmaService', () => {
   const config = { get: jest.fn() };

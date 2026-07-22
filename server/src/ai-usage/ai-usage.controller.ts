@@ -5,12 +5,12 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { resolveOrganizationRole } from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { AiUsageService } from './ai-usage.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { resolveOrganizationRole } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { AiUsageService } from './ai-usage.service.js';
 
 @Controller('organizations/:organizationId/ai-usage')
 @UseGuards(JwtAuthGuard)

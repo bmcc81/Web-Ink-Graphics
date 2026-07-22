@@ -1,19 +1,22 @@
+import { jest as jestGlobals } from '@jest/globals';
 import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { CreativeBriefsService } from './creative-briefs.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
 
 const mockCreate = jest.fn();
-jest.mock('@anthropic-ai/sdk', () => {
-  return jest.fn().mockImplementation(() => ({
+jestGlobals.unstable_mockModule('@anthropic-ai/sdk', () => ({
+  default: jest.fn().mockImplementation(() => ({
     messages: { create: mockCreate },
-  }));
-});
+  })),
+}));
+
+const { CreativeBriefsService } = await import('./creative-briefs.service.js');
+type CreativeBriefsService = InstanceType<typeof CreativeBriefsService>;
 
 function structuredResponse(content: Record<string, unknown>) {
   return {

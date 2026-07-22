@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { ArrayMinSize, IsArray, ValidateNested } from 'class-validator';
-import { AssetFieldValueInputDto } from './create-project-asset.dto';
+import { AssetFieldValueInputDto } from './create-project-asset.dto.js';
 
 export class UpdateAssetValuesDto {
   @IsArray()

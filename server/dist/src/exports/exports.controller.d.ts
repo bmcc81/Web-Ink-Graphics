@@ -1,6 +1,6 @@
-import type { AuthUser } from '../auth/auth-user';
-import { CreateExportDto } from './dto/create-export.dto';
-import { ExportsService } from './exports.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CreateExportDto } from './dto/create-export.dto.js';
+import { ExportsService } from './exports.service.js';
 export declare class ExportsController {
     private readonly exports;
     constructor(exports: ExportsService);
@@ -12,11 +12,11 @@ export declare class ExportsController {
     } & {
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.ExportStatus;
+        status: import("../generated/prisma/enums.js").ExportStatus;
         objectKey: string | null;
         completedAt: Date | null;
-        format: import("@prisma/client").$Enums.ExportFormat;
         assetRevisionId: string;
+        format: import("../generated/prisma/enums.js").ExportFormat;
         errorMessage: string | null;
         requestedById: string;
     })[]>;
@@ -28,11 +28,11 @@ export declare class ExportsController {
     } & {
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.ExportStatus;
+        status: import("../generated/prisma/enums.js").ExportStatus;
         objectKey: string | null;
         completedAt: Date | null;
-        format: import("@prisma/client").$Enums.ExportFormat;
         assetRevisionId: string;
+        format: import("../generated/prisma/enums.js").ExportFormat;
         errorMessage: string | null;
         requestedById: string;
     }>;

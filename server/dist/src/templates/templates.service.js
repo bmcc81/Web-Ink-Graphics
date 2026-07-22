@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TemplatesService = void 0;
-const common_1 = require("@nestjs/common");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, Injectable, NotFoundException, } from '@nestjs/common';
+import { isStaff } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const templateInclude = {
     fields: { orderBy: { sortOrder: 'asc' } },
 };
@@ -23,24 +20,24 @@ let TemplatesService = class TemplatesService {
     }
     list(user) {
         return this.prisma.designTemplate.findMany({
-            where: (0, organization_access_1.isStaff)(user) ? {} : { isPublished: true },
+            where: isStaff(user) ? {} : { isPublished: true },
             include: templateInclude,
             orderBy: { createdAt: 'desc' },
         });
     }
     async findOne(user, id) {
         const template = await this.prisma.designTemplate.findFirst({
-            where: { id, ...((0, organization_access_1.isStaff)(user) ? {} : { isPublished: true }) },
+            where: { id, ...(isStaff(user) ? {} : { isPublished: true }) },
             include: templateInclude,
         });
         if (!template)
-            throw new common_1.NotFoundException('Template not found');
+            throw new NotFoundException('Template not found');
         return template;
     }
     create(dto) {
         const keys = new Set(dto.fields.map((field) => field.key));
         if (keys.size !== dto.fields.length) {
-            throw new common_1.BadRequestException('Field keys must be unique within a template');
+            throw new BadRequestException('Field keys must be unique within a template');
         }
         return this.prisma.designTemplate.create({
             data: {
@@ -89,13 +86,13 @@ let TemplatesService = class TemplatesService {
             select: { id: true },
         });
         if (!template)
-            throw new common_1.NotFoundException('Template not found');
+            throw new NotFoundException('Template not found');
         return template;
     }
 };
-exports.TemplatesService = TemplatesService;
-exports.TemplatesService = TemplatesService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+TemplatesService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService])
 ], TemplatesService);
+export { TemplatesService };
 //# sourceMappingURL=templates.service.js.map

@@ -1,7 +1,7 @@
 import { ForbiddenException } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { AiUsageService } from './ai-usage.service';
+import { Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { AiUsageService } from './ai-usage.service.js';
 
 describe('AiUsageService', () => {
   const organizationId = 'organization-1';

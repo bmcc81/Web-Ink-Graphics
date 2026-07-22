@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateEnvironment = validateEnvironment;
-function validateEnvironment(environment) {
+export function validateEnvironment(environment) {
     const production = environment.NODE_ENV === 'production';
     const errors = [];
     if (production) {

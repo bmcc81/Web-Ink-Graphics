@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,12 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CampaignMetricsService = void 0;
-const common_1 = require("@nestjs/common");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
-const activity_log_service_1 = require("../activity/activity-log.service");
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { CONTRIBUTE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
 const metricInclude = {
     recordedBy: { select: { id: true, name: true } },
 };
@@ -37,7 +34,7 @@ let CampaignMetricsService = class CampaignMetricsService {
         await this.assertCanContribute(user, organizationId);
         await this.findProjectOrThrow(organizationId, projectId);
         if (new Date(dto.periodEnd) < new Date(dto.periodStart)) {
-            throw new common_1.BadRequestException('The period end date cannot be before the period start date');
+            throw new BadRequestException('The period end date cannot be before the period start date');
         }
         const entry = await this.prisma.campaignMetricEntry.create({
             data: {
@@ -69,7 +66,7 @@ let CampaignMetricsService = class CampaignMetricsService {
             where: { id: metricId, projectId },
         });
         if (!entry)
-            throw new common_1.NotFoundException('Campaign metric entry not found');
+            throw new NotFoundException('Campaign metric entry not found');
         await this.prisma.campaignMetricEntry.delete({ where: { id: metricId } });
         await this.activityLog.record({
             organizationId,
@@ -127,16 +124,16 @@ let CampaignMetricsService = class CampaignMetricsService {
         return { budget: budgetSummary, metrics };
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can log campaign metrics');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can log campaign metrics');
         }
         return role;
     }
@@ -146,14 +143,14 @@ let CampaignMetricsService = class CampaignMetricsService {
             select: { id: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
 };
-exports.CampaignMetricsService = CampaignMetricsService;
-exports.CampaignMetricsService = CampaignMetricsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService])
+CampaignMetricsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ActivityLogService])
 ], CampaignMetricsService);
+export { CampaignMetricsService };
 //# sourceMappingURL=campaign-metrics.service.js.map

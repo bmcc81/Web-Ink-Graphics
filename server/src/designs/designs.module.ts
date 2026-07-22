@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { DesignsController } from './designs.controller';
-import { DesignsService } from './designs.service';
-import { FigmaService } from './figma.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { DesignsController } from './designs.controller.js';
+import { DesignsService } from './designs.service.js';
+import { FigmaService } from './figma.service.js';
 
 @Module({
   imports: [ActivityLogModule],

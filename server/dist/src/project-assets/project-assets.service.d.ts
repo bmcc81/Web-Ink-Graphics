@@ -1,8 +1,8 @@
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateProjectAssetDto } from './dto/create-project-asset.dto';
-import { UpdateAssetValuesDto } from './dto/update-asset-values.dto';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateProjectAssetDto } from './dto/create-project-asset.dto.js';
+import { UpdateAssetValuesDto } from './dto/update-asset-values.dto.js';
 export declare class ProjectAssetsService {
     private readonly prisma;
     private readonly activityLog;
@@ -11,17 +11,17 @@ export declare class ProjectAssetsService {
         template: {
             fields: {
                 id: string;
-                y: number;
                 sortOrder: number;
-                key: string;
                 width: number;
                 height: number;
                 templateId: string;
+                key: string;
                 label: string;
-                fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
                 x: number;
+                y: number;
                 fontSize: number;
                 color: string | null;
             }[];
@@ -30,45 +30,45 @@ export declare class ProjectAssetsService {
             name: string;
             createdAt: Date;
             updatedAt: Date;
-            category: import("@prisma/client").$Enums.TemplateCategory;
+            category: import("../generated/prisma/enums.js").TemplateCategory;
             description: string | null;
             previewImageUrl: string | null;
+            isPublished: boolean;
             canvasWidth: number;
             canvasHeight: number;
-            isPublished: boolean;
         };
         createdBy: {
             id: string;
             name: string;
         };
         revisions: ({
+            approvedBy: {
+                id: string;
+                name: string;
+            } | null;
             values: ({
                 templateField: {
                     id: string;
-                    y: number;
                     sortOrder: number;
-                    key: string;
                     width: number;
                     height: number;
                     templateId: string;
+                    key: string;
                     label: string;
-                    fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                    fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                     required: boolean;
                     maxLength: number | null;
                     x: number;
+                    y: number;
                     fontSize: number;
                     color: string | null;
                 };
             } & {
                 id: string;
-                value: string;
                 revisionId: string;
                 templateFieldId: string;
+                value: string;
             })[];
-            approvedBy: {
-                id: string;
-                name: string;
-            } | null;
             createdBy: {
                 id: string;
                 name: string;
@@ -76,11 +76,11 @@ export declare class ProjectAssetsService {
         } & {
             id: string;
             createdAt: Date;
-            status: import("@prisma/client").$Enums.AssetRevisionStatus;
+            status: import("../generated/prisma/enums.js").AssetRevisionStatus;
             approvedAt: Date | null;
             createdById: string;
-            approvedById: string | null;
             projectAssetId: string;
+            approvedById: string | null;
         })[];
     } & {
         id: string;
@@ -88,25 +88,25 @@ export declare class ProjectAssetsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         templateId: string;
         createdById: string;
-        unlinkedAt: Date | null;
     })[]>;
     attach(user: AuthUser, organizationId: string, projectId: string, dto: CreateProjectAssetDto): Promise<{
         template: {
             fields: {
                 id: string;
-                y: number;
                 sortOrder: number;
-                key: string;
                 width: number;
                 height: number;
                 templateId: string;
+                key: string;
                 label: string;
-                fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
                 x: number;
+                y: number;
                 fontSize: number;
                 color: string | null;
             }[];
@@ -115,45 +115,45 @@ export declare class ProjectAssetsService {
             name: string;
             createdAt: Date;
             updatedAt: Date;
-            category: import("@prisma/client").$Enums.TemplateCategory;
+            category: import("../generated/prisma/enums.js").TemplateCategory;
             description: string | null;
             previewImageUrl: string | null;
+            isPublished: boolean;
             canvasWidth: number;
             canvasHeight: number;
-            isPublished: boolean;
         };
         createdBy: {
             id: string;
             name: string;
         };
         revisions: ({
+            approvedBy: {
+                id: string;
+                name: string;
+            } | null;
             values: ({
                 templateField: {
                     id: string;
-                    y: number;
                     sortOrder: number;
-                    key: string;
                     width: number;
                     height: number;
                     templateId: string;
+                    key: string;
                     label: string;
-                    fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                    fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                     required: boolean;
                     maxLength: number | null;
                     x: number;
+                    y: number;
                     fontSize: number;
                     color: string | null;
                 };
             } & {
                 id: string;
-                value: string;
                 revisionId: string;
                 templateFieldId: string;
+                value: string;
             })[];
-            approvedBy: {
-                id: string;
-                name: string;
-            } | null;
             createdBy: {
                 id: string;
                 name: string;
@@ -161,11 +161,11 @@ export declare class ProjectAssetsService {
         } & {
             id: string;
             createdAt: Date;
-            status: import("@prisma/client").$Enums.AssetRevisionStatus;
+            status: import("../generated/prisma/enums.js").AssetRevisionStatus;
             approvedAt: Date | null;
             createdById: string;
-            approvedById: string | null;
             projectAssetId: string;
+            approvedById: string | null;
         })[];
     } & {
         id: string;
@@ -173,38 +173,38 @@ export declare class ProjectAssetsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
         templateId: string;
         createdById: string;
-        unlinkedAt: Date | null;
     }>;
     listRevisions(user: AuthUser, organizationId: string, projectId: string, assetId: string): Promise<({
+        approvedBy: {
+            id: string;
+            name: string;
+        } | null;
         values: ({
             templateField: {
                 id: string;
-                y: number;
                 sortOrder: number;
-                key: string;
                 width: number;
                 height: number;
                 templateId: string;
+                key: string;
                 label: string;
-                fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
                 x: number;
+                y: number;
                 fontSize: number;
                 color: string | null;
             };
         } & {
             id: string;
-            value: string;
             revisionId: string;
             templateFieldId: string;
+            value: string;
         })[];
-        approvedBy: {
-            id: string;
-            name: string;
-        } | null;
         createdBy: {
             id: string;
             name: string;
@@ -212,40 +212,40 @@ export declare class ProjectAssetsService {
     } & {
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.AssetRevisionStatus;
+        status: import("../generated/prisma/enums.js").AssetRevisionStatus;
         approvedAt: Date | null;
         createdById: string;
-        approvedById: string | null;
         projectAssetId: string;
+        approvedById: string | null;
     })[]>;
     updateValues(user: AuthUser, organizationId: string, projectId: string, assetId: string, dto: UpdateAssetValuesDto): Promise<{
+        approvedBy: {
+            id: string;
+            name: string;
+        } | null;
         values: ({
             templateField: {
                 id: string;
-                y: number;
                 sortOrder: number;
-                key: string;
                 width: number;
                 height: number;
                 templateId: string;
+                key: string;
                 label: string;
-                fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
                 x: number;
+                y: number;
                 fontSize: number;
                 color: string | null;
             };
         } & {
             id: string;
-            value: string;
             revisionId: string;
             templateFieldId: string;
+            value: string;
         })[];
-        approvedBy: {
-            id: string;
-            name: string;
-        } | null;
         createdBy: {
             id: string;
             name: string;
@@ -253,40 +253,40 @@ export declare class ProjectAssetsService {
     } & {
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.AssetRevisionStatus;
+        status: import("../generated/prisma/enums.js").AssetRevisionStatus;
         approvedAt: Date | null;
         createdById: string;
-        approvedById: string | null;
         projectAssetId: string;
+        approvedById: string | null;
     }>;
     approve(user: AuthUser, organizationId: string, projectId: string, assetId: string): Promise<{
+        approvedBy: {
+            id: string;
+            name: string;
+        } | null;
         values: ({
             templateField: {
                 id: string;
-                y: number;
                 sortOrder: number;
-                key: string;
                 width: number;
                 height: number;
                 templateId: string;
+                key: string;
                 label: string;
-                fieldType: import("@prisma/client").$Enums.TemplateFieldType;
+                fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
                 required: boolean;
                 maxLength: number | null;
                 x: number;
+                y: number;
                 fontSize: number;
                 color: string | null;
             };
         } & {
             id: string;
-            value: string;
             revisionId: string;
             templateFieldId: string;
+            value: string;
         })[];
-        approvedBy: {
-            id: string;
-            name: string;
-        } | null;
         createdBy: {
             id: string;
             name: string;
@@ -294,11 +294,11 @@ export declare class ProjectAssetsService {
     } & {
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.AssetRevisionStatus;
+        status: import("../generated/prisma/enums.js").AssetRevisionStatus;
         approvedAt: Date | null;
         createdById: string;
-        approvedById: string | null;
         projectAssetId: string;
+        approvedById: string | null;
     }>;
     unlink(user: AuthUser, organizationId: string, projectId: string, assetId: string): Promise<{
         removed: boolean;

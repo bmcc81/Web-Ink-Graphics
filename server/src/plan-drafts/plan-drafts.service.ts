@@ -8,17 +8,22 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
-import { GoalPeriod, OrganizationRole, Prisma, Role } from '@prisma/client';
-import { ActivityLogService } from '../activity/activity-log.service';
-import { AiUsageService } from '../ai-usage/ai-usage.service';
-import type { AuthUser } from '../auth/auth-user';
-import { GoalsService } from '../goals/goals.service';
+import {
+  GoalPeriod,
+  OrganizationRole,
+  Prisma,
+  Role,
+} from '../generated/prisma/client.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { GoalsService } from '../goals/goals.service.js';
 import {
   MANAGE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { ProjectsService } from '../projects/projects.service';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ProjectsService } from '../projects/projects.service.js';
 
 const HAIKU_MODEL = 'claude-haiku-4-5';
 const VALID_PERIODS: GoalPeriod[] = ['Q1', 'Q2', 'Q3', 'Q4', 'ANNUAL'];

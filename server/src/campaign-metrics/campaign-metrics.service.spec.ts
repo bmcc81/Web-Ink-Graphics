@@ -3,9 +3,9 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { CampaignMetricsService } from './campaign-metrics.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CampaignMetricsService } from './campaign-metrics.service.js';
 
 describe('CampaignMetricsService', () => {
   const organizationId = 'organization-1';

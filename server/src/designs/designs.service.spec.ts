@@ -3,10 +3,10 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { DesignReviewDecision } from './dto/decide-design-review.dto';
-import { DesignsService } from './designs.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { DesignReviewDecision } from './dto/decide-design-review.dto.js';
+import { DesignsService } from './designs.service.js';
 
 describe('DesignsService', () => {
   const organizationId = 'organization-1';

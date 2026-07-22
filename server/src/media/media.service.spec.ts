@@ -1,7 +1,7 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { MediaService } from './media.service';
+import { Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { MediaService } from './media.service.js';
 
 describe('MediaService tenant authorization', () => {
   const customer: AuthUser = {

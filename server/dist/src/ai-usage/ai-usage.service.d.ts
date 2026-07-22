@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
-import { AiUsagePurpose } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
+import { AiUsagePurpose } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 export declare class AiUsageService {
     private readonly prisma;
     private readonly config;

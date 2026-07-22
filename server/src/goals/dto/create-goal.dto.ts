@@ -1,4 +1,4 @@
-import { GoalPeriod, GoalStatus } from '@prisma/client';
+import { GoalPeriod, GoalStatus } from '../../generated/prisma/client.js';
 import {
   IsEnum,
   IsInt,

@@ -1,5 +1,5 @@
-import type { AuthUser } from '../auth/auth-user';
-import { PerformanceRecommendationsService } from './performance-recommendations.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PerformanceRecommendationsService } from './performance-recommendations.service.js';
 export declare class PerformanceRecommendationsController {
     private readonly recommendations;
     constructor(recommendations: PerformanceRecommendationsService);
@@ -10,10 +10,10 @@ export declare class PerformanceRecommendationsController {
         };
         items: {
             id: string;
-            priority: import("@prisma/client").$Enums.RecommendationPriority;
-            sortOrder: number;
             title: string;
+            priority: import("../generated/prisma/enums.js").RecommendationPriority;
             rationale: string;
+            sortOrder: number;
             performanceRecommendationId: string;
         }[];
     } & {
@@ -33,10 +33,10 @@ export declare class PerformanceRecommendationsController {
         };
         items: {
             id: string;
-            priority: import("@prisma/client").$Enums.RecommendationPriority;
-            sortOrder: number;
             title: string;
+            priority: import("../generated/prisma/enums.js").RecommendationPriority;
             rationale: string;
+            sortOrder: number;
             performanceRecommendationId: string;
         }[];
     } & {

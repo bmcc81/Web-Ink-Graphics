@@ -1,6 +1,6 @@
-import type { AuthUser } from '../auth/auth-user';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { MediaService } from './media.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CreateUploadDto } from './dto/create-upload.dto.js';
+import { MediaService } from './media.service.js';
 export declare class MediaController {
     private readonly media;
     constructor(media: MediaService);

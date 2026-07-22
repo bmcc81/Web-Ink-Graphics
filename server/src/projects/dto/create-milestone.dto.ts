@@ -1,4 +1,4 @@
-import { MilestoneStatus } from '@prisma/client';
+import { MilestoneStatus } from '../../generated/prisma/client.js';
 import {
   IsDateString,
   IsEnum,

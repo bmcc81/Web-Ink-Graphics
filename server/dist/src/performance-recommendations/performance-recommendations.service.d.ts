@@ -1,9 +1,10 @@
 import { ConfigService } from '@nestjs/config';
-import { ActivityLogService } from '../activity/activity-log.service';
-import { AiUsageService } from '../ai-usage/ai-usage.service';
-import type { AuthUser } from '../auth/auth-user';
-import { CampaignMetricsService } from '../campaign-metrics/campaign-metrics.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { RecommendationPriority } from '../generated/prisma/client.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CampaignMetricsService } from '../campaign-metrics/campaign-metrics.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 export declare class PerformanceRecommendationsService {
     private readonly prisma;
     private readonly config;
@@ -19,10 +20,10 @@ export declare class PerformanceRecommendationsService {
         };
         items: {
             id: string;
-            priority: import("@prisma/client").$Enums.RecommendationPriority;
-            sortOrder: number;
             title: string;
+            priority: RecommendationPriority;
             rationale: string;
+            sortOrder: number;
             performanceRecommendationId: string;
         }[];
     } & {
@@ -42,10 +43,10 @@ export declare class PerformanceRecommendationsService {
         };
         items: {
             id: string;
-            priority: import("@prisma/client").$Enums.RecommendationPriority;
-            sortOrder: number;
             title: string;
+            priority: RecommendationPriority;
             rationale: string;
+            sortOrder: number;
             performanceRecommendationId: string;
         }[];
     } & {

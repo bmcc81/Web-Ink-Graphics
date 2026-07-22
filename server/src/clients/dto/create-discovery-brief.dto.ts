@@ -1,4 +1,4 @@
-import { BriefStatus } from '@prisma/client';
+import { BriefStatus } from '../../generated/prisma/client.js';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -10,8 +10,8 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { BriefQuestionDto } from './brief-question.dto';
-import { BriefRequirementDto } from './brief-requirement.dto';
+import { BriefQuestionDto } from './brief-question.dto.js';
+import { BriefRequirementDto } from './brief-requirement.dto.js';
 
 export class CreateDiscoveryBriefDto {
   @IsString()

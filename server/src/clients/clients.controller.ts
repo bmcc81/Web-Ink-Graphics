@@ -8,16 +8,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { ClientsService } from './clients.service';
-import { CreateClientDto } from './dto/create-client.dto';
-import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
-import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto';
-import { GeneratePromptDto } from './dto/generate-prompt.dto';
-import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { ClientsService } from './clients.service.js';
+import { CreateClientDto } from './dto/create-client.dto.js';
+import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto.js';
+import { UpdateClientDto } from './dto/update-client.dto.js';
+import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto.js';
+import { GeneratePromptDto } from './dto/generate-prompt.dto.js';
+import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto.js';
 
 @Controller('clients')
 @UseGuards(JwtAuthGuard)

@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,12 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ActivityLogController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const activity_log_service_1 = require("./activity-log.service");
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { ActivityLogService } from './activity-log.service.js';
 let ActivityLogController = class ActivityLogController {
     activityLog;
     constructor(activityLog) {
@@ -26,18 +23,18 @@ let ActivityLogController = class ActivityLogController {
         return this.activityLog.list(user, organizationId);
     }
 };
-exports.ActivityLogController = ActivityLogController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ActivityLogController.prototype, "list", null);
-exports.ActivityLogController = ActivityLogController = __decorate([
-    (0, common_1.Controller)('organizations/:organizationId/activity'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [activity_log_service_1.ActivityLogService])
+ActivityLogController = __decorate([
+    Controller('organizations/:organizationId/activity'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [ActivityLogService])
 ], ActivityLogController);
+export { ActivityLogController };
 //# sourceMappingURL=activity-log.controller.js.map

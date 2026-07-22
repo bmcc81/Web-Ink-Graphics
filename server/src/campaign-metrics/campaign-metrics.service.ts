@@ -4,14 +4,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { ActivityLogService } from '../activity/activity-log.service';
-import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto.js';
 
 const metricInclude = {
   recordedBy: { select: { id: true, name: true } },

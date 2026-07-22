@@ -1,6 +1,6 @@
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { AiUsageService } from './ai-usage.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { AiUsageService } from './ai-usage.service.js';
 export declare class AiUsageController {
     private readonly aiUsage;
     private readonly prisma;

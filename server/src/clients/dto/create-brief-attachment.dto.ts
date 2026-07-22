@@ -1,4 +1,4 @@
-import { AttachmentCategory } from '@prisma/client';
+import { AttachmentCategory } from '../../generated/prisma/client.js';
 import {
   IsEnum,
   IsInt,

@@ -2,7 +2,7 @@ import {
   RequirementCategory,
   RequirementPriority,
   RequirementStatus,
-} from '@prisma/client';
+} from '../../generated/prisma/client.js';
 import {
   IsEnum,
   IsInt,

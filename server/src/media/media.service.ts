@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OrganizationRole, Role } from '@prisma/client';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -14,13 +14,13 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
-import { AuthUser } from '../auth/auth-user';
+import { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateUploadDto } from './dto/create-upload.dto.js';
 
 const extensions: Record<CreateUploadDto['contentType'], string> = {
   'image/jpeg': 'jpg',

@@ -1,4 +1,4 @@
-import { RequirementCategory, RequirementPriority, RequirementStatus } from '@prisma/client';
+import { RequirementCategory, RequirementPriority, RequirementStatus } from '../../generated/prisma/client.js';
 export declare class BriefRequirementDto {
     id?: string;
     referenceCode?: string;

@@ -1,25 +1,22 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CampaignMetricsModule = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const campaign_metrics_controller_1 = require("./campaign-metrics.controller");
-const campaign_metrics_service_1 = require("./campaign-metrics.service");
+import { Module } from '@nestjs/common';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { CampaignMetricsController } from './campaign-metrics.controller.js';
+import { CampaignMetricsService } from './campaign-metrics.service.js';
 let CampaignMetricsModule = class CampaignMetricsModule {
 };
-exports.CampaignMetricsModule = CampaignMetricsModule;
-exports.CampaignMetricsModule = CampaignMetricsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [campaign_metrics_controller_1.CampaignMetricsController],
-        providers: [campaign_metrics_service_1.CampaignMetricsService],
-        exports: [campaign_metrics_service_1.CampaignMetricsService],
+CampaignMetricsModule = __decorate([
+    Module({
+        imports: [ActivityLogModule],
+        controllers: [CampaignMetricsController],
+        providers: [CampaignMetricsService],
+        exports: [CampaignMetricsService],
     })
 ], CampaignMetricsModule);
+export { CampaignMetricsModule };
 //# sourceMappingURL=campaign-metrics.module.js.map

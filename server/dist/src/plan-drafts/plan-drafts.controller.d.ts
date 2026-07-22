@@ -1,5 +1,5 @@
-import type { AuthUser } from '../auth/auth-user';
-import { PlanDraftsService } from './plan-drafts.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PlanDraftsService } from './plan-drafts.service.js';
 export declare class PlanDraftsController {
     private readonly planDrafts;
     constructor(planDrafts: PlanDraftsService);
@@ -9,8 +9,8 @@ export declare class PlanDraftsController {
                 id: string;
                 name: string;
                 sortOrder: number;
-                tasks: string[];
                 planDraftProjectId: string;
+                tasks: string[];
             }[];
         } & {
             id: string;
@@ -25,10 +25,10 @@ export declare class PlanDraftsController {
         };
         channelRecommendations: {
             id: string;
-            sortOrder: number;
             rationale: string;
-            channel: string;
+            sortOrder: number;
             planDraftId: string;
+            channel: string;
         }[];
         appliedBy: {
             id: string;
@@ -38,15 +38,15 @@ export declare class PlanDraftsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.PlanDraftStatus;
         summary: string;
+        status: import("../generated/prisma/enums.js").PlanDraftStatus;
         createdById: string;
         readinessScore: number;
         readinessNotes: string;
         discoveryBriefId: string;
         goalTitle: string;
         goalDescription: string | null;
-        goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
+        goalPeriod: import("../generated/prisma/enums.js").GoalPeriod;
         goalYear: number;
         risks: string;
         contentIdeas: string;
@@ -60,8 +60,8 @@ export declare class PlanDraftsController {
                     id: string;
                     name: string;
                     sortOrder: number;
-                    tasks: string[];
                     planDraftProjectId: string;
+                    tasks: string[];
                 }[];
             } & {
                 id: string;
@@ -76,10 +76,10 @@ export declare class PlanDraftsController {
             };
             channelRecommendations: {
                 id: string;
-                sortOrder: number;
                 rationale: string;
-                channel: string;
+                sortOrder: number;
                 planDraftId: string;
+                channel: string;
             }[];
             appliedBy: {
                 id: string;
@@ -89,15 +89,15 @@ export declare class PlanDraftsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.PlanDraftStatus;
             summary: string;
+            status: import("../generated/prisma/enums.js").PlanDraftStatus;
             createdById: string;
             readinessScore: number;
             readinessNotes: string;
             discoveryBriefId: string;
             goalTitle: string;
             goalDescription: string | null;
-            goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
+            goalPeriod: import("../generated/prisma/enums.js").GoalPeriod;
             goalYear: number;
             risks: string;
             contentIdeas: string;
@@ -106,14 +106,14 @@ export declare class PlanDraftsController {
         };
         followUpQuestions: {
             id: string;
-            priority: import("@prisma/client").$Enums.FollowUpPriority;
-            status: import("@prisma/client").$Enums.QuestionStatus;
+            status: import("../generated/prisma/enums.js").QuestionStatus;
+            briefId: string;
+            priority: import("../generated/prisma/enums.js").FollowUpPriority;
+            sortOrder: number;
             question: string;
             answer: string | null;
             owner: string | null;
             dueDate: Date | null;
-            sortOrder: number;
-            briefId: string;
         }[];
     }>;
     apply(user: AuthUser, briefId: string, planDraftId: string): Promise<{
@@ -123,8 +123,8 @@ export declare class PlanDraftsController {
                     id: string;
                     name: string;
                     sortOrder: number;
-                    tasks: string[];
                     planDraftProjectId: string;
+                    tasks: string[];
                 }[];
             } & {
                 id: string;
@@ -139,10 +139,10 @@ export declare class PlanDraftsController {
             };
             channelRecommendations: {
                 id: string;
-                sortOrder: number;
                 rationale: string;
-                channel: string;
+                sortOrder: number;
                 planDraftId: string;
+                channel: string;
             }[];
             appliedBy: {
                 id: string;
@@ -152,15 +152,15 @@ export declare class PlanDraftsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.PlanDraftStatus;
             summary: string;
+            status: import("../generated/prisma/enums.js").PlanDraftStatus;
             createdById: string;
             readinessScore: number;
             readinessNotes: string;
             discoveryBriefId: string;
             goalTitle: string;
             goalDescription: string | null;
-            goalPeriod: import("@prisma/client").$Enums.GoalPeriod;
+            goalPeriod: import("../generated/prisma/enums.js").GoalPeriod;
             goalYear: number;
             risks: string;
             contentIdeas: string;

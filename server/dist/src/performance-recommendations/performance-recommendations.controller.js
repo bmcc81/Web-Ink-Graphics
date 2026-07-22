@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,12 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PerformanceRecommendationsController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const performance_recommendations_service_1 = require("./performance-recommendations.service");
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { PerformanceRecommendationsService } from './performance-recommendations.service.js';
 let PerformanceRecommendationsController = class PerformanceRecommendationsController {
     recommendations;
     constructor(recommendations) {
@@ -29,28 +26,28 @@ let PerformanceRecommendationsController = class PerformanceRecommendationsContr
         return this.recommendations.generate(user, organizationId, projectId);
     }
 };
-exports.PerformanceRecommendationsController = PerformanceRecommendationsController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], PerformanceRecommendationsController.prototype, "list", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Post(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], PerformanceRecommendationsController.prototype, "generate", null);
-exports.PerformanceRecommendationsController = PerformanceRecommendationsController = __decorate([
-    (0, common_1.Controller)('organizations/:organizationId/projects/:projectId/performance-recommendations'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [performance_recommendations_service_1.PerformanceRecommendationsService])
+PerformanceRecommendationsController = __decorate([
+    Controller('organizations/:organizationId/projects/:projectId/performance-recommendations'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [PerformanceRecommendationsService])
 ], PerformanceRecommendationsController);
+export { PerformanceRecommendationsController };
 //# sourceMappingURL=performance-recommendations.controller.js.map

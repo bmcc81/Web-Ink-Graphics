@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,12 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlanDraftsController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const plan_drafts_service_1 = require("./plan-drafts.service");
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { PlanDraftsService } from './plan-drafts.service.js';
 let PlanDraftsController = class PlanDraftsController {
     planDrafts;
     constructor(planDrafts) {
@@ -32,35 +29,35 @@ let PlanDraftsController = class PlanDraftsController {
         return this.planDrafts.apply(user, briefId, planDraftId);
     }
 };
-exports.PlanDraftsController = PlanDraftsController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('briefId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('briefId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], PlanDraftsController.prototype, "list", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('briefId')),
+    Post(),
+    __param(0, CurrentUser()),
+    __param(1, Param('briefId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], PlanDraftsController.prototype, "generate", null);
 __decorate([
-    (0, common_1.Post)(':planDraftId/apply'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('briefId')),
-    __param(2, (0, common_1.Param)('planDraftId')),
+    Post(':planDraftId/apply'),
+    __param(0, CurrentUser()),
+    __param(1, Param('briefId')),
+    __param(2, Param('planDraftId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], PlanDraftsController.prototype, "apply", null);
-exports.PlanDraftsController = PlanDraftsController = __decorate([
-    (0, common_1.Controller)('clients/briefs/:briefId/plan-drafts'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [plan_drafts_service_1.PlanDraftsService])
+PlanDraftsController = __decorate([
+    Controller('clients/briefs/:briefId/plan-drafts'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [PlanDraftsService])
 ], PlanDraftsController);
+export { PlanDraftsController };
 //# sourceMappingURL=plan-drafts.controller.js.map

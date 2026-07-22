@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AiUsageService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service.js';
 const HAIKU_INPUT_MICROS_PER_TOKEN = 1;
 const HAIKU_OUTPUT_MICROS_PER_TOKEN = 5;
 const DEFAULT_MONTHLY_CALL_CAP = 50;
@@ -40,7 +37,7 @@ let AiUsageService = class AiUsageService {
             where: { organizationId, createdAt: { gte: this.startOfMonth() } },
         });
         if (used >= cap) {
-            throw new common_1.ForbiddenException(`This organization has reached its monthly AI generation limit (${cap} calls). The limit resets next month.`);
+            throw new ForbiddenException(`This organization has reached its monthly AI generation limit (${cap} calls). The limit resets next month.`);
         }
     }
     async record(organizationId, user, purpose, model, promptTokens, completionTokens) {
@@ -72,10 +69,10 @@ let AiUsageService = class AiUsageService {
         };
     }
 };
-exports.AiUsageService = AiUsageService;
-exports.AiUsageService = AiUsageService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService])
+AiUsageService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService])
 ], AiUsageService);
+export { AiUsageService };
 //# sourceMappingURL=ai-usage.service.js.map

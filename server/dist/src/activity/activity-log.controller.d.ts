@@ -1,5 +1,5 @@
-import type { AuthUser } from '../auth/auth-user';
-import { ActivityLogService } from './activity-log.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { ActivityLogService } from './activity-log.service.js';
 export declare class ActivityLogController {
     private readonly activityLog;
     constructor(activityLog: ActivityLogService);
@@ -12,10 +12,10 @@ export declare class ActivityLogController {
         id: string;
         createdAt: Date;
         organizationId: string;
-        summary: string;
-        entityType: import("@prisma/client").$Enums.ActivityEntityType;
+        entityType: import("../generated/prisma/enums.js").ActivityEntityType;
         entityId: string;
-        action: import("@prisma/client").$Enums.ActivityAction;
+        action: import("../generated/prisma/enums.js").ActivityAction;
+        summary: string;
         actorId: string | null;
     })[]>;
 }

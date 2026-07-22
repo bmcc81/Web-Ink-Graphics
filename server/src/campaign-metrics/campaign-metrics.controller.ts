@@ -7,11 +7,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CampaignMetricsService } from './campaign-metrics.service';
-import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CampaignMetricsService } from './campaign-metrics.service.js';
+import { CreateCampaignMetricDto } from './dto/create-campaign-metric.dto.js';
 
 @Controller('organizations/:organizationId/projects/:projectId/metrics')
 @UseGuards(JwtAuthGuard)

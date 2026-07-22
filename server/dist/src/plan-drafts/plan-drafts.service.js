@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,22 +7,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var PlanDraftsService_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlanDraftsService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const client_1 = require("@prisma/client");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const ai_usage_service_1 = require("../ai-usage/ai-usage.service");
-const goals_service_1 = require("../goals/goals.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
-const projects_service_1 = require("../projects/projects.service");
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import Anthropic from '@anthropic-ai/sdk';
+import { OrganizationRole, Role, } from '../generated/prisma/client.js';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import { GoalsService } from '../goals/goals.service.js';
+import { MANAGE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ProjectsService } from '../projects/projects.service.js';
 const HAIKU_MODEL = 'claude-haiku-4-5';
 const VALID_PERIODS = ['Q1', 'Q2', 'Q3', 'Q4', 'ANNUAL'];
 const planDraftInclude = {
@@ -42,7 +36,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
     aiUsage;
     goals;
     projects;
-    logger = new common_1.Logger(PlanDraftsService_1.name);
+    logger = new Logger(PlanDraftsService_1.name);
     constructor(prisma, config, activityLog, aiUsage, goals, projects) {
         this.prisma = prisma;
         this.config = config;
@@ -63,7 +57,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
         const brief = await this.findBrief(user, briefId, true);
         const apiKey = this.config.get('ANTHROPIC_API_KEY');
         if (!apiKey) {
-            throw new common_1.ServiceUnavailableException('AI-assisted planning is not configured for this environment.');
+            throw new ServiceUnavailableException('AI-assisted planning is not configured for this environment.');
         }
         await this.aiUsage.assertWithinCap(brief.client.organizationId);
         const context = this.buildContext(brief);
@@ -73,7 +67,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
         }
         catch (error) {
             this.logger.error('Plan draft generation failed', error);
-            throw new common_1.ServiceUnavailableException('The plan draft could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The plan draft could not be generated right now. Try again shortly.');
         }
         const parsed = this.parseResponse(response);
         await this.aiUsage.record(brief.client.organizationId, user, 'PLANNING_COPILOT', HAIKU_MODEL, response.usage.input_tokens, response.usage.output_tokens);
@@ -134,9 +128,9 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
             include: planDraftInclude,
         });
         if (!planDraft)
-            throw new common_1.NotFoundException('Plan draft not found');
+            throw new NotFoundException('Plan draft not found');
         if (planDraft.status === 'APPLIED') {
-            throw new common_1.BadRequestException('This plan draft has already been applied');
+            throw new BadRequestException('This plan draft has already been applied');
         }
         const goal = await this.goals.create(user, organizationId, {
             title: this.truncate(planDraft.goalTitle, 160),
@@ -204,7 +198,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
         return created;
     }
     async callClaude(apiKey, context) {
-        const client = new sdk_1.default({ apiKey });
+        const client = new Anthropic({ apiKey });
         return client.messages.create({
             model: HAIKU_MODEL,
             max_tokens: 3000,
@@ -329,7 +323,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
     parseResponse(response) {
         const textBlock = response.content.find((block) => block.type === 'text');
         if (!textBlock) {
-            throw new common_1.ServiceUnavailableException('The plan draft could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The plan draft could not be generated right now. Try again shortly.');
         }
         const parsed = JSON.parse(textBlock.text);
         const projects = Array.isArray(parsed.projects) ? parsed.projects : [];
@@ -443,7 +437,7 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
             },
         });
         if (!brief)
-            throw new common_1.NotFoundException('Discovery brief not found');
+            throw new NotFoundException('Discovery brief not found');
         return brief;
     }
     clientAccessWhere(user, write) {
@@ -451,12 +445,12 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
             return {};
         const roles = write
             ? [
-                client_1.OrganizationRole.OWNER,
-                client_1.OrganizationRole.MANAGER,
-                client_1.OrganizationRole.CONTRIBUTOR,
-                client_1.OrganizationRole.WEBINK_SPECIALIST,
+                OrganizationRole.OWNER,
+                OrganizationRole.MANAGER,
+                OrganizationRole.CONTRIBUTOR,
+                OrganizationRole.WEBINK_SPECIALIST,
             ]
-            : Object.values(client_1.OrganizationRole);
+            : Object.values(OrganizationRole);
         return {
             organization: {
                 memberships: { some: { userId: user.id, role: { in: roles } } },
@@ -464,25 +458,25 @@ let PlanDraftsService = PlanDraftsService_1 = class PlanDraftsService {
         };
     }
     isStaff(user) {
-        return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+        return user.role === Role.ADMIN || user.role === Role.EDITOR;
     }
     async assertCanApply(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.MANAGE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only organization owners and managers can apply a plan draft');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !MANAGE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only organization owners and managers can apply a plan draft');
         }
     }
 };
-exports.PlanDraftsService = PlanDraftsService;
-exports.PlanDraftsService = PlanDraftsService = PlanDraftsService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService,
-        activity_log_service_1.ActivityLogService,
-        ai_usage_service_1.AiUsageService,
-        goals_service_1.GoalsService,
-        projects_service_1.ProjectsService])
+PlanDraftsService = PlanDraftsService_1 = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService,
+        ActivityLogService,
+        AiUsageService,
+        GoalsService,
+        ProjectsService])
 ], PlanDraftsService);
+export { PlanDraftsService };
 //# sourceMappingURL=plan-drafts.service.js.map

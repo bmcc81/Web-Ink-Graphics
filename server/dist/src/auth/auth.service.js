@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,13 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthService = void 0;
-const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
-const bcryptjs_1 = require("bcryptjs");
-const prisma_service_1 = require("../prisma/prisma.service");
-const DUMMY_PASSWORD_HASH = (0, bcryptjs_1.hashSync)('not-a-real-password', 12);
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { compare, hashSync } from 'bcryptjs';
+import { PrismaService } from '../prisma/prisma.service.js';
+const DUMMY_PASSWORD_HASH = hashSync('not-a-real-password', 12);
 let AuthService = class AuthService {
     prisma;
     jwt;
@@ -33,9 +30,9 @@ let AuthService = class AuthService {
                 },
             },
         });
-        const passwordMatches = await (0, bcryptjs_1.compare)(credentials.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+        const passwordMatches = await compare(credentials.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
         if (!user || !passwordMatches) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
+            throw new UnauthorizedException('Invalid email or password');
         }
         const payload = {
             sub: user.id,
@@ -59,7 +56,7 @@ let AuthService = class AuthService {
             },
         });
         if (!user) {
-            throw new common_1.UnauthorizedException('User no longer exists');
+            throw new UnauthorizedException('User no longer exists');
         }
         return this.userProfile(user);
     }
@@ -78,10 +75,10 @@ let AuthService = class AuthService {
         };
     }
 };
-exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+AuthService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        JwtService])
 ], AuthService);
+export { AuthService };
 //# sourceMappingURL=auth.service.js.map

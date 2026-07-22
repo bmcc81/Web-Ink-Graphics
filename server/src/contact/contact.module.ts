@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ContactController } from './contact.controller';
-import { ContactMailerService } from './contact-mailer.service';
-import { ContactService } from './contact.service';
+import { ContactController } from './contact.controller.js';
+import { ContactMailerService } from './contact-mailer.service.js';
+import { ContactService } from './contact.service.js';
 
 @Module({
   controllers: [ContactController],

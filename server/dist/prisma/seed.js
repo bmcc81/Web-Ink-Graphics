@@ -1,8 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const bcryptjs_1 = require("bcryptjs");
-const prisma = new client_1.PrismaClient();
+import { PrismaPg } from '@prisma/adapter-pg';
+import { hash } from 'bcryptjs';
+import { PrismaClient, Role } from '../src/generated/prisma/client.js';
+const prisma = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 async function main() {
     const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
     const password = process.env.ADMIN_PASSWORD;
@@ -10,11 +11,11 @@ async function main() {
     if (!email || !password || password.length < 12) {
         throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required; the password must contain at least 12 characters.');
     }
-    const passwordHash = await (0, bcryptjs_1.hash)(password, 12);
+    const passwordHash = await hash(password, 12);
     const administrator = await prisma.user.upsert({
         where: { email },
-        update: { name, role: client_1.Role.ADMIN, passwordHash },
-        create: { email, name, role: client_1.Role.ADMIN, passwordHash },
+        update: { name, role: Role.ADMIN, passwordHash },
+        create: { email, name, role: Role.ADMIN, passwordHash },
     });
     const webInkOrganization = await prisma.organization.upsert({
         where: { slug: 'webink-graphics' },

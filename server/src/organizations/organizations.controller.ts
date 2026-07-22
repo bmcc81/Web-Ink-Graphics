@@ -9,13 +9,13 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
-import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
-import { OrganizationsService } from './organizations.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateInvitationDto } from './dto/create-invitation.dto.js';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto.js';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto.js';
+import { OrganizationsService } from './organizations.service.js';
 
 @Controller('organizations')
 @UseGuards(JwtAuthGuard)

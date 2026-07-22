@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,12 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SeoService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const client_1 = require("@prisma/client");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ProjectStatus } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 let SeoService = class SeoService {
     prisma;
     config;
@@ -24,7 +21,7 @@ let SeoService = class SeoService {
     async sitemap() {
         const siteUrl = this.siteUrl();
         const projects = await this.prisma.portfolioProject.findMany({
-            where: { status: client_1.ProjectStatus.PUBLISHED },
+            where: { status: ProjectStatus.PUBLISHED },
             select: { slug: true, updatedAt: true },
             orderBy: { updatedAt: 'desc' },
         });
@@ -83,10 +80,10 @@ let SeoService = class SeoService {
             .replace(/'/g, '&apos;');
     }
 };
-exports.SeoService = SeoService;
-exports.SeoService = SeoService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService])
+SeoService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService])
 ], SeoService);
+export { SeoService };
 //# sourceMappingURL=seo.service.js.map

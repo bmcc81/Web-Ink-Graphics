@@ -1,6 +1,6 @@
-import { ProjectStatus } from '@prisma/client';
-import { PortfolioImageDto } from './portfolio-image.dto';
-import { ProjectTranslationDto } from './project-translation.dto';
+import { ProjectStatus } from '../../generated/prisma/client.js';
+import { PortfolioImageDto } from './portfolio-image.dto.js';
+import { ProjectTranslationDto } from './project-translation.dto.js';
 export declare class CreatePortfolioProjectDto {
     slug: string;
     clientName?: string;

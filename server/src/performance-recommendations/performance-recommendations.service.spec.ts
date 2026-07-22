@@ -1,18 +1,24 @@
+import { jest as jestGlobals } from '@jest/globals';
 import {
   BadRequestException,
   ForbiddenException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { PerformanceRecommendationsService } from './performance-recommendations.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
 
 const mockCreate = jest.fn();
-jest.mock('@anthropic-ai/sdk', () => {
-  return jest.fn().mockImplementation(() => ({
+jestGlobals.unstable_mockModule('@anthropic-ai/sdk', () => ({
+  default: jest.fn().mockImplementation(() => ({
     messages: { create: mockCreate },
-  }));
-});
+  })),
+}));
+
+const { PerformanceRecommendationsService } =
+  await import('./performance-recommendations.service.js');
+type PerformanceRecommendationsService = InstanceType<
+  typeof PerformanceRecommendationsService
+>;
 
 function structuredResponse(content: Record<string, unknown>) {
   return {

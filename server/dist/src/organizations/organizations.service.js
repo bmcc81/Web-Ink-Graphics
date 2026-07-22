@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,15 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrganizationsService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const client_1 = require("@prisma/client");
-const bcryptjs_1 = require("bcryptjs");
-const crypto_1 = require("crypto");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import { compare, hash } from 'bcryptjs';
+import { createHash, randomBytes } from 'crypto';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 let OrganizationsService = class OrganizationsService {
     prisma;
     config;
@@ -66,7 +63,7 @@ let OrganizationsService = class OrganizationsService {
             select: { id: true },
         });
         if (existingMember) {
-            throw new common_1.ConflictException('This user is already a member');
+            throw new ConflictException('This user is already a member');
         }
         await this.prisma.organizationInvitation.updateMany({
             where: {
@@ -77,7 +74,7 @@ let OrganizationsService = class OrganizationsService {
             },
             data: { revokedAt: new Date() },
         });
-        const token = (0, crypto_1.randomBytes)(32).toString('base64url');
+        const token = randomBytes(32).toString('base64url');
         const invitation = await this.prisma.organizationInvitation.create({
             data: {
                 email,
@@ -117,7 +114,7 @@ let OrganizationsService = class OrganizationsService {
             data: { revokedAt: new Date() },
         });
         if (!result.count) {
-            throw new common_1.NotFoundException('Active invitation not found');
+            throw new NotFoundException('Active invitation not found');
         }
         return { revoked: true };
     }
@@ -145,16 +142,16 @@ let OrganizationsService = class OrganizationsService {
             },
         });
         if (existingUser &&
-            !(await (0, bcryptjs_1.compare)(dto.password, existingUser.passwordHash))) {
-            throw new common_1.UnauthorizedException('Use the password for the existing account associated with this email');
+            !(await compare(dto.password, existingUser.passwordHash))) {
+            throw new UnauthorizedException('Use the password for the existing account associated with this email');
         }
         const name = dto.name?.trim();
         if (!existingUser && (!name || name.length < 2)) {
-            throw new common_1.BadRequestException('A name is required when creating a new account');
+            throw new BadRequestException('A name is required when creating a new account');
         }
         const passwordHash = existingUser
             ? undefined
-            : await (0, bcryptjs_1.hash)(dto.password, 12);
+            : await hash(dto.password, 12);
         const result = await this.prisma.$transaction(async (transaction) => {
             const accepted = await transaction.organizationInvitation.updateMany({
                 where: {
@@ -166,7 +163,7 @@ let OrganizationsService = class OrganizationsService {
                 data: { acceptedAt: new Date() },
             });
             if (!accepted.count) {
-                throw new common_1.ConflictException('This invitation is no longer active');
+                throw new ConflictException('This invitation is no longer active');
             }
             const account = existingUser ??
                 (await transaction.user.create({
@@ -174,7 +171,7 @@ let OrganizationsService = class OrganizationsService {
                         email: invitation.email,
                         name: name,
                         passwordHash: passwordHash,
-                        role: client_1.Role.CUSTOMER,
+                        role: Role.CUSTOMER,
                     },
                     select: { id: true },
                 }));
@@ -209,7 +206,7 @@ let OrganizationsService = class OrganizationsService {
                 select: { id: true, role: true },
             });
             if (!target)
-                throw new common_1.NotFoundException('Membership not found');
+                throw new NotFoundException('Membership not found');
             this.assertManagerScope(actingRole, target.role, dto.role);
             await this.assertRemainingOwner(transaction, organizationId, membershipId, target.role, dto.role);
             return transaction.organizationMembership.update({
@@ -231,7 +228,7 @@ let OrganizationsService = class OrganizationsService {
                 select: { id: true, role: true },
             });
             if (!target)
-                throw new common_1.NotFoundException('Membership not found');
+                throw new NotFoundException('Membership not found');
             this.assertManagerScope(actingRole, target.role);
             await this.assertRemainingOwner(transaction, organizationId, membershipId, target.role, undefined);
             await transaction.organizationMembership.delete({
@@ -269,31 +266,31 @@ let OrganizationsService = class OrganizationsService {
         return brandKit;
     }
     assertManagerScope(actingRole, ...rolesInvolved) {
-        if (actingRole !== client_1.OrganizationRole.MANAGER)
+        if (actingRole !== OrganizationRole.MANAGER)
             return;
         const restricted = new Set([
-            client_1.OrganizationRole.OWNER,
-            client_1.OrganizationRole.MANAGER,
-            client_1.OrganizationRole.WEBINK_SPECIALIST,
+            OrganizationRole.OWNER,
+            OrganizationRole.MANAGER,
+            OrganizationRole.WEBINK_SPECIALIST,
         ]);
         if (rolesInvolved.some((role) => restricted.has(role))) {
-            throw new common_1.ForbiddenException('Managers can only manage contributor and viewer memberships');
+            throw new ForbiddenException('Managers can only manage contributor and viewer memberships');
         }
     }
     async assertRemainingOwner(transaction, organizationId, membershipId, currentRole, nextRole) {
-        if (currentRole !== client_1.OrganizationRole.OWNER ||
-            nextRole === client_1.OrganizationRole.OWNER) {
+        if (currentRole !== OrganizationRole.OWNER ||
+            nextRole === OrganizationRole.OWNER) {
             return;
         }
         const remainingOwners = await transaction.organizationMembership.count({
             where: {
                 organizationId,
-                role: client_1.OrganizationRole.OWNER,
+                role: OrganizationRole.OWNER,
                 id: { not: membershipId },
             },
         });
         if (remainingOwners === 0) {
-            throw new common_1.BadRequestException('Organizations must keep at least one owner');
+            throw new BadRequestException('Organizations must keep at least one owner');
         }
     }
     async assertCanView(user, organizationId) {
@@ -304,7 +301,7 @@ let OrganizationsService = class OrganizationsService {
             select: { id: true },
         });
         if (!membership)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanManage(user, organizationId, invitationRole) {
         if (this.isStaff(user))
@@ -315,27 +312,27 @@ let OrganizationsService = class OrganizationsService {
         });
         if (!membership ||
             !new Set([
-                client_1.OrganizationRole.OWNER,
-                client_1.OrganizationRole.MANAGER,
+                OrganizationRole.OWNER,
+                OrganizationRole.MANAGER,
             ]).has(membership.role)) {
-            throw new common_1.ForbiddenException('Only organization owners and managers can manage invitations');
+            throw new ForbiddenException('Only organization owners and managers can manage invitations');
         }
-        if (membership.role === client_1.OrganizationRole.MANAGER &&
+        if (membership.role === OrganizationRole.MANAGER &&
             invitationRole &&
             !new Set([
-                client_1.OrganizationRole.CONTRIBUTOR,
-                client_1.OrganizationRole.VIEWER,
+                OrganizationRole.CONTRIBUTOR,
+                OrganizationRole.VIEWER,
             ]).has(invitationRole)) {
-            throw new common_1.ForbiddenException('Managers can only invite contributors and viewers');
+            throw new ForbiddenException('Managers can only invite contributors and viewers');
         }
         return membership.role;
     }
     tokenHash(token) {
-        return (0, crypto_1.createHash)('sha256').update(token).digest('hex');
+        return createHash('sha256').update(token).digest('hex');
     }
     async activeInvitation(token) {
         if (!token || token.length < 32 || token.length > 256) {
-            throw new common_1.NotFoundException('Invitation not found');
+            throw new NotFoundException('Invitation not found');
         }
         const invitation = await this.prisma.organizationInvitation.findUnique({
             where: { tokenHash: this.tokenHash(token) },
@@ -354,19 +351,19 @@ let OrganizationsService = class OrganizationsService {
             invitation.acceptedAt ||
             invitation.revokedAt ||
             invitation.expiresAt <= new Date()) {
-            throw new common_1.NotFoundException('Invitation not found or no longer active');
+            throw new NotFoundException('Invitation not found or no longer active');
         }
         return invitation;
     }
     isStaff(user) {
-        return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+        return user.role === Role.ADMIN || user.role === Role.EDITOR;
     }
 };
-exports.OrganizationsService = OrganizationsService;
-exports.OrganizationsService = OrganizationsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService,
-        activity_log_service_1.ActivityLogService])
+OrganizationsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService,
+        ActivityLogService])
 ], OrganizationsService);
+export { OrganizationsService };
 //# sourceMappingURL=organizations.service.js.map

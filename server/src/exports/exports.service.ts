@@ -10,7 +10,7 @@ import {
   ExportFormat,
   TemplateField,
   type AssetFieldValue,
-} from '@prisma/client';
+} from '../generated/prisma/client.js';
 import {
   GetObjectCommand,
   PutObjectCommand,
@@ -18,14 +18,14 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { chromium } from 'playwright';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateExportDto } from './dto/create-export.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateExportDto } from './dto/create-export.dto.js';
 
 const exportInclude = {
   requestedBy: { select: { id: true, name: true } },

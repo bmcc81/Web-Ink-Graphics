@@ -5,7 +5,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY prisma ./prisma
-COPY nest-cli.json tsconfig.json tsconfig.build.json ./
+COPY prisma.config.ts nest-cli.json tsconfig.json tsconfig.build.json ./
 COPY src ./src
 RUN npm run prisma:generate && npm run build
 
@@ -15,6 +15,7 @@ ENV NODE_ENV=production
 
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 

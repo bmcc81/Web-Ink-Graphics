@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,12 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoalsService = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CONTRIBUTE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 let GoalsService = class GoalsService {
     prisma;
     activityLog;
@@ -100,16 +97,16 @@ let GoalsService = class GoalsService {
         return { removed: true };
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can manage goals');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can manage goals');
         }
         return role;
     }
@@ -119,14 +116,14 @@ let GoalsService = class GoalsService {
             include,
         });
         if (!goal)
-            throw new common_1.NotFoundException('Goal not found');
+            throw new NotFoundException('Goal not found');
         return goal;
     }
 };
-exports.GoalsService = GoalsService;
-exports.GoalsService = GoalsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService])
+GoalsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ActivityLogService])
 ], GoalsService);
+export { GoalsService };
 //# sourceMappingURL=goals.service.js.map

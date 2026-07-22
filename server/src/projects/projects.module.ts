@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { NotificationsModule } from '../notifications/notifications.module';
-import { ProjectsController } from './projects.controller';
-import { ProjectsService } from './projects.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
+import { ProjectsController } from './projects.controller.js';
+import { ProjectsService } from './projects.service.js';
 
 @Module({
   imports: [ActivityLogModule, NotificationsModule],

@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateMilestoneDto } from './create-milestone.dto';
+import { CreateMilestoneDto } from './create-milestone.dto.js';
 
 export class UpdateMilestoneDto extends PartialType(CreateMilestoneDto) {}

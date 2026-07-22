@@ -1,4 +1,4 @@
-import { FollowUpPriority, QuestionStatus } from '@prisma/client';
+import { FollowUpPriority, QuestionStatus } from '../../generated/prisma/client.js';
 export declare class BriefQuestionDto {
     id?: string;
     question: string;

@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   MANAGE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { AiUsageService } from '../ai-usage/ai-usage.service';
-import { PrismaService } from '../prisma/prisma.service';
+} from '../organizations/organization-access.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 const HAIKU_MODEL = 'claude-haiku-4-5';
 
