@@ -15,6 +15,10 @@ COPY src ./src
 # schema.prisma change so that fallback stays current.
 RUN npm run prisma:generate || echo "prisma generate failed; falling back to the committed generated client"
 RUN test -f src/generated/prisma/client.ts
+# The committed generated client adds a lot of TypeScript for tsc to process;
+# on memory-constrained hosts Node's automatic heap sizing can be too
+# conservative and abort mid-compile, so raise the ceiling explicitly.
+ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN npm run build
 
 FROM node:22.20-alpine AS runtime
