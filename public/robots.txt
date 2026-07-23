@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /portal
+Disallow: /accept-invitation
+
+Sitemap: https://webinkgraphics.com/sitemap.xml

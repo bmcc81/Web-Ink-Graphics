@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,23 +7,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContactQueryDto = void 0;
-const class_validator_1 = require("class-validator");
-class ContactQueryDto {
+import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+export class ContactQueryDto {
     status;
     search;
 }
-exports.ContactQueryDto = ContactQueryDto;
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsIn)(['all', 'new', 'contacted']),
+    IsOptional(),
+    IsIn(['all', 'new', 'contacted']),
     __metadata("design:type", String)
 ], ContactQueryDto.prototype, "status", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(120),
+    IsOptional(),
+    IsString(),
+    MaxLength(120),
     __metadata("design:type", String)
 ], ContactQueryDto.prototype, "search", void 0);
 //# sourceMappingURL=contact-query.dto.js.map

@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,21 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateInvitationDto = void 0;
-const client_1 = require("@prisma/client");
-const class_validator_1 = require("class-validator");
-class CreateInvitationDto {
+import { OrganizationRole } from '../../generated/prisma/client.js';
+import { IsEmail, IsEnum } from 'class-validator';
+export class CreateInvitationDto {
     email;
     role;
 }
-exports.CreateInvitationDto = CreateInvitationDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    IsEmail(),
     __metadata("design:type", String)
 ], CreateInvitationDto.prototype, "email", void 0);
 __decorate([
-    (0, class_validator_1.IsEnum)(client_1.OrganizationRole),
+    IsEnum(OrganizationRole),
     __metadata("design:type", String)
 ], CreateInvitationDto.prototype, "role", void 0);
 //# sourceMappingURL=create-invitation.dto.js.map

@@ -1,8 +1,8 @@
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateGoalDto } from './dto/create-goal.dto.js';
+import { UpdateGoalDto } from './dto/update-goal.dto.js';
 export declare class GoalsService {
     private readonly prisma;
     private readonly activityLog;
@@ -11,51 +11,51 @@ export declare class GoalsService {
         projects: {
             id: string;
             name: string;
-            status: import("@prisma/client").$Enums.ProjectWorkflowStatus;
+            status: import("../generated/prisma/enums.js").ProjectWorkflowStatus;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        year: number;
-        status: import("@prisma/client").$Enums.GoalStatus;
+        status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
-        period: import("@prisma/client").$Enums.GoalPeriod;
+        period: import("../generated/prisma/enums.js").GoalPeriod;
+        year: number;
     })[]>;
     findOne(user: AuthUser, organizationId: string, goalId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        year: number;
-        status: import("@prisma/client").$Enums.GoalStatus;
+        status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
-        period: import("@prisma/client").$Enums.GoalPeriod;
+        period: import("../generated/prisma/enums.js").GoalPeriod;
+        year: number;
     }>;
     create(user: AuthUser, organizationId: string, dto: CreateGoalDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        year: number;
-        status: import("@prisma/client").$Enums.GoalStatus;
+        status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
-        period: import("@prisma/client").$Enums.GoalPeriod;
+        period: import("../generated/prisma/enums.js").GoalPeriod;
+        year: number;
     }>;
     update(user: AuthUser, organizationId: string, goalId: string, dto: UpdateGoalDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        year: number;
-        status: import("@prisma/client").$Enums.GoalStatus;
+        status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
-        period: import("@prisma/client").$Enums.GoalPeriod;
+        period: import("../generated/prisma/enums.js").GoalPeriod;
+        year: number;
     }>;
     remove(user: AuthUser, organizationId: string, goalId: string): Promise<{
         removed: boolean;

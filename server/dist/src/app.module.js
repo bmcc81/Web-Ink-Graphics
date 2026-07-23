@@ -1,68 +1,73 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const core_1 = require("@nestjs/core");
-const throttler_1 = require("@nestjs/throttler");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const auth_module_1 = require("./auth/auth.module");
-const contact_module_1 = require("./contact/contact.module");
-const clients_module_1 = require("./clients/clients.module");
-const environment_validation_1 = require("./config/environment.validation");
-const health_module_1 = require("./health/health.module");
-const media_module_1 = require("./media/media.module");
-const portfolio_module_1 = require("./portfolio/portfolio.module");
-const prisma_module_1 = require("./prisma/prisma.module");
-const prisma_exception_filter_1 = require("./prisma/prisma-exception.filter");
-const seo_module_1 = require("./seo/seo.module");
-const organizations_module_1 = require("./organizations/organizations.module");
-const projects_module_1 = require("./projects/projects.module");
-const goals_module_1 = require("./goals/goals.module");
-const activity_log_module_1 = require("./activity/activity-log.module");
-const designs_module_1 = require("./designs/designs.module");
-const templates_module_1 = require("./templates/templates.module");
-const project_assets_module_1 = require("./project-assets/project-assets.module");
-const exports_module_1 = require("./exports/exports.module");
-const creative_briefs_module_1 = require("./creative-briefs/creative-briefs.module");
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { AuthModule } from './auth/auth.module.js';
+import { ContactModule } from './contact/contact.module.js';
+import { ClientsModule } from './clients/clients.module.js';
+import { validateEnvironment } from './config/environment.validation.js';
+import { HealthModule } from './health/health.module.js';
+import { MediaModule } from './media/media.module.js';
+import { PortfolioModule } from './portfolio/portfolio.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { PrismaExceptionFilter } from './prisma/prisma-exception.filter.js';
+import { SeoModule } from './seo/seo.module.js';
+import { OrganizationsModule } from './organizations/organizations.module.js';
+import { ProjectsModule } from './projects/projects.module.js';
+import { GoalsModule } from './goals/goals.module.js';
+import { ActivityLogModule } from './activity/activity-log.module.js';
+import { DesignsModule } from './designs/designs.module.js';
+import { TemplatesModule } from './templates/templates.module.js';
+import { ProjectAssetsModule } from './project-assets/project-assets.module.js';
+import { ExportsModule } from './exports/exports.module.js';
+import { CreativeBriefsModule } from './creative-briefs/creative-briefs.module.js';
+import { AiUsageModule } from './ai-usage/ai-usage.module.js';
+import { PlanDraftsModule } from './plan-drafts/plan-drafts.module.js';
+import { CampaignMetricsModule } from './campaign-metrics/campaign-metrics.module.js';
+import { PerformanceRecommendationsModule } from './performance-recommendations/performance-recommendations.module.js';
 let AppModule = class AppModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
-    (0, common_1.Module)({
+AppModule = __decorate([
+    Module({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true, validate: environment_validation_1.validateEnvironment }),
-            throttler_1.ThrottlerModule.forRoot([{ ttl: 60_000, limit: 20 }]),
-            prisma_module_1.PrismaModule,
-            auth_module_1.AuthModule,
-            media_module_1.MediaModule,
-            seo_module_1.SeoModule,
-            contact_module_1.ContactModule,
-            clients_module_1.ClientsModule,
-            health_module_1.HealthModule,
-            portfolio_module_1.PortfolioModule,
-            organizations_module_1.OrganizationsModule,
-            activity_log_module_1.ActivityLogModule,
-            projects_module_1.ProjectsModule,
-            goals_module_1.GoalsModule,
-            designs_module_1.DesignsModule,
-            templates_module_1.TemplatesModule,
-            project_assets_module_1.ProjectAssetsModule,
-            exports_module_1.ExportsModule,
-            creative_briefs_module_1.CreativeBriefsModule,
+            ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
+            ThrottlerModule.forRoot([{ ttl: 60_000, limit: 20 }]),
+            PrismaModule,
+            AuthModule,
+            MediaModule,
+            SeoModule,
+            ContactModule,
+            ClientsModule,
+            HealthModule,
+            PortfolioModule,
+            OrganizationsModule,
+            ActivityLogModule,
+            ProjectsModule,
+            GoalsModule,
+            DesignsModule,
+            TemplatesModule,
+            ProjectAssetsModule,
+            ExportsModule,
+            CreativeBriefsModule,
+            AiUsageModule,
+            PlanDraftsModule,
+            CampaignMetricsModule,
+            PerformanceRecommendationsModule,
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [AppController],
         providers: [
-            app_service_1.AppService,
-            { provide: core_1.APP_FILTER, useClass: prisma_exception_filter_1.PrismaExceptionFilter },
+            AppService,
+            { provide: APP_FILTER, useClass: PrismaExceptionFilter },
         ],
     })
 ], AppModule);
+export { AppModule };
 //# sourceMappingURL=app.module.js.map

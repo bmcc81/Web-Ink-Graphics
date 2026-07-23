@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { SeoService } from './seo.service';
+import { SeoService } from './seo.service.js';
 export declare class SeoController {
     private readonly seo;
     constructor(seo: SeoService);

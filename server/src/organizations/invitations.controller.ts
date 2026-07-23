@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { AcceptInvitationDto } from './dto/accept-invitation.dto';
-import { OrganizationsService } from './organizations.service';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto.js';
+import { OrganizationsService } from './organizations.service.js';
 
 @Controller('invitations')
 @UseGuards(ThrottlerGuard)

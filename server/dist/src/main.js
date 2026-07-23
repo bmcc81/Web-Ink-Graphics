@@ -1,17 +1,12 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const common_1 = require("@nestjs/common");
-const core_1 = require("@nestjs/core");
-const compression_1 = __importDefault(require("compression"));
-const helmet_1 = __importDefault(require("helmet"));
-const app_module_1 = require("./app.module");
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import compression from 'compression';
+import helmet from 'helmet';
+import { AppModule } from './app.module.js';
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await NestFactory.create(AppModule);
     app.set('trust proxy', 1);
-    app.use((0, helmet_1.default)({
+    app.use(helmet({
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
@@ -31,17 +26,17 @@ async function bootstrap() {
         },
         crossOriginResourcePolicy: { policy: 'cross-origin' },
     }));
-    app.use((0, compression_1.default)());
+    app.use(compression());
     app.setGlobalPrefix('api', {
         exclude: [
-            { path: 'sitemap.xml', method: common_1.RequestMethod.GET },
-            { path: 'robots.txt', method: common_1.RequestMethod.GET },
+            { path: 'sitemap.xml', method: RequestMethod.GET },
+            { path: 'robots.txt', method: RequestMethod.GET },
         ],
     });
     app.enableCors({
         origin: process.env.WEB_ORIGIN ?? 'http://localhost:4200',
     });
-    app.useGlobalPipes(new common_1.ValidationPipe({
+    app.useGlobalPipes(new ValidationPipe({
         transform: true,
         whitelist: true,
         forbidNonWhitelisted: true,

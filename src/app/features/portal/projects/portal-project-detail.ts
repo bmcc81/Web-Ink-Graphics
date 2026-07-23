@@ -29,6 +29,8 @@ interface Milestone {
   dueDate: string | null;
 }
 
+type RecurrenceRule = 'WEEKLY' | 'MONTHLY';
+
 interface Task {
   id: string;
   title: string;
@@ -37,6 +39,7 @@ interface Task {
   dueDate: string | null;
   milestoneId: string | null;
   assignee: Assignee | null;
+  recurrenceRule: RecurrenceRule | null;
   _count: { comments: number };
 }
 
@@ -50,6 +53,7 @@ interface ProjectDetail {
   goal: { id: string; title: string; period: string; year: number } | null;
   milestones: Milestone[];
   tasks: Task[];
+  portfolioProject: { id: string; slug: string; status: string } | null;
 }
 
 interface Member {
@@ -72,6 +76,66 @@ interface Budget {
   committedAmount: string | null;
   actualAmount: string | null;
   notes: string | null;
+}
+
+type MetricType =
+  | 'IMPRESSIONS'
+  | 'CLICKS'
+  | 'WEBSITE_VISITS'
+  | 'LEADS'
+  | 'CONVERSIONS'
+  | 'REVENUE';
+
+interface CampaignMetricEntry {
+  id: string;
+  metricType: MetricType;
+  periodStart: string;
+  periodEnd: string;
+  actualValue: string;
+  plannedValue: string | null;
+  notes: string | null;
+  recordedBy: { id: string; name: string };
+  createdAt: string;
+}
+
+interface MetricSummaryRow {
+  metricType: MetricType;
+  actualTotal: number;
+  plannedTotal: number | null;
+  variance: number | null;
+  entryCount: number;
+}
+
+interface PerformanceSummary {
+  budget: {
+    currency: string;
+    plannedAmount: string | null;
+    approvedAmount: string | null;
+    committedAmount: string | null;
+    actualAmount: string | null;
+    variance: number | null;
+  } | null;
+  metrics: MetricSummaryRow[];
+}
+
+type RecommendationPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
+interface PerformanceRecommendationItem {
+  id: string;
+  title: string;
+  rationale: string;
+  priority: RecommendationPriority;
+}
+
+interface PerformanceRecommendation {
+  id: string;
+  summary: string;
+  dataSummary: string;
+  confidenceScore: number;
+  confidenceNotes: string;
+  items: PerformanceRecommendationItem[];
+  createdBy: { id: string; name: string };
+  createdAt: string;
 }
 
 interface DesignVersion {
@@ -213,6 +277,14 @@ export const MILESTONE_STATUSES: MilestoneStatus[] = [
   'COMPLETED',
 ];
 export const TASK_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
+export const METRIC_TYPES: MetricType[] = [
+  'IMPRESSIONS',
+  'CLICKS',
+  'WEBSITE_VISITS',
+  'LEADS',
+  'CONVERSIONS',
+  'REVENUE',
+];
 
 @Component({
   selector: 'app-portal-project-detail',
@@ -234,6 +306,7 @@ export class PortalProjectDetail {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly actionError = signal('');
+  readonly publishingToPortfolio = signal(false);
 
   readonly projectStatuses = PROJECT_STATUSES;
   readonly milestoneStatuses = MILESTONE_STATUSES;
@@ -241,6 +314,10 @@ export class PortalProjectDetail {
 
   readonly canContribute = computed(() => this.hasRole(CONTRIBUTE_ROLES));
   readonly canManage = computed(() => this.hasRole(MANAGE_ROLES));
+  readonly isStaff = computed(() => {
+    const user = this.auth.user();
+    return user?.role === 'ADMIN' || user?.role === 'EDITOR';
+  });
 
   readonly unassignedTasks = computed(() =>
     (this.project()?.tasks ?? []).filter((task) => !task.milestoneId),
@@ -261,6 +338,25 @@ export class PortalProjectDetail {
     approvedAmount: [''],
     committedAmount: [''],
     actualAmount: [''],
+    notes: [''],
+  });
+
+  readonly metricEntries = signal<CampaignMetricEntry[]>([]);
+  readonly metricsSummary = signal<PerformanceSummary | null>(null);
+  readonly metricsError = signal('');
+  readonly loggingMetric = signal(false);
+  readonly metricTypes = METRIC_TYPES;
+
+  readonly performanceRecommendations = signal<PerformanceRecommendation[]>([]);
+  readonly recommendationsError = signal('');
+  readonly generatingRecommendations = signal(false);
+
+  readonly metricForm = this.formBuilder.nonNullable.group({
+    metricType: ['LEADS' as MetricType],
+    periodStart: ['', Validators.required],
+    periodEnd: ['', Validators.required],
+    actualValue: ['', Validators.required],
+    plannedValue: [''],
     notes: [''],
   });
 
@@ -344,6 +440,7 @@ export class PortalProjectDetail {
     milestoneId: [''],
     assigneeId: [''],
     dueDate: [''],
+    recurrenceRule: [''],
   });
 
   constructor() {
@@ -391,6 +488,9 @@ export class PortalProjectDetail {
           this.loadAssets();
           this.loadCreativeBriefs();
           this.loadAiUsage();
+          this.loadMetrics();
+          this.loadMetricsSummary();
+          this.loadPerformanceRecommendations();
         },
         error: () => this.error.set('This project could not be loaded.'),
       });
@@ -486,6 +586,123 @@ export class PortalProjectDetail {
           this.budgetForm.reset({ currency: 'USD' });
         },
         error: () => this.budgetError.set('The budget could not be deleted.'),
+      });
+  }
+
+  private loadMetrics() {
+    this.http
+      .get<CampaignMetricEntry[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics`,
+      )
+      .subscribe({
+        next: (entries) => this.metricEntries.set(entries),
+        error: () => this.metricsError.set('Metrics could not be loaded.'),
+      });
+  }
+
+  private loadMetricsSummary() {
+    this.http
+      .get<PerformanceSummary>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics/summary`,
+      )
+      .subscribe({ next: (summary) => this.metricsSummary.set(summary) });
+  }
+
+  logMetric() {
+    if (this.metricForm.invalid || this.loggingMetric()) {
+      this.metricForm.markAllAsTouched();
+      return;
+    }
+    this.metricsError.set('');
+    this.loggingMetric.set(true);
+    const raw = this.metricForm.getRawValue();
+    this.http
+      .post<CampaignMetricEntry>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics`,
+        {
+          metricType: raw.metricType,
+          periodStart: raw.periodStart,
+          periodEnd: raw.periodEnd,
+          actualValue: Number(raw.actualValue),
+          plannedValue: raw.plannedValue ? Number(raw.plannedValue) : undefined,
+          notes: raw.notes || undefined,
+        },
+      )
+      .pipe(finalize(() => this.loggingMetric.set(false)))
+      .subscribe({
+        next: (entry) => {
+          this.metricEntries.update((list) => [entry, ...list]);
+          this.metricForm.reset({
+            metricType: raw.metricType,
+            periodStart: '',
+            periodEnd: '',
+            actualValue: '',
+            plannedValue: '',
+            notes: '',
+          });
+          this.loadMetricsSummary();
+        },
+        error: (response) =>
+          this.metricsError.set(
+            response.error?.message ?? 'The metric could not be logged.',
+          ),
+      });
+  }
+
+  removeMetric(entry: CampaignMetricEntry) {
+    if (!confirm('Remove this metric entry?')) return;
+    this.metricsError.set('');
+    this.http
+      .delete(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/metrics/${entry.id}`,
+      )
+      .subscribe({
+        next: () => {
+          this.metricEntries.update((list) =>
+            list.filter((candidate) => candidate.id !== entry.id),
+          );
+          this.loadMetricsSummary();
+        },
+        error: () => this.metricsError.set('The metric could not be removed.'),
+      });
+  }
+
+  private loadPerformanceRecommendations() {
+    this.http
+      .get<PerformanceRecommendation[]>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/performance-recommendations`,
+      )
+      .subscribe({
+        next: (recommendations) =>
+          this.performanceRecommendations.set(recommendations),
+        error: () =>
+          this.recommendationsError.set(
+            'Performance recommendations could not be loaded.',
+          ),
+      });
+  }
+
+  generatePerformanceRecommendations() {
+    if (this.generatingRecommendations()) return;
+    this.recommendationsError.set('');
+    this.generatingRecommendations.set(true);
+    this.http
+      .post<PerformanceRecommendation>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/performance-recommendations`,
+        {},
+      )
+      .pipe(finalize(() => this.generatingRecommendations.set(false)))
+      .subscribe({
+        next: (recommendation) =>
+          this.performanceRecommendations.update((list) => [
+            recommendation,
+            ...list,
+          ]),
+        error: (response) =>
+          this.recommendationsError.set(
+            response.error?.message ??
+              'The performance recommendations could not be generated.',
+          ),
       });
   }
 
@@ -1115,6 +1332,37 @@ export class PortalProjectDetail {
       });
   }
 
+  publishToPortfolio() {
+    const project = this.project();
+    if (!project || this.publishingToPortfolio()) return;
+    if (
+      !confirm(
+        `Publish "${project.name}" to the WebInk portfolio as a draft? You'll still need to add photos and review it before it goes live.`,
+      )
+    ) {
+      return;
+    }
+    this.actionError.set('');
+    this.publishingToPortfolio.set(true);
+    this.http
+      .post<{ portfolioProject: { id: string; slug: string; status: string } }>(
+        `/api/organizations/${this.organizationId}/projects/${this.projectId}/publish-to-portfolio`,
+        {},
+      )
+      .pipe(finalize(() => this.publishingToPortfolio.set(false)))
+      .subscribe({
+        next: ({ portfolioProject }) =>
+          this.project.update((current) =>
+            current ? { ...current, portfolioProject } : current,
+          ),
+        error: (response) =>
+          this.actionError.set(
+            response.error?.message ??
+              'The project could not be published to the portfolio.',
+          ),
+      });
+  }
+
   deleteProject() {
     const project = this.project();
     if (!project) return;
@@ -1213,7 +1461,8 @@ export class PortalProjectDetail {
       return;
     }
     this.actionError.set('');
-    const { title, milestoneId, assigneeId, dueDate } = this.taskForm.getRawValue();
+    const { title, milestoneId, assigneeId, dueDate, recurrenceRule } =
+      this.taskForm.getRawValue();
     this.http
       .post<Task>(
         `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks`,
@@ -1222,6 +1471,7 @@ export class PortalProjectDetail {
           milestoneId: milestoneId || undefined,
           assigneeId: assigneeId || undefined,
           dueDate: dueDate || undefined,
+          recurrenceRule: recurrenceRule || undefined,
         },
       )
       .subscribe({
@@ -1234,6 +1484,7 @@ export class PortalProjectDetail {
             milestoneId: '',
             assigneeId: '',
             dueDate: '',
+            recurrenceRule: '',
           });
         },
         error: () => this.actionError.set('The task could not be created.'),
@@ -1251,19 +1502,22 @@ export class PortalProjectDetail {
   private updateTask(task: Task, data: Partial<{ status: TaskStatus; assigneeId: string | null }>) {
     this.actionError.set('');
     this.http
-      .patch<Task>(
+      .patch<Task & { recurrenceChild?: Task }>(
         `/api/organizations/${this.organizationId}/projects/${this.projectId}/tasks/${task.id}`,
         data,
       )
       .subscribe({
-        next: (updated) =>
+        next: ({ recurrenceChild, ...updated }) =>
           this.project.update((current) =>
             current
               ? {
                   ...current,
-                  tasks: current.tasks.map((candidate) =>
-                    candidate.id === updated.id ? updated : candidate,
-                  ),
+                  tasks: [
+                    ...current.tasks.map((candidate) =>
+                      candidate.id === updated.id ? updated : candidate,
+                    ),
+                    ...(recurrenceChild ? [recurrenceChild] : []),
+                  ],
                 }
               : current,
           ),

@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,46 +7,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpsertBrandKitDto = void 0;
-const class_validator_1 = require("class-validator");
+import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
-class UpsertBrandKitDto {
+export class UpsertBrandKitDto {
     logoUrl;
     primaryColor;
     secondaryColor;
     accentColor;
     fontFamily;
 }
-exports.UpsertBrandKitDto = UpsertBrandKitDto;
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(1024),
+    IsOptional(),
+    IsString(),
+    MaxLength(1024),
     __metadata("design:type", String)
 ], UpsertBrandKitDto.prototype, "logoUrl", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(HEX_COLOR, { message: 'primaryColor must be a hex color' }),
+    IsOptional(),
+    IsString(),
+    Matches(HEX_COLOR, { message: 'primaryColor must be a hex color' }),
     __metadata("design:type", String)
 ], UpsertBrandKitDto.prototype, "primaryColor", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(HEX_COLOR, { message: 'secondaryColor must be a hex color' }),
+    IsOptional(),
+    IsString(),
+    Matches(HEX_COLOR, { message: 'secondaryColor must be a hex color' }),
     __metadata("design:type", String)
 ], UpsertBrandKitDto.prototype, "secondaryColor", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(HEX_COLOR, { message: 'accentColor must be a hex color' }),
+    IsOptional(),
+    IsString(),
+    Matches(HEX_COLOR, { message: 'accentColor must be a hex color' }),
     __metadata("design:type", String)
 ], UpsertBrandKitDto.prototype, "accentColor", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(120),
+    IsOptional(),
+    IsString(),
+    MaxLength(120),
     __metadata("design:type", String)
 ], UpsertBrandKitDto.prototype, "fontFamily", void 0);
 //# sourceMappingURL=upsert-brand-kit.dto.js.map

@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { ContactMailerService } from './contact-mailer.service';
-import { ContactQueryDto } from './dto/contact-query.dto';
-import { CreateContactDto } from './dto/create-contact.dto';
+import { Prisma } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ContactMailerService } from './contact-mailer.service.js';
+import { ContactQueryDto } from './dto/contact-query.dto.js';
+import { CreateContactDto } from './dto/create-contact.dto.js';
 export declare class ContactService {
     private readonly prisma;
     private readonly mailer;
@@ -40,7 +40,9 @@ export declare class ContactService {
         message: string;
         source: string | null;
         contactedAt: Date | null;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, Prisma.PrismaClientOptions>;
+    }, never, import("@prisma/client/runtime/client").DefaultArgs, {
+        omit: Prisma.GlobalOmitConfig | undefined;
+    }>;
     exportCsv(query: ContactQueryDto): Promise<string>;
     private where;
     private csvCell;

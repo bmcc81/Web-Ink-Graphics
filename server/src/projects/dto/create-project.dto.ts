@@ -1,4 +1,4 @@
-import { ProjectWorkflowStatus } from '@prisma/client';
+import { ProjectWorkflowStatus } from '../../generated/prisma/client.js';
 import {
   IsDateString,
   IsEnum,

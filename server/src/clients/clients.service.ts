@@ -3,18 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OrganizationRole, Prisma, Role } from '@prisma/client';
+import { OrganizationRole, Prisma, Role } from '../generated/prisma/client.js';
 import { randomUUID } from 'crypto';
-import { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateClientDto } from './dto/create-client.dto';
-import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
-import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto';
-import { PromptOutputType } from './dto/generate-prompt.dto';
-import { MediaService } from '../media/media.service';
-import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto';
-import { BriefQuestionDto } from './dto/brief-question.dto';
+import { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateClientDto } from './dto/create-client.dto.js';
+import { CreateDiscoveryBriefDto } from './dto/create-discovery-brief.dto.js';
+import { UpdateClientDto } from './dto/update-client.dto.js';
+import { UpdateDiscoveryBriefDto } from './dto/update-discovery-brief.dto.js';
+import { PromptOutputType } from './dto/generate-prompt.dto.js';
+import { MediaService } from '../media/media.service.js';
+import { CreateBriefAttachmentDto } from './dto/create-brief-attachment.dto.js';
+import { BriefQuestionDto } from './dto/brief-question.dto.js';
 
 const briefInclude = {
   client: true,

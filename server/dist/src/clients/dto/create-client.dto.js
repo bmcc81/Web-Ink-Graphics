@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateClientDto = void 0;
-const client_1 = require("@prisma/client");
-const class_validator_1 = require("class-validator");
-class CreateClientDto {
+import { ClientStatus } from '../../generated/prisma/client.js';
+import { IsEmail, IsEnum, IsOptional, IsString, IsUrl, Length, MaxLength, } from 'class-validator';
+export class CreateClientDto {
     companyName;
     industry;
     website;
@@ -23,55 +20,54 @@ class CreateClientDto {
     contactPhone;
     generalNotes;
 }
-exports.CreateClientDto = CreateClientDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(2, 160),
+    IsString(),
+    Length(2, 160),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "companyName", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(120),
+    IsOptional(),
+    IsString(),
+    MaxLength(120),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "industry", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsUrl)({ require_tld: false }),
+    IsOptional(),
+    IsUrl({ require_tld: false }),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "website", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(200),
+    IsOptional(),
+    IsString(),
+    MaxLength(200),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "serviceArea", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(client_1.ClientStatus),
+    IsOptional(),
+    IsEnum(ClientStatus),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "status", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(120),
+    IsOptional(),
+    IsString(),
+    MaxLength(120),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "contactName", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEmail)(),
+    IsOptional(),
+    IsEmail(),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "contactEmail", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(40),
+    IsOptional(),
+    IsString(),
+    MaxLength(40),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "contactPhone", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(4000),
+    IsOptional(),
+    IsString(),
+    MaxLength(4000),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "generalNotes", void 0);
 //# sourceMappingURL=create-client.dto.js.map

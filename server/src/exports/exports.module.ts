@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { ExportsController } from './exports.controller';
-import { ExportsService } from './exports.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { ExportsController } from './exports.controller.js';
+import { ExportsService } from './exports.service.js';
 
 @Module({
   imports: [ActivityLogModule],

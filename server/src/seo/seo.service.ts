@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ProjectStatus } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { ProjectStatus } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class SeoService {

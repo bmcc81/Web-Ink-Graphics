@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,9 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUploadDto = void 0;
-const class_validator_1 = require("class-validator");
+import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min, } from 'class-validator';
 const contentTypes = [
     'image/jpeg',
     'image/png',
@@ -21,7 +18,7 @@ const contentTypes = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'text/plain',
 ];
-class CreateUploadDto {
+export class CreateUploadDto {
     fileName;
     contentType;
     fileSize;
@@ -29,37 +26,36 @@ class CreateUploadDto {
     briefId;
     organizationId;
 }
-exports.CreateUploadDto = CreateUploadDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(180),
+    IsString(),
+    MaxLength(180),
     __metadata("design:type", String)
 ], CreateUploadDto.prototype, "fileName", void 0);
 __decorate([
-    (0, class_validator_1.IsIn)(contentTypes),
+    IsIn(contentTypes),
     __metadata("design:type", Object)
 ], CreateUploadDto.prototype, "contentType", void 0);
 __decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(20 * 1024 * 1024),
+    IsInt(),
+    Min(1),
+    Max(20 * 1024 * 1024),
     __metadata("design:type", Number)
 ], CreateUploadDto.prototype, "fileSize", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsIn)(['PORTFOLIO', 'DISCOVERY', 'ASSET']),
+    IsOptional(),
+    IsIn(['PORTFOLIO', 'DISCOVERY', 'ASSET']),
     __metadata("design:type", String)
 ], CreateUploadDto.prototype, "purpose", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(64),
+    IsOptional(),
+    IsString(),
+    MaxLength(64),
     __metadata("design:type", String)
 ], CreateUploadDto.prototype, "briefId", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(64),
+    IsOptional(),
+    IsString(),
+    MaxLength(64),
     __metadata("design:type", String)
 ], CreateUploadDto.prototype, "organizationId", void 0);
 //# sourceMappingURL=create-upload.dto.js.map

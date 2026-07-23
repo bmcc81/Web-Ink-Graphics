@@ -8,12 +8,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
-import { GoalsService } from './goals.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateGoalDto } from './dto/create-goal.dto.js';
+import { UpdateGoalDto } from './dto/update-goal.dto.js';
+import { GoalsService } from './goals.service.js';
 
 @Controller('organizations/:organizationId/goals')
 @UseGuards(JwtAuthGuard)

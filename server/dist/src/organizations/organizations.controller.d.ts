@@ -1,14 +1,14 @@
-import type { AuthUser } from '../auth/auth-user';
-import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
-import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto';
-import { OrganizationsService } from './organizations.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CreateInvitationDto } from './dto/create-invitation.dto.js';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto.js';
+import { UpsertBrandKitDto } from './dto/upsert-brand-kit.dto.js';
+import { OrganizationsService } from './organizations.service.js';
 export declare class OrganizationsController {
     private readonly organizations;
     constructor(organizations: OrganizationsService);
     members(user: AuthUser, organizationId: string): Promise<{
         id: string;
-        role: import("@prisma/client").$Enums.OrganizationRole;
+        role: import("../generated/prisma/enums.js").OrganizationRole;
         createdAt: Date;
         user: {
             id: string;
@@ -19,7 +19,7 @@ export declare class OrganizationsController {
     invitations(user: AuthUser, organizationId: string): Promise<{
         id: string;
         email: string;
-        role: import("@prisma/client").$Enums.OrganizationRole;
+        role: import("../generated/prisma/enums.js").OrganizationRole;
         createdAt: Date;
         expiresAt: Date;
         acceptedAt: Date | null;
@@ -31,18 +31,18 @@ export declare class OrganizationsController {
     createInvitation(user: AuthUser, organizationId: string, dto: CreateInvitationDto): Promise<{
         inviteUrl: string;
         delivery: "MANUAL";
-        createdByRole: import("@prisma/client").$Enums.Role | import("@prisma/client").$Enums.OrganizationRole;
+        createdByRole: import("../generated/prisma/enums.js").Role | import("../generated/prisma/enums.js").OrganizationRole;
         id: string;
         email: string;
-        role: import("@prisma/client").$Enums.OrganizationRole;
+        role: import("../generated/prisma/enums.js").OrganizationRole;
+        expiresAt: Date;
         organization: {
             name: string;
         };
-        expiresAt: Date;
     }>;
     updateMemberRole(user: AuthUser, organizationId: string, membershipId: string, dto: UpdateMemberRoleDto): Promise<{
         id: string;
-        role: import("@prisma/client").$Enums.OrganizationRole;
+        role: import("../generated/prisma/enums.js").OrganizationRole;
         user: {
             id: string;
             email: string;

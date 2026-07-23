@@ -4,23 +4,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { NotificationsService } from '../notifications/notifications.service';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import {
   CONTRIBUTE_ROLES,
+  isStaff,
   MANAGE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateMilestoneDto } from './dto/create-milestone.dto';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateMilestoneDto } from './dto/update-milestone.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { UpsertBudgetDto } from './dto/upsert-budget.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateMilestoneDto } from './dto/create-milestone.dto.js';
+import { CreateProjectDto } from './dto/create-project.dto.js';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto.js';
+import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateMilestoneDto } from './dto/update-milestone.dto.js';
+import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto.js';
 
 const taskInclude = {
   assignee: { select: { id: true, name: true } },
@@ -52,6 +53,7 @@ export class ProjectsService {
         orderBy: { sortOrder: 'asc' as const },
         include: taskInclude,
       },
+      portfolioProject: { select: { id: true, slug: true, status: true } },
     });
   }
 
@@ -250,6 +252,7 @@ export class ProjectsService {
         projectId,
         milestoneId: dto.milestoneId ?? undefined,
         assigneeId: dto.assigneeId ?? undefined,
+        recurrenceRule: dto.recurrenceRule ?? undefined,
       },
       include: taskInclude,
     });
@@ -294,6 +297,10 @@ export class ProjectsService {
           dto.milestoneId === null ? null : (dto.milestoneId ?? undefined),
         assigneeId:
           dto.assigneeId === null ? null : (dto.assigneeId ?? undefined),
+        recurrenceRule:
+          dto.recurrenceRule === null
+            ? null
+            : (dto.recurrenceRule ?? undefined),
       },
       include: taskInclude,
     });
@@ -316,7 +323,70 @@ export class ProjectsService {
         updated.title,
       );
     }
-    return updated;
+    let recurrenceChild: typeof updated | undefined;
+    if (statusChanged && updated.status === 'DONE' && updated.recurrenceRule) {
+      recurrenceChild = await this.generateNextOccurrence(
+        organizationId,
+        updated,
+        user,
+      );
+    }
+    return recurrenceChild ? { ...updated, recurrenceChild } : updated;
+  }
+
+  private async generateNextOccurrence(
+    organizationId: string,
+    task: {
+      id: string;
+      title: string;
+      description: string | null;
+      projectId: string;
+      milestoneId: string | null;
+      assigneeId: string | null;
+      recurrenceRule: 'WEEKLY' | 'MONTHLY' | null;
+      dueDate: Date | null;
+    },
+    user: AuthUser,
+  ) {
+    const existingChild = await this.prisma.task.findFirst({
+      where: { recurrenceParentId: task.id },
+    });
+    if (existingChild) return undefined;
+
+    const nextDueDate = new Date(task.dueDate ?? new Date());
+    if (task.recurrenceRule === 'MONTHLY') {
+      nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+    } else {
+      nextDueDate.setDate(nextDueDate.getDate() + 7);
+    }
+
+    const sortOrder = await this.prisma.task.count({
+      where: { projectId: task.projectId },
+    });
+    const created = await this.prisma.task.create({
+      data: {
+        title: task.title,
+        description: task.description,
+        status: 'TODO',
+        dueDate: nextDueDate,
+        sortOrder,
+        projectId: task.projectId,
+        milestoneId: task.milestoneId ?? undefined,
+        assigneeId: task.assigneeId ?? undefined,
+        recurrenceRule: task.recurrenceRule,
+        recurrenceParentId: task.id,
+      },
+      include: taskInclude,
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'TASK',
+      entityId: created.id,
+      action: 'CREATED',
+      summary: `Recurring task "${created.title}" created for ${nextDueDate.toDateString()}`,
+      actorId: user.id,
+    });
+    return created;
   }
 
   async removeTask(
@@ -402,6 +472,72 @@ export class ProjectsService {
       actorId: user.id,
     });
     return { removed: true };
+  }
+
+  async publishToPortfolio(
+    user: AuthUser,
+    organizationId: string,
+    projectId: string,
+  ) {
+    this.assertIsStaff(user);
+    const project = await this.findProjectOrThrow(organizationId, projectId);
+    if (project.status !== 'COMPLETED') {
+      throw new BadRequestException(
+        'Only completed projects can be published to the portfolio',
+      );
+    }
+    if (project.portfolioProjectId) {
+      throw new BadRequestException(
+        'This project has already been published to the portfolio',
+      );
+    }
+
+    const [approvedAssetCount, approvedBriefCount] = await Promise.all([
+      this.prisma.assetRevision.count({
+        where: { status: 'APPROVED', projectAsset: { projectId } },
+      }),
+      this.prisma.creativeBrief.count({
+        where: { status: 'APPROVED', projectId },
+      }),
+    ]);
+    if (approvedAssetCount === 0 && approvedBriefCount === 0) {
+      throw new BadRequestException(
+        'The project needs at least one approved asset or creative brief before publishing to the portfolio',
+      );
+    }
+
+    const slug = await this.uniquePortfolioSlug(this.slugify(project.name));
+    const portfolioProject = await this.prisma.portfolioProject.create({
+      data: {
+        slug,
+        status: 'DRAFT',
+        completedAt: new Date(),
+        translations: {
+          create: [
+            {
+              locale: 'EN',
+              title: project.name,
+              summary:
+                project.description?.trim() ||
+                'A completed project delivered by WebInk Graphics.',
+            },
+          ],
+        },
+      },
+    });
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: { portfolioProjectId: portfolioProject.id },
+    });
+    await this.activityLog.record({
+      organizationId,
+      entityType: 'PROJECT',
+      entityId: projectId,
+      action: 'UPDATED',
+      summary: `Project published to the portfolio as a draft ("${slug}")`,
+      actorId: user.id,
+    });
+    return { portfolioProject };
   }
 
   async listComments(
@@ -518,6 +654,38 @@ export class ProjectsService {
         'Only organization owners and managers can delete a project',
       );
     }
+  }
+
+  private assertIsStaff(user: AuthUser) {
+    if (!isStaff(user)) {
+      throw new ForbiddenException(
+        'Only WebInk staff can publish a project to the portfolio',
+      );
+    }
+  }
+
+  private slugify(value: string): string {
+    const slug = value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return slug || 'project';
+  }
+
+  private async uniquePortfolioSlug(base: string): Promise<string> {
+    let candidate = base;
+    let suffix = 2;
+    while (
+      await this.prisma.portfolioProject.findUnique({
+        where: { slug: candidate },
+        select: { id: true },
+      })
+    ) {
+      candidate = `${base}-${suffix}`;
+      suffix += 1;
+    }
+    return candidate;
   }
 
   private async findProjectOrThrow(

@@ -1,26 +1,22 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreativeBriefsModule = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_module_1 = require("../activity/activity-log.module");
-const ai_usage_controller_1 = require("./ai-usage.controller");
-const ai_usage_service_1 = require("./ai-usage.service");
-const creative_briefs_controller_1 = require("./creative-briefs.controller");
-const creative_briefs_service_1 = require("./creative-briefs.service");
+import { Module } from '@nestjs/common';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { AiUsageModule } from '../ai-usage/ai-usage.module.js';
+import { CreativeBriefsController } from './creative-briefs.controller.js';
+import { CreativeBriefsService } from './creative-briefs.service.js';
 let CreativeBriefsModule = class CreativeBriefsModule {
 };
-exports.CreativeBriefsModule = CreativeBriefsModule;
-exports.CreativeBriefsModule = CreativeBriefsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [activity_log_module_1.ActivityLogModule],
-        controllers: [creative_briefs_controller_1.CreativeBriefsController, ai_usage_controller_1.AiUsageController],
-        providers: [creative_briefs_service_1.CreativeBriefsService, ai_usage_service_1.AiUsageService],
+CreativeBriefsModule = __decorate([
+    Module({
+        imports: [ActivityLogModule, AiUsageModule],
+        controllers: [CreativeBriefsController],
+        providers: [CreativeBriefsService],
     })
 ], CreativeBriefsModule);
+export { CreativeBriefsModule };
 //# sourceMappingURL=creative-briefs.module.js.map

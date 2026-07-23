@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,19 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var CreativeBriefsService_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreativeBriefsService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const activity_log_service_1 = require("../activity/activity-log.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
-const ai_usage_service_1 = require("./ai-usage.service");
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import Anthropic from '@anthropic-ai/sdk';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { CONTRIBUTE_ROLES, MANAGE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { AiUsageService } from '../ai-usage/ai-usage.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const HAIKU_MODEL = 'claude-haiku-4-5';
 const briefInclude = {
     createdBy: { select: { id: true, name: true } },
@@ -32,7 +26,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
     config;
     activityLog;
     aiUsage;
-    logger = new common_1.Logger(CreativeBriefsService_1.name);
+    logger = new Logger(CreativeBriefsService_1.name);
     constructor(prisma, config, activityLog, aiUsage) {
         this.prisma = prisma;
         this.config = config;
@@ -53,7 +47,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
         const project = await this.findProjectWithContext(organizationId, projectId);
         const apiKey = this.config.get('ANTHROPIC_API_KEY');
         if (!apiKey) {
-            throw new common_1.ServiceUnavailableException('AI-assisted creative work is not configured for this environment.');
+            throw new ServiceUnavailableException('AI-assisted creative work is not configured for this environment.');
         }
         await this.aiUsage.assertWithinCap(organizationId);
         const discoveryBrief = await this.latestDiscoveryBrief(organizationId);
@@ -64,7 +58,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
         }
         catch (error) {
             this.logger.error('Creative brief generation failed', error);
-            throw new common_1.ServiceUnavailableException('The creative brief could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The creative brief could not be generated right now. Try again shortly.');
         }
         const parsed = this.parseResponse(response);
         await this.aiUsage.record(organizationId, user, 'CREATIVE_BRIEF', HAIKU_MODEL, response.usage.input_tokens, response.usage.output_tokens);
@@ -106,9 +100,9 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
             where: { id: briefId, projectId },
         });
         if (!brief)
-            throw new common_1.NotFoundException('Creative brief not found');
+            throw new NotFoundException('Creative brief not found');
         if (brief.status === 'APPROVED') {
-            throw new common_1.BadRequestException('This brief has already been approved');
+            throw new BadRequestException('This brief has already been approved');
         }
         const updated = await this.prisma.creativeBrief.update({
             where: { id: briefId },
@@ -130,7 +124,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
         return updated;
     }
     async callClaude(apiKey, context) {
-        const client = new sdk_1.default({ apiKey });
+        const client = new Anthropic({ apiKey });
         return client.messages.create({
             model: HAIKU_MODEL,
             max_tokens: 1500,
@@ -213,7 +207,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
     parseResponse(response) {
         const textBlock = response.content.find((block) => block.type === 'text');
         if (!textBlock) {
-            throw new common_1.ServiceUnavailableException('The creative brief could not be generated right now. Try again shortly.');
+            throw new ServiceUnavailableException('The creative brief could not be generated right now. Try again shortly.');
         }
         const parsed = JSON.parse(textBlock.text);
         return {
@@ -265,25 +259,25 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
         });
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can generate creative briefs');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can generate creative briefs');
         }
         return role;
     }
     async assertCanManage(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.MANAGE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only organization owners and managers can approve creative briefs');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !MANAGE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only organization owners and managers can approve creative briefs');
         }
         return role;
     }
@@ -293,7 +287,7 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
             select: { id: true, name: true },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
     async findProjectWithContext(organizationId, projectId) {
@@ -315,16 +309,16 @@ let CreativeBriefsService = CreativeBriefsService_1 = class CreativeBriefsServic
             },
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
 };
-exports.CreativeBriefsService = CreativeBriefsService;
-exports.CreativeBriefsService = CreativeBriefsService = CreativeBriefsService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        config_1.ConfigService,
-        activity_log_service_1.ActivityLogService,
-        ai_usage_service_1.AiUsageService])
+CreativeBriefsService = CreativeBriefsService_1 = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ConfigService,
+        ActivityLogService,
+        AiUsageService])
 ], CreativeBriefsService);
+export { CreativeBriefsService };
 //# sourceMappingURL=creative-briefs.service.js.map

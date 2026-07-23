@@ -9,14 +9,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
-import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto';
-import { PortfolioQueryDto } from './dto/portfolio-query.dto';
-import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto';
-import { PortfolioService } from './portfolio.service';
+import { Role } from '../generated/prisma/client.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto.js';
+import { PortfolioQueryDto } from './dto/portfolio-query.dto.js';
+import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto.js';
+import { PortfolioService } from './portfolio.service.js';
 
 @Controller('portfolio')
 export class PortfolioController {

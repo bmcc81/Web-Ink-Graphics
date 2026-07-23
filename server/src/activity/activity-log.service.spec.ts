@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { ActivityLogService } from './activity-log.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { ActivityLogService } from './activity-log.service.js';
 
 describe('ActivityLogService', () => {
   const organizationId = 'organization-1';

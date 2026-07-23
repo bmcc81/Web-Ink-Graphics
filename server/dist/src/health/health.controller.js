@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,10 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HealthController = void 0;
-const common_1 = require("@nestjs/common");
-const health_service_1 = require("./health.service");
+import { Controller, Get } from '@nestjs/common';
+import { HealthService } from './health.service.js';
 let HealthController = class HealthController {
     health;
     constructor(health) {
@@ -24,21 +21,21 @@ let HealthController = class HealthController {
         return this.health.readiness();
     }
 };
-exports.HealthController = HealthController;
 __decorate([
-    (0, common_1.Get)('live'),
+    Get('live'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], HealthController.prototype, "live", null);
 __decorate([
-    (0, common_1.Get)('ready'),
+    Get('ready'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], HealthController.prototype, "ready", null);
-exports.HealthController = HealthController = __decorate([
-    (0, common_1.Controller)('health'),
-    __metadata("design:paramtypes", [health_service_1.HealthService])
+HealthController = __decorate([
+    Controller('health'),
+    __metadata("design:paramtypes", [HealthService])
 ], HealthController);
+export { HealthController };
 //# sourceMappingURL=health.controller.js.map

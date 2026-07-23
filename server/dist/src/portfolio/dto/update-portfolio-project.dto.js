@@ -1,9 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdatePortfolioProjectDto = void 0;
-const mapped_types_1 = require("@nestjs/mapped-types");
-const create_portfolio_project_dto_1 = require("./create-portfolio-project.dto");
-class UpdatePortfolioProjectDto extends (0, mapped_types_1.PartialType)(create_portfolio_project_dto_1.CreatePortfolioProjectDto) {
+import { PartialType } from '@nestjs/mapped-types';
+import { CreatePortfolioProjectDto } from './create-portfolio-project.dto.js';
+export class UpdatePortfolioProjectDto extends PartialType(CreatePortfolioProjectDto) {
 }
-exports.UpdatePortfolioProjectDto = UpdatePortfolioProjectDto;
 //# sourceMappingURL=update-portfolio-project.dto.js.map

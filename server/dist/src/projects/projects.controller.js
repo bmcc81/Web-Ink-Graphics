@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,20 +10,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectsController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const create_milestone_dto_1 = require("./dto/create-milestone.dto");
-const create_project_dto_1 = require("./dto/create-project.dto");
-const create_task_comment_dto_1 = require("./dto/create-task-comment.dto");
-const create_task_dto_1 = require("./dto/create-task.dto");
-const update_milestone_dto_1 = require("./dto/update-milestone.dto");
-const update_project_dto_1 = require("./dto/update-project.dto");
-const update_task_dto_1 = require("./dto/update-task.dto");
-const upsert_budget_dto_1 = require("./dto/upsert-budget.dto");
-const projects_service_1 = require("./projects.service");
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards, } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateMilestoneDto } from './dto/create-milestone.dto.js';
+import { CreateProjectDto } from './dto/create-project.dto.js';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto.js';
+import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateMilestoneDto } from './dto/update-milestone.dto.js';
+import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto.js';
+import { ProjectsService } from './projects.service.js';
 let ProjectsController = class ProjectsController {
     projects;
     constructor(projects) {
@@ -72,6 +69,9 @@ let ProjectsController = class ProjectsController {
     removeBudget(user, organizationId, projectId) {
         return this.projects.removeBudget(user, organizationId, projectId);
     }
+    publishToPortfolio(user, organizationId, projectId) {
+        return this.projects.publishToPortfolio(user, organizationId, projectId);
+    }
     listComments(user, organizationId, projectId, taskId) {
         return this.projects.listComments(user, organizationId, projectId, taskId);
     }
@@ -82,177 +82,186 @@ let ProjectsController = class ProjectsController {
         return this.projects.removeComment(user, organizationId, projectId, taskId, commentId);
     }
 };
-exports.ProjectsController = ProjectsController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "list", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Body)()),
+    Post(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, create_project_dto_1.CreateProjectDto]),
+    __metadata("design:paramtypes", [Object, String, CreateProjectDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':projectId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Get(':projectId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':projectId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Body)()),
+    Patch(':projectId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, update_project_dto_1.UpdateProjectDto]),
+    __metadata("design:paramtypes", [Object, String, String, UpdateProjectDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':projectId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Delete(':projectId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "remove", null);
 __decorate([
-    (0, common_1.Post)(':projectId/milestones'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Body)()),
+    Post(':projectId/milestones'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, create_milestone_dto_1.CreateMilestoneDto]),
+    __metadata("design:paramtypes", [Object, String, String, CreateMilestoneDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "createMilestone", null);
 __decorate([
-    (0, common_1.Patch)(':projectId/milestones/:milestoneId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('milestoneId')),
-    __param(4, (0, common_1.Body)()),
+    Patch(':projectId/milestones/:milestoneId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('milestoneId')),
+    __param(4, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String, update_milestone_dto_1.UpdateMilestoneDto]),
+    __metadata("design:paramtypes", [Object, String, String, String, UpdateMilestoneDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "updateMilestone", null);
 __decorate([
-    (0, common_1.Delete)(':projectId/milestones/:milestoneId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('milestoneId')),
+    Delete(':projectId/milestones/:milestoneId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('milestoneId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeMilestone", null);
 __decorate([
-    (0, common_1.Post)(':projectId/tasks'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Body)()),
+    Post(':projectId/tasks'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, create_task_dto_1.CreateTaskDto]),
+    __metadata("design:paramtypes", [Object, String, String, CreateTaskDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "createTask", null);
 __decorate([
-    (0, common_1.Patch)(':projectId/tasks/:taskId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('taskId')),
-    __param(4, (0, common_1.Body)()),
+    Patch(':projectId/tasks/:taskId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('taskId')),
+    __param(4, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String, update_task_dto_1.UpdateTaskDto]),
+    __metadata("design:paramtypes", [Object, String, String, String, UpdateTaskDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "updateTask", null);
 __decorate([
-    (0, common_1.Delete)(':projectId/tasks/:taskId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('taskId')),
+    Delete(':projectId/tasks/:taskId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('taskId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeTask", null);
 __decorate([
-    (0, common_1.Get)(':projectId/budget'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Get(':projectId/budget'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "getBudget", null);
 __decorate([
-    (0, common_1.Put)(':projectId/budget'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Body)()),
+    Put(':projectId/budget'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, upsert_budget_dto_1.UpsertBudgetDto]),
+    __metadata("design:paramtypes", [Object, String, String, UpsertBudgetDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "upsertBudget", null);
 __decorate([
-    (0, common_1.Delete)(':projectId/budget'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
+    Delete(':projectId/budget'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeBudget", null);
 __decorate([
-    (0, common_1.Get)(':projectId/tasks/:taskId/comments'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('taskId')),
+    Post(':projectId/publish-to-portfolio'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "publishToPortfolio", null);
+__decorate([
+    Get(':projectId/tasks/:taskId/comments'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('taskId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "listComments", null);
 __decorate([
-    (0, common_1.Post)(':projectId/tasks/:taskId/comments'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('taskId')),
-    __param(4, (0, common_1.Body)()),
+    Post(':projectId/tasks/:taskId/comments'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('taskId')),
+    __param(4, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String, create_task_comment_dto_1.CreateTaskCommentDto]),
+    __metadata("design:paramtypes", [Object, String, String, String, CreateTaskCommentDto]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "createComment", null);
 __decorate([
-    (0, common_1.Delete)(':projectId/tasks/:taskId/comments/:commentId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('projectId')),
-    __param(3, (0, common_1.Param)('taskId')),
-    __param(4, (0, common_1.Param)('commentId')),
+    Delete(':projectId/tasks/:taskId/comments/:commentId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('projectId')),
+    __param(3, Param('taskId')),
+    __param(4, Param('commentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "removeComment", null);
-exports.ProjectsController = ProjectsController = __decorate([
-    (0, common_1.Controller)('organizations/:organizationId/projects'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [projects_service_1.ProjectsService])
+ProjectsController = __decorate([
+    Controller('organizations/:organizationId/projects'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [ProjectsService])
 ], ProjectsController);
+export { ProjectsController };
 //# sourceMappingURL=projects.controller.js.map

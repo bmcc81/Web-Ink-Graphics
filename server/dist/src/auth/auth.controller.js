@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,13 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
-const common_1 = require("@nestjs/common");
-const auth_service_1 = require("./auth.service");
-const current_user_decorator_1 = require("./current-user.decorator");
-const login_dto_1 = require("./dto/login.dto");
-const jwt_auth_guard_1 = require("./jwt-auth.guard");
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { AuthService } from './auth.service.js';
+import { CurrentUser } from './current-user.decorator.js';
+import { LoginDto } from './dto/login.dto.js';
+import { JwtAuthGuard } from './jwt-auth.guard.js';
 let AuthController = class AuthController {
     auth;
     constructor(auth) {
@@ -30,25 +28,27 @@ let AuthController = class AuthController {
         return this.auth.profile(user.id);
     }
 };
-exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Post)('login'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, common_1.Body)()),
+    Post('login'),
+    HttpCode(HttpStatus.OK),
+    UseGuards(ThrottlerGuard),
+    Throttle({ default: { limit: 10, ttl: 60_000 } }),
+    __param(0, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:paramtypes", [LoginDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('me'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    Get('me'),
+    UseGuards(JwtAuthGuard),
+    __param(0, CurrentUser()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "profile", null);
-exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+AuthController = __decorate([
+    Controller('auth'),
+    __metadata("design:paramtypes", [AuthService])
 ], AuthController);
+export { AuthController };
 //# sourceMappingURL=auth.controller.js.map

@@ -1,6 +1,6 @@
-import { ActivityAction, ActivityEntityType } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
+import { ActivityAction, ActivityEntityType } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 interface RecordActivityInput {
     organizationId: string;
     entityType: ActivityEntityType;
@@ -22,10 +22,10 @@ export declare class ActivityLogService {
         id: string;
         createdAt: Date;
         organizationId: string;
-        summary: string;
-        entityType: import("@prisma/client").$Enums.ActivityEntityType;
+        entityType: ActivityEntityType;
         entityId: string;
-        action: import("@prisma/client").$Enums.ActivityAction;
+        action: ActivityAction;
+        summary: string;
         actorId: string | null;
     })[]>;
 }

@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,14 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoalsController = void 0;
-const common_1 = require("@nestjs/common");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const create_goal_dto_1 = require("./dto/create-goal.dto");
-const update_goal_dto_1 = require("./dto/update-goal.dto");
-const goals_service_1 = require("./goals.service");
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateGoalDto } from './dto/create-goal.dto.js';
+import { UpdateGoalDto } from './dto/update-goal.dto.js';
+import { GoalsService } from './goals.service.js';
 let GoalsController = class GoalsController {
     goals;
     constructor(goals) {
@@ -40,55 +37,55 @@ let GoalsController = class GoalsController {
         return this.goals.remove(user, organizationId, goalId);
     }
 };
-exports.GoalsController = GoalsController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
+    Get(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], GoalsController.prototype, "list", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Body)()),
+    Post(),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, create_goal_dto_1.CreateGoalDto]),
+    __metadata("design:paramtypes", [Object, String, CreateGoalDto]),
     __metadata("design:returntype", void 0)
 ], GoalsController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':goalId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('goalId')),
+    Get(':goalId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('goalId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], GoalsController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':goalId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('goalId')),
-    __param(3, (0, common_1.Body)()),
+    Patch(':goalId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('goalId')),
+    __param(3, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, update_goal_dto_1.UpdateGoalDto]),
+    __metadata("design:paramtypes", [Object, String, String, UpdateGoalDto]),
     __metadata("design:returntype", void 0)
 ], GoalsController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':goalId'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('organizationId')),
-    __param(2, (0, common_1.Param)('goalId')),
+    Delete(':goalId'),
+    __param(0, CurrentUser()),
+    __param(1, Param('organizationId')),
+    __param(2, Param('goalId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], GoalsController.prototype, "remove", null);
-exports.GoalsController = GoalsController = __decorate([
-    (0, common_1.Controller)('organizations/:organizationId/goals'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [goals_service_1.GoalsService])
+GoalsController = __decorate([
+    Controller('organizations/:organizationId/goals'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [GoalsService])
 ], GoalsController);
+export { GoalsController };
 //# sourceMappingURL=goals.controller.js.map

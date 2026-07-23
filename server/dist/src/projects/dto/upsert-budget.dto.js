@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,10 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpsertBudgetDto = void 0;
-const class_validator_1 = require("class-validator");
-class UpsertBudgetDto {
+import { IsNumber, IsOptional, IsString, Length, Min, MaxLength, } from 'class-validator';
+export class UpsertBudgetDto {
     currency;
     plannedAmount;
     approvedAmount;
@@ -19,41 +16,40 @@ class UpsertBudgetDto {
     actualAmount;
     notes;
 }
-exports.UpsertBudgetDto = UpsertBudgetDto;
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(3, 3),
+    IsOptional(),
+    IsString(),
+    Length(3, 3),
     __metadata("design:type", String)
 ], UpsertBudgetDto.prototype, "currency", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(0),
+    IsOptional(),
+    IsNumber(),
+    Min(0),
     __metadata("design:type", Number)
 ], UpsertBudgetDto.prototype, "plannedAmount", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(0),
+    IsOptional(),
+    IsNumber(),
+    Min(0),
     __metadata("design:type", Number)
 ], UpsertBudgetDto.prototype, "approvedAmount", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(0),
+    IsOptional(),
+    IsNumber(),
+    Min(0),
     __metadata("design:type", Number)
 ], UpsertBudgetDto.prototype, "committedAmount", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(0),
+    IsOptional(),
+    IsNumber(),
+    Min(0),
     __metadata("design:type", Number)
 ], UpsertBudgetDto.prototype, "actualAmount", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(2000),
+    IsOptional(),
+    IsString(),
+    MaxLength(2000),
     __metadata("design:type", String)
 ], UpsertBudgetDto.prototype, "notes", void 0);
 //# sourceMappingURL=upsert-budget.dto.js.map

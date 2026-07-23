@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,16 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateMemberRoleDto = void 0;
-const client_1 = require("@prisma/client");
-const class_validator_1 = require("class-validator");
-class UpdateMemberRoleDto {
+import { OrganizationRole } from '../../generated/prisma/client.js';
+import { IsEnum } from 'class-validator';
+export class UpdateMemberRoleDto {
     role;
 }
-exports.UpdateMemberRoleDto = UpdateMemberRoleDto;
 __decorate([
-    (0, class_validator_1.IsEnum)(client_1.OrganizationRole),
+    IsEnum(OrganizationRole),
     __metadata("design:type", String)
 ], UpdateMemberRoleDto.prototype, "role", void 0);
 //# sourceMappingURL=update-member-role.dto.js.map

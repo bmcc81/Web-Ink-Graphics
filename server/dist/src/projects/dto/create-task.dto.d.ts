@@ -1,4 +1,4 @@
-import { TaskStatus } from '@prisma/client';
+import { RecurrenceRule, TaskStatus } from '../../generated/prisma/client.js';
 export declare class CreateTaskDto {
     title: string;
     description?: string;
@@ -6,4 +6,5 @@ export declare class CreateTaskDto {
     milestoneId?: string | null;
     assigneeId?: string | null;
     dueDate?: string;
+    recurrenceRule?: RecurrenceRule | null;
 }

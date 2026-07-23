@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiUrlService } from '../../core/api/api-url.service';
+import { SeoService } from '../../core/seo/seo.service';
+import { SITE_ORIGIN } from '../../core/seo/site-origin';
 import { ContactForm } from '../contact/contact-form';
 import { localizedContent, PortfolioProject } from '../portfolio/portfolio.models';
 import { LanguageService } from '../../core/i18n/language.service';
@@ -23,6 +25,8 @@ interface Service {
 export class HomePage {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly seo = inject(SeoService);
   readonly i18n = inject(LanguageService);
   readonly featuredProjects = signal<PortfolioProject[]>([]);
   readonly projectsLoaded = signal(false);
@@ -79,6 +83,23 @@ export class HomePage {
   readonly process = computed(() => this.i18n.french ? this.frenchProcess : this.englishProcess);
 
   constructor() {
+    const description = this.i18n.french
+      ? 'Sites Web stratégiques, référencement, campagnes courriel et design graphique conçus pour transformer l’attention en résultats.'
+      : 'Strategic websites, search optimization, email campaigns and graphic design created to turn attention into meaningful business.';
+    this.seo.set({
+      title: this.route.snapshot.title ?? 'WebInk Graphics',
+      description,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'WebInk Graphics',
+        url: SITE_ORIGIN,
+        email: 'hello@webinkgraphics.com',
+        description,
+        areaServed: 'Montreal, QC',
+      },
+    });
+
     this.http
       .get<PortfolioProject[]>(this.apiUrl.url('portfolio/featured'))
       .subscribe({

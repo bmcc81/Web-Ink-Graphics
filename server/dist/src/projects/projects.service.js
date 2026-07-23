@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,13 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectsService = void 0;
-const common_1 = require("@nestjs/common");
-const activity_log_service_1 = require("../activity/activity-log.service");
-const notifications_service_1 = require("../notifications/notifications.service");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
+import { CONTRIBUTE_ROLES, isStaff, MANAGE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const taskInclude = {
     assignee: { select: { id: true, name: true } },
     _count: { select: { comments: true } },
@@ -44,6 +41,7 @@ let ProjectsService = class ProjectsService {
                 orderBy: { sortOrder: 'asc' },
                 include: taskInclude,
             },
+            portfolioProject: { select: { id: true, slug: true, status: true } },
         });
     }
     async create(user, organizationId, dto) {
@@ -203,6 +201,7 @@ let ProjectsService = class ProjectsService {
                 projectId,
                 milestoneId: dto.milestoneId ?? undefined,
                 assigneeId: dto.assigneeId ?? undefined,
+                recurrenceRule: dto.recurrenceRule ?? undefined,
             },
             include: taskInclude,
         });
@@ -238,6 +237,9 @@ let ProjectsService = class ProjectsService {
                 dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
                 milestoneId: dto.milestoneId === null ? null : (dto.milestoneId ?? undefined),
                 assigneeId: dto.assigneeId === null ? null : (dto.assigneeId ?? undefined),
+                recurrenceRule: dto.recurrenceRule === null
+                    ? null
+                    : (dto.recurrenceRule ?? undefined),
             },
             include: taskInclude,
         });
@@ -255,7 +257,52 @@ let ProjectsService = class ProjectsService {
         if (dto.assigneeId && dto.assigneeId !== existing.assigneeId) {
             await this.notifyAssignee(dto.assigneeId, user, project.name, updated.title);
         }
-        return updated;
+        let recurrenceChild;
+        if (statusChanged && updated.status === 'DONE' && updated.recurrenceRule) {
+            recurrenceChild = await this.generateNextOccurrence(organizationId, updated, user);
+        }
+        return recurrenceChild ? { ...updated, recurrenceChild } : updated;
+    }
+    async generateNextOccurrence(organizationId, task, user) {
+        const existingChild = await this.prisma.task.findFirst({
+            where: { recurrenceParentId: task.id },
+        });
+        if (existingChild)
+            return undefined;
+        const nextDueDate = new Date(task.dueDate ?? new Date());
+        if (task.recurrenceRule === 'MONTHLY') {
+            nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+        }
+        else {
+            nextDueDate.setDate(nextDueDate.getDate() + 7);
+        }
+        const sortOrder = await this.prisma.task.count({
+            where: { projectId: task.projectId },
+        });
+        const created = await this.prisma.task.create({
+            data: {
+                title: task.title,
+                description: task.description,
+                status: 'TODO',
+                dueDate: nextDueDate,
+                sortOrder,
+                projectId: task.projectId,
+                milestoneId: task.milestoneId ?? undefined,
+                assigneeId: task.assigneeId ?? undefined,
+                recurrenceRule: task.recurrenceRule,
+                recurrenceParentId: task.id,
+            },
+            include: taskInclude,
+        });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'TASK',
+            entityId: created.id,
+            action: 'CREATED',
+            summary: `Recurring task "${created.title}" created for ${nextDueDate.toDateString()}`,
+            actorId: user.id,
+        });
+        return created;
     }
     async removeTask(user, organizationId, projectId, taskId) {
         await this.assertCanContribute(user, organizationId);
@@ -313,7 +360,7 @@ let ProjectsService = class ProjectsService {
             where: { projectId },
         });
         if (!budget)
-            throw new common_1.NotFoundException('Budget not found');
+            throw new NotFoundException('Budget not found');
         await this.prisma.budget.delete({ where: { projectId } });
         await this.activityLog.record({
             organizationId,
@@ -324,6 +371,58 @@ let ProjectsService = class ProjectsService {
             actorId: user.id,
         });
         return { removed: true };
+    }
+    async publishToPortfolio(user, organizationId, projectId) {
+        this.assertIsStaff(user);
+        const project = await this.findProjectOrThrow(organizationId, projectId);
+        if (project.status !== 'COMPLETED') {
+            throw new BadRequestException('Only completed projects can be published to the portfolio');
+        }
+        if (project.portfolioProjectId) {
+            throw new BadRequestException('This project has already been published to the portfolio');
+        }
+        const [approvedAssetCount, approvedBriefCount] = await Promise.all([
+            this.prisma.assetRevision.count({
+                where: { status: 'APPROVED', projectAsset: { projectId } },
+            }),
+            this.prisma.creativeBrief.count({
+                where: { status: 'APPROVED', projectId },
+            }),
+        ]);
+        if (approvedAssetCount === 0 && approvedBriefCount === 0) {
+            throw new BadRequestException('The project needs at least one approved asset or creative brief before publishing to the portfolio');
+        }
+        const slug = await this.uniquePortfolioSlug(this.slugify(project.name));
+        const portfolioProject = await this.prisma.portfolioProject.create({
+            data: {
+                slug,
+                status: 'DRAFT',
+                completedAt: new Date(),
+                translations: {
+                    create: [
+                        {
+                            locale: 'EN',
+                            title: project.name,
+                            summary: project.description?.trim() ||
+                                'A completed project delivered by WebInk Graphics.',
+                        },
+                    ],
+                },
+            },
+        });
+        await this.prisma.project.update({
+            where: { id: projectId },
+            data: { portfolioProjectId: portfolioProject.id },
+        });
+        await this.activityLog.record({
+            organizationId,
+            entityType: 'PROJECT',
+            entityId: projectId,
+            action: 'UPDATED',
+            summary: `Project published to the portfolio as a draft ("${slug}")`,
+            actorId: user.id,
+        });
+        return { portfolioProject };
     }
     async listComments(user, organizationId, projectId, taskId) {
         await this.assertCanView(user, organizationId);
@@ -370,36 +469,61 @@ let ProjectsService = class ProjectsService {
             select: { authorId: true },
         });
         if (!comment)
-            throw new common_1.NotFoundException('Comment not found');
+            throw new NotFoundException('Comment not found');
         const isAuthor = comment.authorId === user.id;
-        const canModerate = role === 'STAFF' || organization_access_1.MANAGE_ROLES.includes(role);
+        const canModerate = role === 'STAFF' || MANAGE_ROLES.includes(role);
         if (!isAuthor && !canModerate) {
-            throw new common_1.ForbiddenException('Only the author or an organization owner/manager can delete this comment');
+            throw new ForbiddenException('Only the author or an organization owner/manager can delete this comment');
         }
         await this.prisma.taskComment.delete({ where: { id: commentId } });
         return { removed: true };
     }
     async assertCanView(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
     }
     async assertCanContribute(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can manage projects');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can manage projects');
         }
         return role;
     }
     async assertCanManageOwnerLevel(user, organizationId) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
-        if (role !== 'STAFF' && !organization_access_1.MANAGE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only organization owners and managers can delete a project');
+            throw new NotFoundException('Organization not found');
+        if (role !== 'STAFF' && !MANAGE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only organization owners and managers can delete a project');
         }
+    }
+    assertIsStaff(user) {
+        if (!isStaff(user)) {
+            throw new ForbiddenException('Only WebInk staff can publish a project to the portfolio');
+        }
+    }
+    slugify(value) {
+        const slug = value
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        return slug || 'project';
+    }
+    async uniquePortfolioSlug(base) {
+        let candidate = base;
+        let suffix = 2;
+        while (await this.prisma.portfolioProject.findUnique({
+            where: { slug: candidate },
+            select: { id: true },
+        })) {
+            candidate = `${base}-${suffix}`;
+            suffix += 1;
+        }
+        return candidate;
     }
     async findProjectOrThrow(organizationId, projectId, include) {
         const project = await this.prisma.project.findFirst({
@@ -407,7 +531,7 @@ let ProjectsService = class ProjectsService {
             include,
         });
         if (!project)
-            throw new common_1.NotFoundException('Project not found');
+            throw new NotFoundException('Project not found');
         return project;
     }
     async assertMilestoneBelongsToProject(projectId, milestoneId) {
@@ -416,7 +540,7 @@ let ProjectsService = class ProjectsService {
             select: { id: true, name: true, status: true },
         });
         if (!milestone)
-            throw new common_1.NotFoundException('Milestone not found');
+            throw new NotFoundException('Milestone not found');
         return milestone;
     }
     async assertGoalBelongsToOrganization(organizationId, goalId) {
@@ -425,7 +549,7 @@ let ProjectsService = class ProjectsService {
             select: { id: true },
         });
         if (!goal)
-            throw new common_1.NotFoundException('Goal not found');
+            throw new NotFoundException('Goal not found');
     }
     async assertTaskBelongsToProject(projectId, taskId) {
         const task = await this.prisma.task.findFirst({
@@ -433,7 +557,7 @@ let ProjectsService = class ProjectsService {
             select: { id: true, title: true, status: true, assigneeId: true },
         });
         if (!task)
-            throw new common_1.NotFoundException('Task not found');
+            throw new NotFoundException('Task not found');
         return task;
     }
     async assertAssigneeIsMember(organizationId, assigneeId) {
@@ -442,7 +566,7 @@ let ProjectsService = class ProjectsService {
             select: { id: true },
         });
         if (!member) {
-            throw new common_1.BadRequestException('The assignee must be a member of this organization');
+            throw new BadRequestException('The assignee must be a member of this organization');
         }
     }
     async notifyAssignee(assigneeId, actor, projectName, taskTitle) {
@@ -461,11 +585,11 @@ let ProjectsService = class ProjectsService {
         });
     }
 };
-exports.ProjectsService = ProjectsService;
-exports.ProjectsService = ProjectsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        activity_log_service_1.ActivityLogService,
-        notifications_service_1.NotificationsService])
+ProjectsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        ActivityLogService,
+        NotificationsService])
 ], ProjectsService);
+export { ProjectsService };
 //# sourceMappingURL=projects.service.js.map

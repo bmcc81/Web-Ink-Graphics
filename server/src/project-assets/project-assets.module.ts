@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ActivityLogModule } from '../activity/activity-log.module';
-import { ProjectAssetsController } from './project-assets.controller';
-import { ProjectAssetsService } from './project-assets.service';
+import { ActivityLogModule } from '../activity/activity-log.module.js';
+import { ProjectAssetsController } from './project-assets.controller.js';
+import { ProjectAssetsService } from './project-assets.service.js';
 
 @Module({
   imports: [ActivityLogModule],

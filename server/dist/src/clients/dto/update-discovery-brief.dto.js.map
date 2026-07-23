@@ -1,1 +1,1 @@
-{"version":3,"file":"update-discovery-brief.dto.js","sourceRoot":"","sources":["../../../../src/clients/dto/update-discovery-brief.dto.ts"],"names":[],"mappings":";;;AAAA,uDAAmD;AACnD,6EAAuE;AAEvE,MAAa,uBAAwB,SAAQ,IAAA,0BAAW,EACtD,oDAAuB,CACxB;CAAG;AAFJ,0DAEI"}
+{"version":3,"file":"update-discovery-brief.dto.js","sourceRoot":"","sources":["../../../../src/clients/dto/update-discovery-brief.dto.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,sBAAsB,CAAC;AACnD,OAAO,EAAE,uBAAuB,EAAE,MAAM,iCAAiC,CAAC;AAE1E,MAAM,OAAO,uBAAwB,SAAQ,WAAW,CACtD,uBAAuB,CACxB;CAAG"}

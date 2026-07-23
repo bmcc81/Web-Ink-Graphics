@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -116,6 +116,11 @@ enum TaskStatus {
   DONE
 }
 
+enum RecurrenceRule {
+  WEEKLY
+  MONTHLY
+}
+
 enum GoalPeriod {
   Q1
   Q2
@@ -148,6 +153,9 @@ enum ActivityEntityType {
   BRAND_KIT
   PROJECT_ASSET
   CREATIVE_BRIEF
+  PLAN_DRAFT
+  CAMPAIGN_METRIC
+  PERFORMANCE_RECOMMENDATION
 }
 
 model User {
@@ -172,6 +180,10 @@ model User {
   createdCreativeBriefs   CreativeBrief[]          @relation("CreativeBriefCreator")
   approvedCreativeBriefs  CreativeBrief[]          @relation("CreativeBriefApprover")
   aiUsageRequests         AiUsageRecord[]
+  createdPlanDrafts       PlanDraft[]              @relation("PlanDraftCreator")
+  appliedPlanDrafts       PlanDraft[]              @relation("PlanDraftApplier")
+  recordedCampaignMetrics CampaignMetricEntry[]
+  createdPerformanceRecommendations PerformanceRecommendation[]
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 }
@@ -303,6 +315,7 @@ model DiscoveryBrief {
   openQuestions      BriefQuestion[]
   generatedPrompts   GeneratedPrompt[]
   attachments        BriefAttachment[]
+  planDrafts         PlanDraft[]
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
@@ -383,6 +396,7 @@ model PortfolioProject {
   translations ProjectTranslation[]
   images       PortfolioImage[]
   categories   PortfolioCategory[]
+  sourceProject Project?
 
   @@index([status, displayOrder])
   @@index([featured, status])
@@ -462,6 +476,10 @@ model Project {
   designDocuments DesignDocument[]
   assets          ProjectAsset[]
   creativeBriefs  CreativeBrief[]
+  campaignMetrics CampaignMetricEntry[]
+  performanceRecommendations PerformanceRecommendation[]
+  portfolioProjectId String?            @unique
+  portfolioProject   PortfolioProject?  @relation(fields: [portfolioProjectId], references: [id], onDelete: SetNull)
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -482,6 +500,32 @@ model Budget {
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum MetricType {
+  IMPRESSIONS
+  CLICKS
+  WEBSITE_VISITS
+  LEADS
+  CONVERSIONS
+  REVENUE
+}
+
+model CampaignMetricEntry {
+  id           String     @id @default(cuid())
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metricType   MetricType
+  periodStart  DateTime
+  periodEnd    DateTime
+  actualValue  Decimal    @db.Decimal(14, 2)
+  plannedValue Decimal?   @db.Decimal(14, 2)
+  notes        String?
+  recordedById String
+  recordedBy   User       @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now())
+
+  @@index([projectId, metricType, periodStart])
 }
 
 model Goal {
@@ -518,21 +562,25 @@ model Milestone {
 }
 
 model Task {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus    @default(TODO)
-  dueDate     DateTime?
-  sortOrder   Int           @default(0)
-  projectId   String
-  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  milestoneId String?
-  milestone   Milestone?    @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
-  assigneeId  String?
-  assignee    User?         @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  comments    TaskComment[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                 String          @id @default(cuid())
+  title              String
+  description        String?
+  status             TaskStatus      @default(TODO)
+  dueDate            DateTime?
+  sortOrder          Int             @default(0)
+  projectId          String
+  project            Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestoneId        String?
+  milestone          Milestone?      @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  assigneeId         String?
+  assignee           User?           @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  comments           TaskComment[]
+  recurrenceRule     RecurrenceRule?
+  recurrenceParentId String?
+  recurrenceParent   Task?           @relation("TaskRecurrence", fields: [recurrenceParentId], references: [id], onDelete: SetNull)
+  recurrenceChildren Task[]          @relation("TaskRecurrence")
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
 
   @@index([projectId, status, sortOrder])
   @@index([projectId, milestoneId])
@@ -811,6 +859,8 @@ model CreativeBriefVariant {
 
 enum AiUsagePurpose {
   CREATIVE_BRIEF
+  PLANNING_COPILOT
+  PERFORMANCE_RECOMMENDATIONS
 }
 
 model AiUsageRecord {
@@ -827,4 +877,104 @@ model AiUsageRecord {
   createdAt           DateTime       @default(now())
 
   @@index([organizationId, createdAt])
+}
+
+enum PlanDraftStatus {
+  DRAFT
+  APPLIED
+}
+
+model PlanDraft {
+  id                     String                           @id @default(cuid())
+  discoveryBriefId       String
+  discoveryBrief         DiscoveryBrief                   @relation(fields: [discoveryBriefId], references: [id], onDelete: Restrict)
+  goalTitle              String
+  goalDescription        String?
+  goalPeriod             GoalPeriod
+  goalYear               Int
+  summary                String
+  risks                  String
+  contentIdeas           String
+  readinessScore         Int
+  readinessNotes         String
+  status                 PlanDraftStatus                  @default(DRAFT)
+  projects               PlanDraftProject[]
+  channelRecommendations PlanDraftChannelRecommendation[]
+  createdById            String
+  createdBy              User                             @relation("PlanDraftCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  appliedById      String?
+  appliedBy        User?             @relation("PlanDraftApplier", fields: [appliedById], references: [id], onDelete: SetNull)
+  appliedAt        DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([discoveryBriefId, createdAt])
+}
+
+model PlanDraftProject {
+  id          String               @id @default(cuid())
+  planDraftId String
+  planDraft   PlanDraft            @relation(fields: [planDraftId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  sortOrder   Int                  @default(0)
+  milestones  PlanDraftMilestone[]
+
+  @@index([planDraftId, sortOrder])
+}
+
+model PlanDraftMilestone {
+  id                 String           @id @default(cuid())
+  planDraftProjectId String
+  planDraftProject   PlanDraftProject @relation(fields: [planDraftProjectId], references: [id], onDelete: Cascade)
+  name               String
+  tasks              String[]
+  sortOrder          Int              @default(0)
+
+  @@index([planDraftProjectId, sortOrder])
+}
+
+model PlanDraftChannelRecommendation {
+  id          String    @id @default(cuid())
+  planDraftId String
+  planDraft   PlanDraft @relation(fields: [planDraftId], references: [id], onDelete: Cascade)
+  channel     String
+  rationale   String
+  sortOrder   Int       @default(0)
+
+  @@index([planDraftId, sortOrder])
+}
+
+enum RecommendationPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model PerformanceRecommendation {
+  id              String                       @id @default(cuid())
+  projectId       String
+  project         Project                      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  summary         String
+  confidenceScore Int
+  confidenceNotes String
+  dataSummary     String
+  items           PerformanceRecommendationItem[]
+  createdById     String
+  createdBy       User                         @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt       DateTime                     @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model PerformanceRecommendationItem {
+  id                          String                     @id @default(cuid())
+  performanceRecommendationId String
+  performanceRecommendation   PerformanceRecommendation  @relation(fields: [performanceRecommendationId], references: [id], onDelete: Cascade)
+  title                       String
+  rationale                   String
+  priority                    RecommendationPriority
+  sortOrder                   Int                        @default(0)
+
+  @@index([performanceRecommendationId, sortOrder])
 }

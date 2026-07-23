@@ -1,4 +1,4 @@
-import { Locale } from '@prisma/client';
+import { Locale } from '../../generated/prisma/client.js';
 import {
   IsEnum,
   IsOptional,

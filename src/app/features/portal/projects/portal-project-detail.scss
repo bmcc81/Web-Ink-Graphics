@@ -53,6 +53,7 @@ section + section { margin-top: 2.5rem; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   padding: 1.25rem 1.5rem;
   background: white;
   border: 1px solid var(--line);
@@ -81,6 +82,7 @@ section + section { margin-top: 2.5rem; }
   background: var(--paper);
   color: var(--muted);
 }
+.status-badge.portfolio-badge { background: #ede7ff; color: var(--violet); }
 
 select {
   padding: .4rem .6rem;
@@ -165,6 +167,100 @@ button.danger {
   background: white;
   font-weight: 600;
 }
+
+.performance {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+.budget-variance { margin: 0 0 1rem; }
+.variance-badge {
+  margin-left: .5rem;
+  padding: .1rem .5rem;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.variance-badge.variance-good { background: #e3f5e9; color: #1c6b3d; }
+.variance-badge.variance-bad { background: #fbeaea; color: #b3261e; }
+.metrics-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+  font-size: .85rem;
+}
+.metrics-summary-table th {
+  text-align: left;
+  padding: .5rem .6rem;
+  color: var(--muted);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--line);
+}
+.metrics-summary-table td {
+  padding: .5rem .6rem;
+  border-bottom: 1px solid var(--line);
+}
+.metric-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.metric-form label {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.metric-form input,
+.metric-form select {
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  font: inherit;
+}
+.metric-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.metric-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+  padding: .6rem .8rem;
+  background: var(--paper);
+  border-radius: .5rem;
+  font-size: .82rem;
+}
+.metric-type { font-weight: 700; }
+.metric-meta { color: var(--muted); margin-left: auto; }
+.metric-list button { padding: .3rem .8rem; border: 1px solid var(--line); border-radius: 100px; background: white; font-weight: 600; font-size: .78rem; }
+
+.recommendations-block { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.section-subhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.section-subhead h3 { margin: 0; font: 700 1rem var(--font-display); }
+.section-subhead button { padding: .5rem 1rem; border: 1px solid var(--line); border-radius: 100px; background: white; font-weight: 600; font-size: .85rem; white-space: nowrap; }
+.recommendation-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+.recommendation-item { padding: 1rem; border: 1px solid var(--line); border-radius: .75rem; background: var(--paper); }
+.recommendation-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; }
+.status-badge.confidence-badge { background: #ede7ff; color: var(--violet); }
+.recommendation-meta { color: var(--muted); font-size: .78rem; margin-left: auto; }
+.data-summary, .confidence-notes { color: var(--muted); font-size: .82rem; }
+.recommendation-item-list { list-style: none; padding: 0; margin: .75rem 0; display: flex; flex-direction: column; gap: .5rem; }
+.recommendation-item-list li { display: flex; align-items: baseline; flex-wrap: wrap; gap: .5rem; padding: .5rem .65rem; background: white; border-radius: .5rem; font-size: .85rem; }
+.status-badge.priority-high { background: #fbeaea; color: #b3261e; }
+.status-badge.priority-medium { background: #fff4e0; color: #8a5a00; }
+.status-badge.priority-low { background: #e3f5e9; color: #1c6b3d; }
 
 .designs {
   padding: 1.5rem;
@@ -699,6 +795,16 @@ button.danger {
   gap: .75rem;
 }
 .task-title { font-weight: 600; margin-right: auto; }
+.recurrence-badge {
+  padding: .1rem .5rem;
+  border-radius: 100px;
+  background: #ede7ff;
+  color: var(--violet);
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
 .assignee { color: var(--muted); font-size: .85rem; }
 .comments-toggle {
   padding: .3rem .75rem;

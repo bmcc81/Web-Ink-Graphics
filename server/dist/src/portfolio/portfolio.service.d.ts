@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto';
-import { PortfolioQueryDto } from './dto/portfolio-query.dto';
-import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto';
+import { Locale, Prisma, ProjectStatus } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto.js';
+import { PortfolioQueryDto } from './dto/portfolio-query.dto.js';
+import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto.js';
 export declare class PortfolioService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -15,9 +15,9 @@ export declare class PortfolioService {
     findFeatured(): Prisma.PrismaPromise<({
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -26,15 +26,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -47,7 +47,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
@@ -58,9 +58,9 @@ export declare class PortfolioService {
     findAll(query: PortfolioQueryDto, includeUnpublished?: boolean): Prisma.PrismaPromise<({
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -69,15 +69,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -90,7 +90,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
@@ -101,9 +101,9 @@ export declare class PortfolioService {
     findOne(slug: string): Promise<{
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -112,15 +112,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -133,7 +133,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
@@ -144,9 +144,9 @@ export declare class PortfolioService {
     findPublished(slug: string): Promise<{
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -155,15 +155,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -176,7 +176,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
@@ -187,9 +187,9 @@ export declare class PortfolioService {
     create(dto: CreatePortfolioProjectDto): Prisma.Prisma__PortfolioProjectClient<{
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -198,15 +198,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -219,20 +219,22 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
         displayOrder: number;
         completedAt: Date | null;
         publishedAt: Date | null;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, Prisma.PrismaClientOptions>;
+    }, never, import("@prisma/client/runtime/client").DefaultArgs, {
+        omit: Prisma.GlobalOmitConfig | undefined;
+    }>;
     update(slug: string, dto: UpdatePortfolioProjectDto): Promise<{
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -241,15 +243,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -262,7 +264,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;
@@ -273,9 +275,9 @@ export declare class PortfolioService {
     archive(slug: string): Promise<{
         translations: {
             id: string;
-            title: string;
-            locale: import("@prisma/client").$Enums.Locale;
             summary: string;
+            title: string;
+            locale: Locale;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -284,15 +286,15 @@ export declare class PortfolioService {
             projectId: string;
         }[];
         images: {
-            id: string;
             url: string;
+            id: string;
             sortOrder: number;
+            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
-            projectId: string;
         }[];
         categories: {
             id: string;
@@ -305,7 +307,7 @@ export declare class PortfolioService {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        status: import("@prisma/client").$Enums.ProjectStatus;
+        status: ProjectStatus;
         clientName: string | null;
         projectUrl: string | null;
         featured: boolean;

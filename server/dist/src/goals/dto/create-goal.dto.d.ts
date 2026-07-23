@@ -1,4 +1,4 @@
-import { GoalPeriod, GoalStatus } from '@prisma/client';
+import { GoalPeriod, GoalStatus } from '../../generated/prisma/client.js';
 export declare class CreateGoalDto {
     title: string;
     description?: string;

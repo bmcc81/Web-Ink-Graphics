@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,10 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SeoController = void 0;
-const common_1 = require("@nestjs/common");
-const seo_service_1 = require("./seo.service");
+import { Controller, Get, Res } from '@nestjs/common';
+import { SeoService } from './seo.service.js';
 let SeoController = class SeoController {
     seo;
     constructor(seo) {
@@ -27,23 +24,23 @@ let SeoController = class SeoController {
         response.type('text/plain').send(this.seo.robots());
     }
 };
-exports.SeoController = SeoController;
 __decorate([
-    (0, common_1.Get)('sitemap.xml'),
-    __param(0, (0, common_1.Res)()),
+    Get('sitemap.xml'),
+    __param(0, Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SeoController.prototype, "sitemap", null);
 __decorate([
-    (0, common_1.Get)('robots.txt'),
-    __param(0, (0, common_1.Res)()),
+    Get('robots.txt'),
+    __param(0, Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SeoController.prototype, "robots", null);
-exports.SeoController = SeoController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [seo_service_1.SeoService])
+SeoController = __decorate([
+    Controller(),
+    __metadata("design:paramtypes", [SeoService])
 ], SeoController);
+export { SeoController };
 //# sourceMappingURL=seo.controller.js.map

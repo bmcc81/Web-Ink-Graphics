@@ -1,1 +1,1 @@
-{"version":3,"file":"update-goal.dto.js","sourceRoot":"","sources":["../../../../src/goals/dto/update-goal.dto.ts"],"names":[],"mappings":";;;AAAA,uDAAmD;AACnD,uDAAkD;AAElD,MAAa,aAAc,SAAQ,IAAA,0BAAW,EAAC,+BAAa,CAAC;CAAG;AAAhE,sCAAgE"}
+{"version":3,"file":"update-goal.dto.js","sourceRoot":"","sources":["../../../../src/goals/dto/update-goal.dto.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,sBAAsB,CAAC;AACnD,OAAO,EAAE,aAAa,EAAE,MAAM,sBAAsB,CAAC;AAErD,MAAM,OAAO,aAAc,SAAQ,WAAW,CAAC,aAAa,CAAC;CAAG"}

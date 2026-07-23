@@ -1,6 +1,6 @@
-import { OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import type { PrismaService } from '../prisma/prisma.service';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import type { PrismaService } from '../prisma/prisma.service.js';
 
 export const MANAGE_ROLES: OrganizationRole[] = [
   OrganizationRole.OWNER,

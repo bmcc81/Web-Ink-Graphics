@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
-import { AuthUser } from '../auth/auth-user';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
+import { AuthUser } from '../auth/auth-user.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateUploadDto } from './dto/create-upload.dto.js';
 export declare class MediaService {
     private readonly config;
     private readonly prisma;

@@ -1,4 +1,7 @@
-import { FollowUpPriority, QuestionStatus } from '@prisma/client';
+import {
+  FollowUpPriority,
+  QuestionStatus,
+} from '../../generated/prisma/client.js';
 import {
   IsDateString,
   IsEnum,

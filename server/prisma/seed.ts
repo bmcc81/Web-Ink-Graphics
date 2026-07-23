@@ -1,7 +1,10 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { hash } from 'bcryptjs';
+import { PrismaClient, Role } from '../src/generated/prisma/client.js';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 
 async function main() {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();

@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Locale, Prisma, ProjectStatus } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto';
-import { PortfolioQueryDto } from './dto/portfolio-query.dto';
-import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto';
+import { Locale, Prisma, ProjectStatus } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreatePortfolioProjectDto } from './dto/create-portfolio-project.dto.js';
+import { PortfolioQueryDto } from './dto/portfolio-query.dto.js';
+import { UpdatePortfolioProjectDto } from './dto/update-portfolio-project.dto.js';
 
 const projectInclude = {
   translations: true,

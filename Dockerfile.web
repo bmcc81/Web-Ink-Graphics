@@ -7,6 +7,12 @@ RUN npm ci
 COPY angular.json tsconfig.json tsconfig.app.json tsconfig.spec.json ./
 COPY public ./public
 COPY src ./src
+# Optional: if the backend API is reachable at build time, pass its URL here
+# so portfolio case-study pages are statically prerendered too. Without it,
+# the marketing pages still prerender and case studies fall back to
+# on-demand server rendering.
+ARG API_INTERNAL_URL
+ENV API_INTERNAL_URL=$API_INTERNAL_URL
 RUN npm run build
 
 FROM node:22.20-alpine AS runtime

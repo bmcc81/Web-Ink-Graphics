@@ -1,15 +1,15 @@
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
-import { NotificationsService } from '../notifications/notifications.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateMilestoneDto } from './dto/create-milestone.dto';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateMilestoneDto } from './dto/update-milestone.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { UpsertBudgetDto } from './dto/upsert-budget.dto';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateMilestoneDto } from './dto/create-milestone.dto.js';
+import { CreateProjectDto } from './dto/create-project.dto.js';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto.js';
+import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateMilestoneDto } from './dto/update-milestone.dto.js';
+import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { UpsertBudgetDto } from './dto/upsert-budget.dto.js';
 export declare class ProjectsService {
     private readonly prisma;
     private readonly activityLog;
@@ -21,11 +21,12 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        status: import("@prisma/client").$Enums.ProjectWorkflowStatus;
+        status: import("../generated/prisma/enums.js").ProjectWorkflowStatus;
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }[]>;
     findOne(user: AuthUser, organizationId: string, projectId: string): Promise<{
         id: string;
@@ -33,11 +34,12 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        status: import("@prisma/client").$Enums.ProjectWorkflowStatus;
+        status: import("../generated/prisma/enums.js").ProjectWorkflowStatus;
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     create(user: AuthUser, organizationId: string, dto: CreateProjectDto): Promise<{
         id: string;
@@ -45,11 +47,12 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        status: import("@prisma/client").$Enums.ProjectWorkflowStatus;
+        status: import("../generated/prisma/enums.js").ProjectWorkflowStatus;
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     update(user: AuthUser, organizationId: string, projectId: string, dto: UpdateProjectDto): Promise<{
         id: string;
@@ -57,11 +60,12 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
-        status: import("@prisma/client").$Enums.ProjectWorkflowStatus;
+        status: import("../generated/prisma/enums.js").ProjectWorkflowStatus;
         targetLaunch: Date | null;
         description: string | null;
         startDate: Date | null;
         goalId: string | null;
+        portfolioProjectId: string | null;
     }>;
     remove(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
@@ -71,9 +75,9 @@ export declare class ProjectsService {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.MilestoneStatus;
-        dueDate: Date | null;
+        status: import("../generated/prisma/enums.js").MilestoneStatus;
         sortOrder: number;
+        dueDate: Date | null;
         projectId: string;
         description: string | null;
     }>;
@@ -82,9 +86,9 @@ export declare class ProjectsService {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.MilestoneStatus;
-        dueDate: Date | null;
+        status: import("../generated/prisma/enums.js").MilestoneStatus;
         sortOrder: number;
+        dueDate: Date | null;
         projectId: string;
         description: string | null;
     }>;
@@ -103,16 +107,18 @@ export declare class ProjectsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.TaskStatus;
-        dueDate: Date | null;
-        sortOrder: number;
+        status: import("../generated/prisma/enums.js").TaskStatus;
         title: string;
+        sortOrder: number;
+        dueDate: Date | null;
         projectId: string;
         description: string | null;
         milestoneId: string | null;
         assigneeId: string | null;
+        recurrenceRule: import("../generated/prisma/enums.js").RecurrenceRule | null;
+        recurrenceParentId: string | null;
     }>;
-    updateTask(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: UpdateTaskDto): Promise<{
+    updateTask(user: AuthUser, organizationId: string, projectId: string, taskId: string, dto: UpdateTaskDto): Promise<({
         _count: {
             comments: number;
         };
@@ -124,15 +130,62 @@ export declare class ProjectsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.TaskStatus;
-        dueDate: Date | null;
-        sortOrder: number;
+        status: import("../generated/prisma/enums.js").TaskStatus;
         title: string;
+        sortOrder: number;
+        dueDate: Date | null;
         projectId: string;
         description: string | null;
         milestoneId: string | null;
         assigneeId: string | null;
+        recurrenceRule: import("../generated/prisma/enums.js").RecurrenceRule | null;
+        recurrenceParentId: string | null;
+    }) | {
+        recurrenceChild: {
+            _count: {
+                comments: number;
+            };
+            assignee: {
+                id: string;
+                name: string;
+            } | null;
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("../generated/prisma/enums.js").TaskStatus;
+            title: string;
+            sortOrder: number;
+            dueDate: Date | null;
+            projectId: string;
+            description: string | null;
+            milestoneId: string | null;
+            assigneeId: string | null;
+            recurrenceRule: import("../generated/prisma/enums.js").RecurrenceRule | null;
+            recurrenceParentId: string | null;
+        };
+        _count: {
+            comments: number;
+        };
+        assignee: {
+            id: string;
+            name: string;
+        } | null;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("../generated/prisma/enums.js").TaskStatus;
+        title: string;
+        sortOrder: number;
+        dueDate: Date | null;
+        projectId: string;
+        description: string | null;
+        milestoneId: string | null;
+        assigneeId: string | null;
+        recurrenceRule: import("../generated/prisma/enums.js").RecurrenceRule | null;
+        recurrenceParentId: string | null;
     }>;
+    private generateNextOccurrence;
     removeTask(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<{
         removed: boolean;
     }>;
@@ -142,10 +195,10 @@ export declare class ProjectsService {
         updatedAt: Date;
         projectId: string;
         currency: string;
-        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        plannedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        approvedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        committedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        actualAmount: import("@prisma/client-runtime-utils").Decimal | null;
         notes: string | null;
     } | null>;
     upsertBudget(user: AuthUser, organizationId: string, projectId: string, dto: UpsertBudgetDto): Promise<{
@@ -154,14 +207,29 @@ export declare class ProjectsService {
         updatedAt: Date;
         projectId: string;
         currency: string;
-        plannedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        approvedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        committedAmount: import("@prisma/client/runtime/library").Decimal | null;
-        actualAmount: import("@prisma/client/runtime/library").Decimal | null;
+        plannedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        approvedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        committedAmount: import("@prisma/client-runtime-utils").Decimal | null;
+        actualAmount: import("@prisma/client-runtime-utils").Decimal | null;
         notes: string | null;
     }>;
     removeBudget(user: AuthUser, organizationId: string, projectId: string): Promise<{
         removed: boolean;
+    }>;
+    publishToPortfolio(user: AuthUser, organizationId: string, projectId: string): Promise<{
+        portfolioProject: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            status: import("../generated/prisma/enums.js").ProjectStatus;
+            clientName: string | null;
+            projectUrl: string | null;
+            featured: boolean;
+            displayOrder: number;
+            completedAt: Date | null;
+            publishedAt: Date | null;
+        };
     }>;
     listComments(user: AuthUser, organizationId: string, projectId: string, taskId: string): Promise<({
         author: {
@@ -195,6 +263,9 @@ export declare class ProjectsService {
     private assertCanView;
     private assertCanContribute;
     private assertCanManageOwnerLevel;
+    private assertIsStaff;
+    private slugify;
+    private uniquePortfolioSlug;
     private findProjectOrThrow;
     private assertMilestoneBelongsToProject;
     private assertGoalBelongsToOrganization;

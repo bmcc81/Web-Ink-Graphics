@@ -1,7 +1,12 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { GoalPeriod, GoalStatus, OrganizationRole, Role } from '@prisma/client';
-import type { AuthUser } from '../auth/auth-user';
-import { GoalsService } from './goals.service';
+import {
+  GoalPeriod,
+  GoalStatus,
+  OrganizationRole,
+  Role,
+} from '../generated/prisma/client.js';
+import type { AuthUser } from '../auth/auth-user.js';
+import { GoalsService } from './goals.service.js';
 
 describe('GoalsService', () => {
   const organizationId = 'organization-1';

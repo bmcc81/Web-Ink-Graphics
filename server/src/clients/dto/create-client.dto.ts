@@ -1,4 +1,4 @@
-import { ClientStatus } from '@prisma/client';
+import { ClientStatus } from '../../generated/prisma/client.js';
 import {
   IsEmail,
   IsEnum,

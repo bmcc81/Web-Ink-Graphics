@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,12 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvitationsController = void 0;
-const common_1 = require("@nestjs/common");
-const throttler_1 = require("@nestjs/throttler");
-const accept_invitation_dto_1 = require("./dto/accept-invitation.dto");
-const organizations_service_1 = require("./organizations.service");
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto.js';
+import { OrganizationsService } from './organizations.service.js';
 let InvitationsController = class InvitationsController {
     organizations;
     constructor(organizations) {
@@ -29,26 +26,26 @@ let InvitationsController = class InvitationsController {
         return this.organizations.acceptInvitation(token, dto);
     }
 };
-exports.InvitationsController = InvitationsController;
 __decorate([
-    (0, common_1.Get)(':token'),
-    __param(0, (0, common_1.Param)('token')),
+    Get(':token'),
+    __param(0, Param('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], InvitationsController.prototype, "inspect", null);
 __decorate([
-    (0, common_1.Post)(':token/accept'),
-    __param(0, (0, common_1.Param)('token')),
-    __param(1, (0, common_1.Body)()),
+    Post(':token/accept'),
+    __param(0, Param('token')),
+    __param(1, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, accept_invitation_dto_1.AcceptInvitationDto]),
+    __metadata("design:paramtypes", [String, AcceptInvitationDto]),
     __metadata("design:returntype", void 0)
 ], InvitationsController.prototype, "accept", null);
-exports.InvitationsController = InvitationsController = __decorate([
-    (0, common_1.Controller)('invitations'),
-    (0, common_1.UseGuards)(throttler_1.ThrottlerGuard),
-    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60_000 } }),
-    __metadata("design:paramtypes", [organizations_service_1.OrganizationsService])
+InvitationsController = __decorate([
+    Controller('invitations'),
+    UseGuards(ThrottlerGuard),
+    Throttle({ default: { limit: 10, ttl: 60_000 } }),
+    __metadata("design:paramtypes", [OrganizationsService])
 ], InvitationsController);
+export { InvitationsController };
 //# sourceMappingURL=invitations.controller.js.map

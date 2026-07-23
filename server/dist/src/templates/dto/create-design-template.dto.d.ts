@@ -1,4 +1,4 @@
-import { TemplateCategory, TemplateFieldType } from '@prisma/client';
+import { TemplateCategory, TemplateFieldType } from '../../generated/prisma/client.js';
 export declare class TemplateFieldInputDto {
     key: string;
     label: string;

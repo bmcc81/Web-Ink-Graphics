@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,17 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TemplatesController = void 0;
-const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const roles_decorator_1 = require("../auth/roles.decorator");
-const roles_guard_1 = require("../auth/roles.guard");
-const create_design_template_dto_1 = require("./dto/create-design-template.dto");
-const update_design_template_dto_1 = require("./dto/update-design-template.dto");
-const templates_service_1 = require("./templates.service");
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, } from '@nestjs/common';
+import { Role } from '../generated/prisma/client.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { CreateDesignTemplateDto } from './dto/create-design-template.dto.js';
+import { UpdateDesignTemplateDto } from './dto/update-design-template.dto.js';
+import { TemplatesService } from './templates.service.js';
 let TemplatesController = class TemplatesController {
     templates;
     constructor(templates) {
@@ -40,44 +37,44 @@ let TemplatesController = class TemplatesController {
         return this.templates.update(id, dto);
     }
 };
-exports.TemplatesController = TemplatesController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    Get(),
+    __param(0, CurrentUser()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], TemplatesController.prototype, "list", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Param)('id')),
+    Get(':id'),
+    __param(0, CurrentUser()),
+    __param(1, Param('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], TemplatesController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Body)()),
+    Post(),
+    UseGuards(RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_design_template_dto_1.CreateDesignTemplateDto]),
+    __metadata("design:paramtypes", [CreateDesignTemplateDto]),
     __metadata("design:returntype", void 0)
 ], TemplatesController.prototype, "create", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EDITOR),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    Patch(':id'),
+    UseGuards(RolesGuard),
+    Roles(Role.ADMIN, Role.EDITOR),
+    __param(0, Param('id')),
+    __param(1, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_design_template_dto_1.UpdateDesignTemplateDto]),
+    __metadata("design:paramtypes", [String, UpdateDesignTemplateDto]),
     __metadata("design:returntype", void 0)
 ], TemplatesController.prototype, "update", null);
-exports.TemplatesController = TemplatesController = __decorate([
-    (0, common_1.Controller)('templates'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [templates_service_1.TemplatesService])
+TemplatesController = __decorate([
+    Controller('templates'),
+    UseGuards(JwtAuthGuard),
+    __metadata("design:paramtypes", [TemplatesService])
 ], TemplatesController);
+export { TemplatesController };
 //# sourceMappingURL=templates.controller.js.map

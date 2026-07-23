@@ -13,7 +13,10 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { TemplateCategory, TemplateFieldType } from '@prisma/client';
+import {
+  TemplateCategory,
+  TemplateFieldType,
+} from '../../generated/prisma/client.js';
 
 export class TemplateFieldInputDto {
   @IsString()

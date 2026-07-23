@@ -4,22 +4,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ActivityLogService } from '../activity/activity-log.service';
-import type { AuthUser } from '../auth/auth-user';
+import { ActivityLogService } from '../activity/activity-log.service.js';
+import type { AuthUser } from '../auth/auth-user.js';
 import {
   CONTRIBUTE_ROLES,
   MANAGE_ROLES,
   resolveOrganizationRole,
-} from '../organizations/organization-access';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateDesignCommentDto } from './dto/create-design-comment.dto';
-import { CreateDesignDocumentDto } from './dto/create-design-document.dto';
-import { CreateDesignReviewDto } from './dto/create-design-review.dto';
+} from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateDesignCommentDto } from './dto/create-design-comment.dto.js';
+import { CreateDesignDocumentDto } from './dto/create-design-document.dto.js';
+import { CreateDesignReviewDto } from './dto/create-design-review.dto.js';
 import {
   DecideDesignReviewDto,
   DesignReviewDecision,
-} from './dto/decide-design-review.dto';
-import { FigmaService } from './figma.service';
+} from './dto/decide-design-review.dto.js';
+import { FigmaService } from './figma.service.js';
 
 const designInclude = {
   linkedBy: { select: { id: true, name: true } },

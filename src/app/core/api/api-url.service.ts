@@ -11,9 +11,11 @@ export class ApiUrlService {
         process?: { env?: Record<string, string | undefined> };
       }
     ).process;
-    const internalApiUrl = nodeProcess?.env?.['API_INTERNAL_URL'];
-    return this.request
-      ? new URL(apiPath, internalApiUrl || this.request.url).toString()
-      : apiPath;
+    if (!nodeProcess) {
+      return apiPath;
+    }
+    const internalApiUrl = nodeProcess.env?.['API_INTERNAL_URL'];
+    const origin = internalApiUrl || this.request?.url || 'http://localhost:3000';
+    return new URL(apiPath, origin).toString();
   }
 }

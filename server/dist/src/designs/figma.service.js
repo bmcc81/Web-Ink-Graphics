@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -9,13 +8,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var FigmaService_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.FigmaService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 let FigmaService = FigmaService_1 = class FigmaService {
     config;
-    logger = new common_1.Logger(FigmaService_1.name);
+    logger = new Logger(FigmaService_1.name);
     constructor(config) {
         this.config = config;
     }
@@ -25,14 +22,14 @@ let FigmaService = FigmaService_1 = class FigmaService {
             url = new URL(rawUrl);
         }
         catch {
-            throw new common_1.BadRequestException('That does not look like a valid URL');
+            throw new BadRequestException('That does not look like a valid URL');
         }
         if (!/(^|\.)figma\.com$/.test(url.hostname)) {
-            throw new common_1.BadRequestException('Only figma.com links can be attached');
+            throw new BadRequestException('Only figma.com links can be attached');
         }
         const match = url.pathname.match(/\/(file|design)\/([^/]+)/);
         if (!match) {
-            throw new common_1.BadRequestException('Could not find a file key in this Figma link');
+            throw new BadRequestException('Could not find a file key in this Figma link');
         }
         const fileKey = match[2];
         const nodeIdParam = url.searchParams.get('node-id');
@@ -95,9 +92,9 @@ let FigmaService = FigmaService_1 = class FigmaService {
         return values[0] ?? null;
     }
 };
-exports.FigmaService = FigmaService;
-exports.FigmaService = FigmaService = FigmaService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+FigmaService = FigmaService_1 = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [ConfigService])
 ], FigmaService);
+export { FigmaService };
 //# sourceMappingURL=figma.service.js.map

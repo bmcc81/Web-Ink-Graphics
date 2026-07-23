@@ -1,11 +1,11 @@
-import { AcceptInvitationDto } from './dto/accept-invitation.dto';
-import { OrganizationsService } from './organizations.service';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto.js';
+import { OrganizationsService } from './organizations.service.js';
 export declare class InvitationsController {
     private readonly organizations;
     constructor(organizations: OrganizationsService);
     inspect(token: string): Promise<{
         email: string;
-        role: import("@prisma/client").$Enums.OrganizationRole;
+        role: import("../generated/prisma/enums.js").OrganizationRole;
         expiresAt: Date;
         organization: {
             id: string;

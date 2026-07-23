@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,13 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClientsService = void 0;
-const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
-const crypto_1 = require("crypto");
-const prisma_service_1 = require("../prisma/prisma.service");
-const media_service_1 = require("../media/media.service");
+import { ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import { randomUUID } from 'crypto';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { MediaService } from '../media/media.service.js';
 const briefInclude = {
     client: true,
     requirements: { orderBy: { sortOrder: 'asc' } },
@@ -59,7 +56,7 @@ let ClientsService = class ClientsService {
             include: { discoveryBriefs: { orderBy: { updatedAt: 'desc' } } },
         });
         if (!client)
-            throw new common_1.NotFoundException('Client not found');
+            throw new NotFoundException('Client not found');
         return client;
     }
     async create(user, dto) {
@@ -124,7 +121,7 @@ let ClientsService = class ClientsService {
             include: briefInclude,
         });
         if (!brief)
-            throw new common_1.NotFoundException('Discovery brief not found');
+            throw new NotFoundException('Discovery brief not found');
         return brief;
     }
     async updateBrief(user, id, dto) {
@@ -217,7 +214,7 @@ let ClientsService = class ClientsService {
         const brief = await this.findBrief(user, id, true);
         if (!this.isStaff(user) &&
             !dto.objectKey.startsWith(`discovery/${brief.client.organizationId}/`)) {
-            throw new common_1.ForbiddenException('The uploaded file does not belong to this organization');
+            throw new ForbiddenException('The uploaded file does not belong to this organization');
         }
         return this.prisma.briefAttachment.create({
             data: { ...dto, briefId: id },
@@ -231,7 +228,7 @@ let ClientsService = class ClientsService {
             },
         });
         if (!attachment)
-            throw new common_1.NotFoundException('Attachment not found');
+            throw new NotFoundException('Attachment not found');
         return {
             downloadUrl: await this.media.createDownload(attachment.objectKey, attachment.fileName),
             expiresIn: 300,
@@ -245,7 +242,7 @@ let ClientsService = class ClientsService {
             },
         });
         if (!attachment)
-            throw new common_1.NotFoundException('Attachment not found');
+            throw new NotFoundException('Attachment not found');
         await this.media.deleteDiscoveryObject(attachment.objectKey);
         await this.prisma.briefAttachment.delete({ where: { id } });
         return { deleted: true };
@@ -394,15 +391,15 @@ let ClientsService = class ClientsService {
             return {};
         }
         const roles = approve
-            ? [client_1.OrganizationRole.OWNER, client_1.OrganizationRole.MANAGER]
+            ? [OrganizationRole.OWNER, OrganizationRole.MANAGER]
             : write
                 ? [
-                    client_1.OrganizationRole.OWNER,
-                    client_1.OrganizationRole.MANAGER,
-                    client_1.OrganizationRole.CONTRIBUTOR,
-                    client_1.OrganizationRole.WEBINK_SPECIALIST,
+                    OrganizationRole.OWNER,
+                    OrganizationRole.MANAGER,
+                    OrganizationRole.CONTRIBUTOR,
+                    OrganizationRole.WEBINK_SPECIALIST,
                 ]
-                : Object.values(client_1.OrganizationRole);
+                : Object.values(OrganizationRole);
         return {
             organization: {
                 memberships: {
@@ -426,16 +423,16 @@ let ClientsService = class ClientsService {
             select: { id: true },
         });
         if (!client) {
-            throw new common_1.ForbiddenException('Only an organization owner or manager can change approval status');
+            throw new ForbiddenException('Only an organization owner or manager can change approval status');
         }
     }
     assertStaff(user) {
         if (!this.isStaff(user)) {
-            throw new common_1.ForbiddenException('Only WebInk staff can create customer companies');
+            throw new ForbiddenException('Only WebInk staff can create customer companies');
         }
     }
     isStaff(user) {
-        return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+        return user.role === Role.ADMIN || user.role === Role.EDITOR;
     }
     organizationSlug(companyName) {
         const base = companyName
@@ -445,7 +442,7 @@ let ClientsService = class ClientsService {
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '')
             .slice(0, 60) || 'company';
-        return `${base}-${(0, crypto_1.randomUUID)().slice(0, 8)}`;
+        return `${base}-${randomUUID().slice(0, 8)}`;
     }
     requirementCode(sortOrder) {
         return `REQ-${String(sortOrder + 1).padStart(3, '0')}`;
@@ -462,10 +459,10 @@ let ClientsService = class ClientsService {
         return Object.fromEntries(Object.entries(item).filter(([key]) => key !== 'id' && key !== 'sortOrder'));
     }
 };
-exports.ClientsService = ClientsService;
-exports.ClientsService = ClientsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        media_service_1.MediaService])
+ClientsService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService,
+        MediaService])
 ], ClientsService);
+export { ClientsService };
 //# sourceMappingURL=clients.service.js.map

@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
   "overrides": {
     "multer": "$multer"
   },
@@ -16,11 +17,12 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:cov": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
+    "test:debug": "node --inspect-brk --experimental-vm-modules node_modules/.bin/jest --runInBand",
+    "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
@@ -39,18 +41,21 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/throttler": "^6.5.0",
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "compression": "^1.8.1",
+    "dotenv": "^17.4.2",
     "helmet": "^8.2.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pg": "^8.16.3",
     "playwright": "^1.56.1",
-    "prisma": "^6.19.3",
+    "prisma": "^7.9.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -66,6 +71,7 @@
     "@types/node": "^24.0.0",
     "@types/nodemailer": "^8.0.1",
     "@types/passport-jwt": "^4.0.1",
+    "@types/pg": "^8.16.0",
     "@types/supertest": "^7.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
@@ -79,6 +85,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
@@ -90,16 +97,27 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "setupFiles": [
+      "<rootDir>/../jest.setup.ts"
+    ],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
   }
 }

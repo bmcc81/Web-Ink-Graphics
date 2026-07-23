@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
 export declare class SeoService {
     private readonly prisma;
     private readonly config;

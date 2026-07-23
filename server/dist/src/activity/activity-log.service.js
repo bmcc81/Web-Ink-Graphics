@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,11 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ActivityLogService = void 0;
-const common_1 = require("@nestjs/common");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { resolveOrganizationRole } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 let ActivityLogService = class ActivityLogService {
     prisma;
     constructor(prisma) {
@@ -22,9 +19,9 @@ let ActivityLogService = class ActivityLogService {
         await this.prisma.activityLogEntry.create({ data: input });
     }
     async list(user, organizationId, take = 50) {
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role)
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
         return this.prisma.activityLogEntry.findMany({
             where: { organizationId },
             include: { actor: { select: { id: true, name: true } } },
@@ -33,9 +30,9 @@ let ActivityLogService = class ActivityLogService {
         });
     }
 };
-exports.ActivityLogService = ActivityLogService;
-exports.ActivityLogService = ActivityLogService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+ActivityLogService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [PrismaService])
 ], ActivityLogService);
+export { ActivityLogService };
 //# sourceMappingURL=activity-log.service.js.map

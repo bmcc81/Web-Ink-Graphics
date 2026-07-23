@@ -8,12 +8,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateProjectAssetDto } from './dto/create-project-asset.dto';
-import { UpdateAssetValuesDto } from './dto/update-asset-values.dto';
-import { ProjectAssetsService } from './project-assets.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreateProjectAssetDto } from './dto/create-project-asset.dto.js';
+import { UpdateAssetValuesDto } from './dto/update-asset-values.dto.js';
+import { ProjectAssetsService } from './project-assets.service.js';
 
 @Controller('organizations/:organizationId/projects/:projectId/assets')
 @UseGuards(JwtAuthGuard)

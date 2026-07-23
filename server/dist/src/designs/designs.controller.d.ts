@@ -1,9 +1,9 @@
-import type { AuthUser } from '../auth/auth-user';
-import { CreateDesignCommentDto } from './dto/create-design-comment.dto';
-import { CreateDesignDocumentDto } from './dto/create-design-document.dto';
-import { CreateDesignReviewDto } from './dto/create-design-review.dto';
-import { DecideDesignReviewDto } from './dto/decide-design-review.dto';
-import { DesignsService } from './designs.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CreateDesignCommentDto } from './dto/create-design-comment.dto.js';
+import { CreateDesignDocumentDto } from './dto/create-design-document.dto.js';
+import { CreateDesignReviewDto } from './dto/create-design-review.dto.js';
+import { DecideDesignReviewDto } from './dto/decide-design-review.dto.js';
+import { DesignsService } from './designs.service.js';
 export declare class DesignsController {
     private readonly designs;
     constructor(designs: DesignsService);
@@ -14,10 +14,10 @@ export declare class DesignsController {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -25,9 +25,9 @@ export declare class DesignsController {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
         unlinkedAt: Date | null;
     })[]>;
@@ -38,10 +38,10 @@ export declare class DesignsController {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -49,9 +49,9 @@ export declare class DesignsController {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
         unlinkedAt: Date | null;
     }>;
@@ -62,9 +62,9 @@ export declare class DesignsController {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
         unlinkedAt: Date | null;
     } | {
@@ -75,19 +75,19 @@ export declare class DesignsController {
         };
         versions: {
             id: string;
+            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
-            designDocumentId: string;
         }[];
         id: string;
         name: string;
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
-        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
+        figmaUrl: string;
         linkedById: string;
         unlinkedAt: Date | null;
     }>;
@@ -111,10 +111,10 @@ export declare class DesignsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -137,10 +137,10 @@ export declare class DesignsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -163,10 +163,10 @@ export declare class DesignsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import("@prisma/client").$Enums.DesignReviewStatus;
+        status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        reviewerId: string;
         designDocumentId: string;
+        reviewerId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;

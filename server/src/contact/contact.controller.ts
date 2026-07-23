@@ -10,15 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { Role } from '@prisma/client';
+import { Role } from '../generated/prisma/client.js';
 import type { Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
-import { ContactService } from './contact.service';
-import { ContactQueryDto } from './dto/contact-query.dto';
-import { CreateContactDto } from './dto/create-contact.dto';
-import { UpdateContactStatusDto } from './dto/update-contact-status.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { ContactService } from './contact.service.js';
+import { ContactQueryDto } from './dto/contact-query.dto.js';
+import { CreateContactDto } from './dto/create-contact.dto.js';
+import { UpdateContactStatusDto } from './dto/update-contact-status.dto.js';
 
 @Controller('contact')
 export class ContactController {

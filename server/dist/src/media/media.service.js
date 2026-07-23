@@ -1,4 +1,3 @@
-"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,16 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MediaService = void 0;
-const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const client_1 = require("@prisma/client");
-const client_s3_1 = require("@aws-sdk/client-s3");
-const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
-const crypto_1 = require("crypto");
-const organization_access_1 = require("../organizations/organization-access");
-const prisma_service_1 = require("../prisma/prisma.service");
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { OrganizationRole, Role } from '../generated/prisma/client.js';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client, } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { randomUUID } from 'crypto';
+import { CONTRIBUTE_ROLES, resolveOrganizationRole, } from '../organizations/organization-access.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 const extensions = {
     'image/jpeg': 'jpg',
     'image/png': 'png',
@@ -43,7 +40,7 @@ let MediaService = class MediaService {
                 ? await this.assetFolder(user, dto.organizationId)
                 : this.portfolioFolder(user);
         const bucket = this.config.getOrThrow('S3_BUCKET');
-        const key = `${folder}/${new Date().toISOString().slice(0, 7)}/${(0, crypto_1.randomUUID)()}.${extensions[dto.contentType]}`;
+        const key = `${folder}/${new Date().toISOString().slice(0, 7)}/${randomUUID()}.${extensions[dto.contentType]}`;
         const client = this.client();
         const isPublic = purpose === 'PORTFOLIO' || purpose === 'ASSET';
         const publicBaseUrl = isPublic
@@ -52,7 +49,7 @@ let MediaService = class MediaService {
         const cacheControl = isPublic
             ? 'public, max-age=31536000, immutable'
             : 'private, no-store';
-        const command = new client_s3_1.PutObjectCommand({
+        const command = new PutObjectCommand({
             Bucket: bucket,
             Key: key,
             ContentType: dto.contentType,
@@ -60,7 +57,7 @@ let MediaService = class MediaService {
             CacheControl: cacheControl,
         });
         return {
-            uploadUrl: await (0, s3_request_presigner_1.getSignedUrl)(client, command, { expiresIn: 300 }),
+            uploadUrl: await getSignedUrl(client, command, { expiresIn: 300 }),
             publicUrl: isPublic ? `${publicBaseUrl}/${key}` : undefined,
             key,
             expiresIn: 300,
@@ -72,7 +69,7 @@ let MediaService = class MediaService {
     }
     createDownload(objectKey, fileName) {
         this.assertDiscoveryKey(objectKey);
-        return (0, s3_request_presigner_1.getSignedUrl)(this.client(), new client_s3_1.GetObjectCommand({
+        return getSignedUrl(this.client(), new GetObjectCommand({
             Bucket: this.config.getOrThrow('S3_BUCKET'),
             Key: objectKey,
             ResponseContentDisposition: `attachment; filename="${fileName.replaceAll('"', '')}"`,
@@ -80,14 +77,14 @@ let MediaService = class MediaService {
     }
     deleteDiscoveryObject(objectKey) {
         this.assertDiscoveryKey(objectKey);
-        return this.client().send(new client_s3_1.DeleteObjectCommand({
+        return this.client().send(new DeleteObjectCommand({
             Bucket: this.config.getOrThrow('S3_BUCKET'),
             Key: objectKey,
         }));
     }
     client() {
         const endpoint = this.config.get('S3_ENDPOINT');
-        return new client_s3_1.S3Client({
+        return new S3Client({
             region: this.config.get('S3_REGION') ?? 'auto',
             endpoint: endpoint || undefined,
             forcePathStyle: this.config.get('S3_FORCE_PATH_STYLE') === 'true',
@@ -104,13 +101,13 @@ let MediaService = class MediaService {
     }
     portfolioFolder(user) {
         if (!this.isStaff(user)) {
-            throw new common_1.ForbiddenException('Only WebInk staff can upload public portfolio media');
+            throw new ForbiddenException('Only WebInk staff can upload public portfolio media');
         }
         return 'portfolio';
     }
     async discoveryFolder(user, briefId) {
         if (!briefId) {
-            throw new common_1.BadRequestException('briefId is required for a discovery upload');
+            throw new BadRequestException('briefId is required for a discovery upload');
         }
         const brief = await this.prisma.discoveryBrief.findFirst({
             where: {
@@ -125,10 +122,10 @@ let MediaService = class MediaService {
                                         userId: user.id,
                                         role: {
                                             in: [
-                                                client_1.OrganizationRole.OWNER,
-                                                client_1.OrganizationRole.MANAGER,
-                                                client_1.OrganizationRole.CONTRIBUTOR,
-                                                client_1.OrganizationRole.WEBINK_SPECIALIST,
+                                                OrganizationRole.OWNER,
+                                                OrganizationRole.MANAGER,
+                                                OrganizationRole.CONTRIBUTOR,
+                                                OrganizationRole.WEBINK_SPECIALIST,
                                             ],
                                         },
                                     },
@@ -140,31 +137,31 @@ let MediaService = class MediaService {
             select: { client: { select: { organizationId: true } } },
         });
         if (!brief) {
-            throw new common_1.NotFoundException('Discovery brief not found');
+            throw new NotFoundException('Discovery brief not found');
         }
         return `discovery/${brief.client.organizationId}`;
     }
     isStaff(user) {
-        return user.role === client_1.Role.ADMIN || user.role === client_1.Role.EDITOR;
+        return user.role === Role.ADMIN || user.role === Role.EDITOR;
     }
     async assetFolder(user, organizationId) {
         if (!organizationId) {
-            throw new common_1.BadRequestException('organizationId is required for an asset upload');
+            throw new BadRequestException('organizationId is required for an asset upload');
         }
-        const role = await (0, organization_access_1.resolveOrganizationRole)(this.prisma, user, organizationId);
+        const role = await resolveOrganizationRole(this.prisma, user, organizationId);
         if (!role) {
-            throw new common_1.NotFoundException('Organization not found');
+            throw new NotFoundException('Organization not found');
         }
-        if (role !== 'STAFF' && !organization_access_1.CONTRIBUTE_ROLES.includes(role)) {
-            throw new common_1.ForbiddenException('Only contributors, managers, and owners can upload project assets');
+        if (role !== 'STAFF' && !CONTRIBUTE_ROLES.includes(role)) {
+            throw new ForbiddenException('Only contributors, managers, and owners can upload project assets');
         }
         return `assets/${organizationId}`;
     }
 };
-exports.MediaService = MediaService;
-exports.MediaService = MediaService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService,
-        prisma_service_1.PrismaService])
+MediaService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [ConfigService,
+        PrismaService])
 ], MediaService);
+export { MediaService };
 //# sourceMappingURL=media.service.js.map

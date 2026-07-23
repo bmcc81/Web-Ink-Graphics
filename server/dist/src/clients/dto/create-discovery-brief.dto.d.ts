@@ -1,6 +1,6 @@
-import { BriefStatus } from '@prisma/client';
-import { BriefQuestionDto } from './brief-question.dto';
-import { BriefRequirementDto } from './brief-requirement.dto';
+import { BriefStatus } from '../../generated/prisma/client.js';
+import { BriefQuestionDto } from './brief-question.dto.js';
+import { BriefRequirementDto } from './brief-requirement.dto.js';
 export declare class CreateDiscoveryBriefDto {
     title: string;
     status?: BriefStatus;

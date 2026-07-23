@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { DOCUMENT } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiUrlService } from '../../../core/api/api-url.service';
+import { SeoService } from '../../../core/seo/seo.service';
+import { SITE_ORIGIN } from '../../../core/seo/site-origin';
 import {
   localizedContent,
   PortfolioProject,
@@ -22,8 +23,7 @@ export class CaseStudy {
   private readonly apiUrl = inject(ApiUrlService);
   private readonly route = inject(ActivatedRoute);
   private readonly titleService = inject(Title);
-  private readonly meta = inject(Meta);
-  private readonly document = inject(DOCUMENT);
+  private readonly seo = inject(SeoService);
   readonly i18n = inject(LanguageService);
   readonly project = signal<PortfolioProject | null>(null);
   readonly content = signal<PortfolioTranslation | undefined>(undefined);
@@ -61,41 +61,26 @@ export class CaseStudy {
     const title = content?.seoTitle || `${content?.title ?? project.slug} | WebInk Graphics`;
     const description = content?.metaDescription || content?.summary || '';
     const cover = this.cover(project);
-    this.titleService.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: description });
-    this.meta.updateTag({ property: 'og:type', content: 'article' });
-    if (cover) {
-      this.meta.updateTag({ property: 'og:image', content: cover.url });
-    }
-    const pageUrl = this.document.location?.href;
-    if (pageUrl) {
-      this.meta.updateTag({ property: 'og:url', content: pageUrl });
-      let canonical = this.document.head.querySelector<HTMLLinkElement>(
-        'link[rel="canonical"]',
-      );
-      if (!canonical) {
-        canonical = this.document.createElement('link');
-        canonical.rel = 'canonical';
-        this.document.head.appendChild(canonical);
-      }
-      canonical.href = pageUrl;
-      this.setAlternate('en', pageUrl.replace(/\/fr(?=\/|$)/, ''));
-      this.setAlternate('fr', pageUrl.includes('/fr/') ? pageUrl : pageUrl.replace(/^(https?:\/\/[^/]+)/, '$1/fr'));
-    }
-  }
 
-  private setAlternate(language: 'en' | 'fr', href: string) {
-    let alternate = this.document.head.querySelector<HTMLLinkElement>(
-      `link[rel="alternate"][hreflang="${language}"]`,
-    );
-    if (!alternate) {
-      alternate = this.document.createElement('link');
-      alternate.rel = 'alternate';
-      alternate.hreflang = language;
-      this.document.head.appendChild(alternate);
-    }
-    alternate.href = href;
+    this.seo.set({
+      title,
+      description,
+      image: cover?.url,
+      type: 'article',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'CreativeWork',
+        name: content?.title ?? project.slug,
+        description,
+        image: cover?.url,
+        dateCreated: project.completedAt,
+        url: `${SITE_ORIGIN}/portfolio/${project.slug}`,
+        creator: {
+          '@type': 'Organization',
+          name: 'WebInk Graphics',
+          url: SITE_ORIGIN,
+        },
+      },
+    });
   }
 }

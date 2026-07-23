@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import type { AuthUser } from '../auth/auth-user';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreativeBriefsService } from './creative-briefs.service';
+import type { AuthUser } from '../auth/auth-user.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { CreativeBriefsService } from './creative-briefs.service.js';
 
 @Controller('organizations/:organizationId/projects/:projectId/creative-briefs')
 @UseGuards(JwtAuthGuard)
