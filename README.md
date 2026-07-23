@@ -226,8 +226,29 @@ Build and start the PostgreSQL, API, Angular SSR and Nginx services:
 docker compose -f compose.production.yaml up -d --build
 ```
 
-The API container runs `prisma migrate deploy` before starting. Create the first administrator
-after the initial deployment:
+Apply migrations as an explicit step before the API can serve requests (it does not run
+`prisma migrate deploy` automatically on start, since that needs the same Prisma schema-engine
+binary that isn't published for 32-bit ARM hosts):
+
+```powershell
+docker compose -f compose.production.yaml exec api npx prisma migrate deploy
+```
+
+On a 32-bit ARM host, run that same command instead through an emulated `linux/amd64` container
+so a working schema-engine binary is available, connecting over the compose network (find the
+network name first — it's normally `<project-directory-name>_default`):
+
+```bash
+docker network ls
+docker run --rm --privileged --platform linux/amd64 tonistiigi/binfmt --install all  # once per host
+docker run --rm --platform linux/amd64 \
+  --network <network-name-from-docker-network-ls> \
+  -v "$(pwd)/server:/app" -w /app \
+  --env-file server/.env.production \
+  node:22.20 sh -c "npm ci && npx prisma migrate deploy"
+```
+
+Create the first administrator after migrations are applied:
 
 ```powershell
 docker compose -f compose.production.yaml exec api npm run prisma:seed:prod
