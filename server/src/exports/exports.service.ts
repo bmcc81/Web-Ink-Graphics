@@ -18,6 +18,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { chromium } from 'playwright';
+import { lookup as dnsLookup } from 'dns/promises';
+import { isIP } from 'net';
 import { ActivityLogService } from '../activity/activity-log.service';
 import type { AuthUser } from '../auth/auth-user';
 import {
@@ -30,6 +32,14 @@ import { CreateExportDto } from './dto/create-export.dto';
 const exportInclude = {
   requestedBy: { select: { id: true, name: true } },
 };
+
+const RENDER_TIMEOUT_MS = 15_000;
+
+// Matches a hex color, an rgb()/rgba()/hsl()/hsla() functional value, or a
+// bare CSS named color — never parentheses-free text that could smuggle a
+// url(...) reference or break out of the style attribute.
+const SAFE_COLOR_PATTERN =
+  /^(#[0-9a-fA-F]{3,8}|(?:rgb|rgba|hsl|hsla)\(\s*[\d.]+%?\s*,\s*[\d.]+%?\s*,\s*[\d.]+%?\s*(?:,\s*[\d.]+\s*)?\)|[a-zA-Z]+)$/;
 
 @Injectable()
 export class ExportsService {
@@ -83,6 +93,8 @@ export class ExportsService {
       where: { id: asset.templateId },
       include: { fields: true },
     });
+
+    await this.assertFieldValuesAreSafe(template.fields, latest.values);
 
     const exportRecord = await this.prisma.assetExport.create({
       data: {
@@ -172,7 +184,12 @@ export class ExportsService {
       const page = await browser.newPage({
         viewport: { width: options.canvasWidth, height: options.canvasHeight },
       });
-      await page.setContent(html, { waitUntil: 'networkidle' });
+      page.setDefaultTimeout(RENDER_TIMEOUT_MS);
+      page.setDefaultNavigationTimeout(RENDER_TIMEOUT_MS);
+      await page.setContent(html, {
+        waitUntil: 'networkidle',
+        timeout: RENDER_TIMEOUT_MS,
+      });
       if (options.format === ExportFormat.PDF) {
         return await page.pdf({
           width: `${options.canvasWidth}px`,
@@ -204,7 +221,7 @@ export class ExportsService {
             : '';
         }
         if (field.fieldType === 'COLOR') {
-          return `<div style="${box}background:${this.escapeAttr(value || '#ffffff')};"></div>`;
+          return `<div style="${box}background:${this.sanitizeColor(value)};"></div>`;
         }
         const textColor = field.color ?? '#111111';
         return `<div style="${box}font-family:sans-serif;font-size:${field.fontSize}px;color:${this.escapeAttr(textColor)};white-space:pre-wrap;">${this.escapeHtml(value)}</div>`;
@@ -222,6 +239,100 @@ export class ExportsService {
 
   private escapeAttr(value: string) {
     return value.replace(/"/g, '&quot;');
+  }
+
+  /**
+   * Validates every field value against the shape its template field
+   * requires before an export job (and the headless-Chromium render behind
+   * it) is ever created. IMAGE values are checked to be http(s) URLs that
+   * do not resolve to a private, loopback, or link-local address (blocking
+   * SSRF against internal services and cloud metadata endpoints), and
+   * COLOR values are restricted to safe CSS color syntax.
+   */
+  private async assertFieldValuesAreSafe(
+    fields: TemplateField[],
+    values: AssetFieldValue[],
+  ) {
+    const fieldById = new Map(fields.map((field) => [field.id, field]));
+    for (const value of values) {
+      const field = fieldById.get(value.templateFieldId);
+      if (!field || !value.value) continue;
+      if (field.fieldType === 'IMAGE') {
+        await this.assertSafeImageUrl(value.value);
+      }
+      if (field.fieldType === 'COLOR') {
+        this.sanitizeColor(value.value);
+      }
+    }
+  }
+
+  private sanitizeColor(value: string) {
+    const trimmed = (value || '#ffffff').trim();
+    if (!SAFE_COLOR_PATTERN.test(trimmed)) {
+      throw new BadRequestException(
+        'Color field values must be a hex, rgb()/rgba(), hsl()/hsla(), or named CSS color',
+      );
+    }
+    return trimmed;
+  }
+
+  private async assertSafeImageUrl(rawUrl: string) {
+    let url: URL;
+    try {
+      url = new URL(rawUrl);
+    } catch {
+      throw new BadRequestException('Image field values must be a valid URL');
+    }
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new BadRequestException(
+        'Image field values must use http or https',
+      );
+    }
+    const hostname = url.hostname.toLowerCase();
+    if (hostname === 'localhost') {
+      throw new BadRequestException('This image URL is not allowed');
+    }
+
+    const addresses = isIP(hostname)
+      ? [hostname]
+      : await dnsLookup(hostname, { all: true })
+          .then((records) => records.map((record) => record.address))
+          .catch(() => []);
+
+    if (!addresses.length) {
+      throw new BadRequestException('Could not resolve the image URL host');
+    }
+    if (addresses.some((address) => this.isBlockedAddress(address))) {
+      throw new BadRequestException(
+        'Image URLs may not point to internal or private network addresses',
+      );
+    }
+  }
+
+  private isBlockedAddress(address: string): boolean {
+    if (isIP(address) === 4) {
+      const [a, b] = address.split('.').map(Number);
+      return (
+        a === 127 || // loopback
+        a === 10 || // private
+        (a === 172 && b >= 16 && b <= 31) || // private
+        (a === 192 && b === 168) || // private
+        (a === 169 && b === 254) || // link-local, incl. cloud metadata
+        a === 0 ||
+        a >= 224 // multicast / reserved
+      );
+    }
+    const lower = address.toLowerCase();
+    if (lower.startsWith('::ffff:')) {
+      return this.isBlockedAddress(lower.slice('::ffff:'.length));
+    }
+    return (
+      lower === '::1' || // loopback
+      lower === '::' ||
+      lower.startsWith('fe80:') || // link-local
+      lower.startsWith('fc') || // unique local
+      lower.startsWith('fd')
+    );
   }
 
   private async uploadToS3(
