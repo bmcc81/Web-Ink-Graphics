@@ -34,6 +34,13 @@ jest.mock('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: (): Promise<string> => mockGetSignedUrl(),
 }));
 
+const mockDnsLookup =
+  jest.fn<Promise<Array<{ address: string; family: number }>>, [string]>();
+jest.mock('dns/promises', () => ({
+  lookup: (hostname: string, options: unknown) =>
+    mockDnsLookup(hostname, options),
+}));
+
 describe('ExportsService', () => {
   const organizationId = 'organization-1';
   const projectId = 'project-1';
@@ -92,11 +99,16 @@ describe('ExportsService', () => {
       setContent: mockSetContent,
       screenshot: mockScreenshot,
       pdf: mockPdf,
+      setDefaultTimeout: jest.fn(),
+      setDefaultNavigationTimeout: jest.fn(),
     });
     mockClose.mockResolvedValue(undefined);
     mockLaunch.mockResolvedValue({ newPage: mockNewPage, close: mockClose });
     mockS3Send.mockResolvedValue({});
     mockGetSignedUrl.mockResolvedValue('https://signed.example/download');
+    // A public, non-routable-for-real TEST-NET-3 address (RFC 5737): safe
+    // default resolution for image URLs used across most tests.
+    mockDnsLookup.mockResolvedValue([{ address: '203.0.113.10', family: 4 }]);
   });
 
   describe('requestExport', () => {
@@ -227,6 +239,245 @@ describe('ExportsService', () => {
       const updateCalls = prisma.assetExport.update.mock
         .calls as unknown as Array<[{ data: { objectKey?: string } }]>;
       expect(updateCalls[0][0].data.objectKey).toContain('.pdf');
+    });
+
+    it('rejects an IMAGE field value that is not http(s)', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: projectId });
+      prisma.projectAsset.findFirst.mockResolvedValue({
+        id: assetId,
+        name: 'Flyer',
+        templateId: 'template-1',
+      });
+      prisma.assetRevision.findFirst.mockResolvedValue({
+        id: 'revision-1',
+        status: 'APPROVED',
+        values: [{ templateFieldId: 'field-1', value: 'file:///etc/passwd' }],
+      });
+      prisma.designTemplate.findUniqueOrThrow.mockResolvedValue({
+        id: 'template-1',
+        canvasWidth: 800,
+        canvasHeight: 600,
+        fields: [
+          {
+            id: 'field-1',
+            fieldType: 'IMAGE',
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 40,
+          },
+        ],
+      });
+
+      await expect(
+        service.requestExport(contributor, organizationId, projectId, assetId, {
+          format: ExportFormat.PNG,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.assetExport.create).not.toHaveBeenCalled();
+      expect(mockLaunch).not.toHaveBeenCalled();
+    });
+
+    it('rejects an IMAGE field value that resolves to a private/link-local address (SSRF)', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: projectId });
+      prisma.projectAsset.findFirst.mockResolvedValue({
+        id: assetId,
+        name: 'Flyer',
+        templateId: 'template-1',
+      });
+      prisma.assetRevision.findFirst.mockResolvedValue({
+        id: 'revision-1',
+        status: 'APPROVED',
+        values: [
+          {
+            templateFieldId: 'field-1',
+            value: 'http://metadata.internal/latest/meta-data/',
+          },
+        ],
+      });
+      prisma.designTemplate.findUniqueOrThrow.mockResolvedValue({
+        id: 'template-1',
+        canvasWidth: 800,
+        canvasHeight: 600,
+        fields: [
+          {
+            id: 'field-1',
+            fieldType: 'IMAGE',
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 40,
+          },
+        ],
+      });
+      mockDnsLookup.mockResolvedValue([
+        { address: '169.254.169.254', family: 4 },
+      ]);
+
+      await expect(
+        service.requestExport(contributor, organizationId, projectId, assetId, {
+          format: ExportFormat.PNG,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.assetExport.create).not.toHaveBeenCalled();
+      expect(mockLaunch).not.toHaveBeenCalled();
+    });
+
+    it('rejects a literal loopback/private IP used directly as an IMAGE value', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: projectId });
+      prisma.projectAsset.findFirst.mockResolvedValue({
+        id: assetId,
+        name: 'Flyer',
+        templateId: 'template-1',
+      });
+      prisma.assetRevision.findFirst.mockResolvedValue({
+        id: 'revision-1',
+        status: 'APPROVED',
+        values: [
+          { templateFieldId: 'field-1', value: 'http://127.0.0.1:8080/admin' },
+        ],
+      });
+      prisma.designTemplate.findUniqueOrThrow.mockResolvedValue({
+        id: 'template-1',
+        canvasWidth: 800,
+        canvasHeight: 600,
+        fields: [
+          {
+            id: 'field-1',
+            fieldType: 'IMAGE',
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 40,
+          },
+        ],
+      });
+
+      await expect(
+        service.requestExport(contributor, organizationId, projectId, assetId, {
+          format: ExportFormat.PNG,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(mockLaunch).not.toHaveBeenCalled();
+    });
+
+    it('rejects a COLOR field value that smuggles a url(...) reference', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: projectId });
+      prisma.projectAsset.findFirst.mockResolvedValue({
+        id: assetId,
+        name: 'Flyer',
+        templateId: 'template-1',
+      });
+      prisma.assetRevision.findFirst.mockResolvedValue({
+        id: 'revision-1',
+        status: 'APPROVED',
+        values: [
+          {
+            templateFieldId: 'field-1',
+            value: 'red;background:url(http://169.254.169.254/)',
+          },
+        ],
+      });
+      prisma.designTemplate.findUniqueOrThrow.mockResolvedValue({
+        id: 'template-1',
+        canvasWidth: 800,
+        canvasHeight: 600,
+        fields: [
+          {
+            id: 'field-1',
+            fieldType: 'COLOR',
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 40,
+          },
+        ],
+      });
+
+      await expect(
+        service.requestExport(contributor, organizationId, projectId, assetId, {
+          format: ExportFormat.PNG,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.assetExport.create).not.toHaveBeenCalled();
+      expect(mockLaunch).not.toHaveBeenCalled();
+    });
+
+    it('accepts a valid https IMAGE value and a valid hex COLOR value', async () => {
+      actorMembership(OrganizationRole.CONTRIBUTOR);
+      prisma.project.findFirst.mockResolvedValue({ id: projectId });
+      prisma.projectAsset.findFirst.mockResolvedValue({
+        id: assetId,
+        name: 'Flyer',
+        templateId: 'template-1',
+      });
+      prisma.assetRevision.findFirst.mockResolvedValue({
+        id: 'revision-1',
+        status: 'APPROVED',
+        values: [
+          {
+            templateFieldId: 'field-1',
+            value: 'https://cdn.example.com/cover.png',
+          },
+          { templateFieldId: 'field-2', value: '#ff8800' },
+        ],
+      });
+      prisma.designTemplate.findUniqueOrThrow.mockResolvedValue({
+        id: 'template-1',
+        canvasWidth: 800,
+        canvasHeight: 600,
+        fields: [
+          {
+            id: 'field-1',
+            fieldType: 'IMAGE',
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 40,
+          },
+          {
+            id: 'field-2',
+            fieldType: 'COLOR',
+            x: 0,
+            y: 50,
+            width: 100,
+            height: 40,
+          },
+        ],
+      });
+      prisma.assetExport.create.mockResolvedValue({ id: 'export-4' });
+      prisma.assetExport.update.mockResolvedValue({
+        id: 'export-4',
+        status: 'READY',
+      });
+
+      const result = await service.requestExport(
+        contributor,
+        organizationId,
+        projectId,
+        assetId,
+        { format: ExportFormat.PNG },
+      );
+
+      expect(result).toEqual({ id: 'export-4', status: 'READY' });
+      expect(mockDnsLookup).toHaveBeenCalledWith(
+        'cdn.example.com',
+        expect.objectContaining({ all: true }),
+      );
+      const htmlPassedToSetContent = mockSetContent.mock
+        .calls[0][0] as string;
+      expect(htmlPassedToSetContent).toContain(
+        'https://cdn.example.com/cover.png',
+      );
+      expect(htmlPassedToSetContent).toContain('#ff8800');
+      expect(mockSetContent).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ timeout: expect.any(Number) }),
+      );
     });
 
     it('marks the export FAILED when rendering throws', async () => {
