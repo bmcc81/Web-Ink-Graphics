@@ -41,10 +41,10 @@ export declare class OrganizationsService {
         id: string;
         email: string;
         role: OrganizationRole;
-        expiresAt: Date;
         organization: {
             name: string;
         };
+        expiresAt: Date;
     }>;
     revokeInvitation(user: AuthUser, organizationId: string, invitationId: string): Promise<{
         revoked: boolean;

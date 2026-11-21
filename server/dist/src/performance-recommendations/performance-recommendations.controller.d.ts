@@ -10,10 +10,10 @@ export declare class PerformanceRecommendationsController {
         };
         items: {
             id: string;
-            title: string;
             priority: import("../generated/prisma/enums.js").RecommendationPriority;
-            rationale: string;
             sortOrder: number;
+            title: string;
+            rationale: string;
             performanceRecommendationId: string;
         }[];
     } & {
@@ -33,10 +33,10 @@ export declare class PerformanceRecommendationsController {
         };
         items: {
             id: string;
-            title: string;
             priority: import("../generated/prisma/enums.js").RecommendationPriority;
-            rationale: string;
             sortOrder: number;
+            title: string;
+            rationale: string;
             performanceRecommendationId: string;
         }[];
     } & {

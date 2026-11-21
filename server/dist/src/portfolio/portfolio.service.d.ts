@@ -15,9 +15,9 @@ export declare class PortfolioService {
     findFeatured(): Prisma.PrismaPromise<({
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -29,12 +29,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -58,9 +58,9 @@ export declare class PortfolioService {
     findAll(query: PortfolioQueryDto, includeUnpublished?: boolean): Prisma.PrismaPromise<({
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -72,12 +72,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -101,9 +101,9 @@ export declare class PortfolioService {
     findOne(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -115,12 +115,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -144,9 +144,9 @@ export declare class PortfolioService {
     findPublished(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -158,12 +158,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -187,9 +187,9 @@ export declare class PortfolioService {
     create(dto: CreatePortfolioProjectDto): Prisma.Prisma__PortfolioProjectClient<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -201,12 +201,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -232,9 +232,9 @@ export declare class PortfolioService {
     update(slug: string, dto: UpdatePortfolioProjectDto): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -246,12 +246,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -275,9 +275,9 @@ export declare class PortfolioService {
     archive(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -289,12 +289,12 @@ export declare class PortfolioService {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;

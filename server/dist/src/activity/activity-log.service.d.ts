@@ -22,10 +22,10 @@ export declare class ActivityLogService {
         id: string;
         createdAt: Date;
         organizationId: string;
+        summary: string;
         entityType: ActivityEntityType;
         entityId: string;
         action: ActivityAction;
-        summary: string;
         actorId: string | null;
     })[]>;
 }

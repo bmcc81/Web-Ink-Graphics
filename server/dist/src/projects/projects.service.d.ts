@@ -76,8 +76,8 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").MilestoneStatus;
-        sortOrder: number;
         dueDate: Date | null;
+        sortOrder: number;
         projectId: string;
         description: string | null;
     }>;
@@ -87,8 +87,8 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").MilestoneStatus;
-        sortOrder: number;
         dueDate: Date | null;
+        sortOrder: number;
         projectId: string;
         description: string | null;
     }>;
@@ -108,9 +108,9 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").TaskStatus;
-        title: string;
-        sortOrder: number;
         dueDate: Date | null;
+        sortOrder: number;
+        title: string;
         projectId: string;
         description: string | null;
         milestoneId: string | null;
@@ -131,9 +131,9 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").TaskStatus;
-        title: string;
-        sortOrder: number;
         dueDate: Date | null;
+        sortOrder: number;
+        title: string;
         projectId: string;
         description: string | null;
         milestoneId: string | null;
@@ -154,9 +154,9 @@ export declare class ProjectsService {
             createdAt: Date;
             updatedAt: Date;
             status: import("../generated/prisma/enums.js").TaskStatus;
-            title: string;
-            sortOrder: number;
             dueDate: Date | null;
+            sortOrder: number;
+            title: string;
             projectId: string;
             description: string | null;
             milestoneId: string | null;
@@ -175,9 +175,9 @@ export declare class ProjectsService {
         createdAt: Date;
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").TaskStatus;
-        title: string;
-        sortOrder: number;
         dueDate: Date | null;
+        sortOrder: number;
+        title: string;
         projectId: string;
         description: string | null;
         milestoneId: string | null;

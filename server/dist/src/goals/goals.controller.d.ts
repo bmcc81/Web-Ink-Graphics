@@ -16,44 +16,44 @@ export declare class GoalsController {
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
+        year: number;
         status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
         period: import("../generated/prisma/enums.js").GoalPeriod;
-        year: number;
     })[]>;
     create(user: AuthUser, organizationId: string, dto: CreateGoalDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
+        year: number;
         status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
         period: import("../generated/prisma/enums.js").GoalPeriod;
-        year: number;
     }>;
     findOne(user: AuthUser, organizationId: string, goalId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
+        year: number;
         status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
         period: import("../generated/prisma/enums.js").GoalPeriod;
-        year: number;
     }>;
     update(user: AuthUser, organizationId: string, goalId: string, dto: UpdateGoalDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         organizationId: string;
+        year: number;
         status: import("../generated/prisma/enums.js").GoalStatus;
         title: string;
         description: string | null;
         period: import("../generated/prisma/enums.js").GoalPeriod;
-        year: number;
     }>;
     remove(user: AuthUser, organizationId: string, goalId: string): Promise<{
         removed: boolean;

@@ -12,10 +12,10 @@ export declare class ActivityLogController {
         id: string;
         createdAt: Date;
         organizationId: string;
+        summary: string;
         entityType: import("../generated/prisma/enums.js").ActivityEntityType;
         entityId: string;
         action: import("../generated/prisma/enums.js").ActivityAction;
-        summary: string;
         actorId: string | null;
     })[]>;
 }

@@ -8,17 +8,17 @@ export declare class TemplatesController {
     list(user: AuthUser): import("../generated/prisma/internal/prismaNamespace.js").PrismaPromise<({
         fields: {
             id: string;
+            y: number;
             sortOrder: number;
+            key: string;
             width: number;
             height: number;
             templateId: string;
-            key: string;
             label: string;
             fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
             required: boolean;
             maxLength: number | null;
             x: number;
-            y: number;
             fontSize: number;
             color: string | null;
         }[];
@@ -30,24 +30,24 @@ export declare class TemplatesController {
         category: import("../generated/prisma/enums.js").TemplateCategory;
         description: string | null;
         previewImageUrl: string | null;
-        isPublished: boolean;
         canvasWidth: number;
         canvasHeight: number;
+        isPublished: boolean;
     })[]>;
     findOne(user: AuthUser, id: string): Promise<{
         fields: {
             id: string;
+            y: number;
             sortOrder: number;
+            key: string;
             width: number;
             height: number;
             templateId: string;
-            key: string;
             label: string;
             fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
             required: boolean;
             maxLength: number | null;
             x: number;
-            y: number;
             fontSize: number;
             color: string | null;
         }[];
@@ -59,24 +59,24 @@ export declare class TemplatesController {
         category: import("../generated/prisma/enums.js").TemplateCategory;
         description: string | null;
         previewImageUrl: string | null;
-        isPublished: boolean;
         canvasWidth: number;
         canvasHeight: number;
+        isPublished: boolean;
     }>;
     create(dto: CreateDesignTemplateDto): import("../generated/prisma/models.js").Prisma__DesignTemplateClient<{
         fields: {
             id: string;
+            y: number;
             sortOrder: number;
+            key: string;
             width: number;
             height: number;
             templateId: string;
-            key: string;
             label: string;
             fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
             required: boolean;
             maxLength: number | null;
             x: number;
-            y: number;
             fontSize: number;
             color: string | null;
         }[];
@@ -88,26 +88,26 @@ export declare class TemplatesController {
         category: import("../generated/prisma/enums.js").TemplateCategory;
         description: string | null;
         previewImageUrl: string | null;
-        isPublished: boolean;
         canvasWidth: number;
         canvasHeight: number;
+        isPublished: boolean;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: import("../generated/prisma/internal/prismaNamespace.js").GlobalOmitConfig | undefined;
     }>;
     update(id: string, dto: UpdateDesignTemplateDto): Promise<{
         fields: {
             id: string;
+            y: number;
             sortOrder: number;
+            key: string;
             width: number;
             height: number;
             templateId: string;
-            key: string;
             label: string;
             fieldType: import("../generated/prisma/enums.js").TemplateFieldType;
             required: boolean;
             maxLength: number | null;
             x: number;
-            y: number;
             fontSize: number;
             color: string | null;
         }[];
@@ -119,8 +119,8 @@ export declare class TemplatesController {
         category: import("../generated/prisma/enums.js").TemplateCategory;
         description: string | null;
         previewImageUrl: string | null;
-        isPublished: boolean;
         canvasWidth: number;
         canvasHeight: number;
+        isPublished: boolean;
     }>;
 }

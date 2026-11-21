@@ -20,10 +20,10 @@ export declare class PerformanceRecommendationsService {
         };
         items: {
             id: string;
-            title: string;
             priority: RecommendationPriority;
-            rationale: string;
             sortOrder: number;
+            title: string;
+            rationale: string;
             performanceRecommendationId: string;
         }[];
     } & {
@@ -43,10 +43,10 @@ export declare class PerformanceRecommendationsService {
         };
         items: {
             id: string;
-            title: string;
             priority: RecommendationPriority;
-            rationale: string;
             sortOrder: number;
+            title: string;
+            rationale: string;
             performanceRecommendationId: string;
         }[];
     } & {

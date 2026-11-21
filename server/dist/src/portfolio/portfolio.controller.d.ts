@@ -8,9 +8,9 @@ export declare class PortfolioController {
     findAll(query: PortfolioQueryDto): import("../generated/prisma/internal/prismaNamespace.js").PrismaPromise<({
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -22,12 +22,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -51,9 +51,9 @@ export declare class PortfolioController {
     findFeatured(): import("../generated/prisma/internal/prismaNamespace.js").PrismaPromise<({
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -65,12 +65,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -94,9 +94,9 @@ export declare class PortfolioController {
     findAllForAdmin(query: PortfolioQueryDto): import("../generated/prisma/internal/prismaNamespace.js").PrismaPromise<({
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -108,12 +108,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -143,9 +143,9 @@ export declare class PortfolioController {
     findOneForAdmin(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -157,12 +157,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -186,9 +186,9 @@ export declare class PortfolioController {
     findOne(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -200,12 +200,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -229,9 +229,9 @@ export declare class PortfolioController {
     create(dto: CreatePortfolioProjectDto): import("../generated/prisma/models.js").Prisma__PortfolioProjectClient<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -243,12 +243,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -274,9 +274,9 @@ export declare class PortfolioController {
     update(slug: string, dto: UpdatePortfolioProjectDto): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -288,12 +288,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;
@@ -317,9 +317,9 @@ export declare class PortfolioController {
     archive(slug: string): Promise<{
         translations: {
             id: string;
-            summary: string;
             title: string;
             locale: import("../generated/prisma/enums.js").Locale;
+            summary: string;
             challenge: string | null;
             solution: string | null;
             results: string | null;
@@ -331,12 +331,12 @@ export declare class PortfolioController {
             url: string;
             id: string;
             sortOrder: number;
-            projectId: string;
             altTextEn: string;
             altTextFr: string | null;
             width: number | null;
             height: number | null;
             isCover: boolean;
+            projectId: string;
         }[];
         categories: {
             id: string;

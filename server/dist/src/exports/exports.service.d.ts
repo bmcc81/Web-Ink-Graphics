@@ -21,8 +21,8 @@ export declare class ExportsService {
         status: import("../generated/prisma/enums.js").ExportStatus;
         objectKey: string | null;
         completedAt: Date | null;
-        assetRevisionId: string;
         format: ExportFormat;
+        assetRevisionId: string;
         errorMessage: string | null;
         requestedById: string;
     })[]>;
@@ -37,8 +37,8 @@ export declare class ExportsService {
         status: import("../generated/prisma/enums.js").ExportStatus;
         objectKey: string | null;
         completedAt: Date | null;
-        assetRevisionId: string;
         format: ExportFormat;
+        assetRevisionId: string;
         errorMessage: string | null;
         requestedById: string;
     }>;

@@ -21,8 +21,8 @@ export declare class PlanDraftsService {
                 id: string;
                 name: string;
                 sortOrder: number;
-                planDraftProjectId: string;
                 tasks: string[];
+                planDraftProjectId: string;
             }[];
         } & {
             id: string;
@@ -37,10 +37,10 @@ export declare class PlanDraftsService {
         };
         channelRecommendations: {
             id: string;
-            rationale: string;
             sortOrder: number;
-            planDraftId: string;
+            rationale: string;
             channel: string;
+            planDraftId: string;
         }[];
         appliedBy: {
             id: string;
@@ -50,8 +50,8 @@ export declare class PlanDraftsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        summary: string;
         status: import("../generated/prisma/enums.js").PlanDraftStatus;
+        summary: string;
         createdById: string;
         readinessScore: number;
         readinessNotes: string;
@@ -72,8 +72,8 @@ export declare class PlanDraftsService {
                     id: string;
                     name: string;
                     sortOrder: number;
-                    planDraftProjectId: string;
                     tasks: string[];
+                    planDraftProjectId: string;
                 }[];
             } & {
                 id: string;
@@ -88,10 +88,10 @@ export declare class PlanDraftsService {
             };
             channelRecommendations: {
                 id: string;
-                rationale: string;
                 sortOrder: number;
-                planDraftId: string;
+                rationale: string;
                 channel: string;
+                planDraftId: string;
             }[];
             appliedBy: {
                 id: string;
@@ -101,8 +101,8 @@ export declare class PlanDraftsService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            summary: string;
             status: import("../generated/prisma/enums.js").PlanDraftStatus;
+            summary: string;
             createdById: string;
             readinessScore: number;
             readinessNotes: string;
@@ -118,14 +118,14 @@ export declare class PlanDraftsService {
         };
         followUpQuestions: {
             id: string;
-            status: import("../generated/prisma/enums.js").QuestionStatus;
-            briefId: string;
             priority: import("../generated/prisma/enums.js").FollowUpPriority;
-            sortOrder: number;
+            status: import("../generated/prisma/enums.js").QuestionStatus;
             question: string;
             answer: string | null;
             owner: string | null;
             dueDate: Date | null;
+            sortOrder: number;
+            briefId: string;
         }[];
     }>;
     apply(user: AuthUser, briefId: string, planDraftId: string): Promise<{
@@ -135,8 +135,8 @@ export declare class PlanDraftsService {
                     id: string;
                     name: string;
                     sortOrder: number;
-                    planDraftProjectId: string;
                     tasks: string[];
+                    planDraftProjectId: string;
                 }[];
             } & {
                 id: string;
@@ -151,10 +151,10 @@ export declare class PlanDraftsService {
             };
             channelRecommendations: {
                 id: string;
-                rationale: string;
                 sortOrder: number;
-                planDraftId: string;
+                rationale: string;
                 channel: string;
+                planDraftId: string;
             }[];
             appliedBy: {
                 id: string;
@@ -164,8 +164,8 @@ export declare class PlanDraftsService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            summary: string;
             status: import("../generated/prisma/enums.js").PlanDraftStatus;
+            summary: string;
             createdById: string;
             readinessScore: number;
             readinessNotes: string;

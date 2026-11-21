@@ -16,17 +16,17 @@ export declare class CreativeBriefsController {
             id: string;
             sortOrder: number;
             label: string;
-            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
+            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        summary: string;
         status: import("../generated/prisma/enums.js").CreativeBriefStatus;
         approvedAt: Date | null;
+        summary: string;
         projectId: string;
         createdById: string;
         approvedById: string | null;
@@ -49,17 +49,17 @@ export declare class CreativeBriefsController {
             id: string;
             sortOrder: number;
             label: string;
-            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
+            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        summary: string;
         status: import("../generated/prisma/enums.js").CreativeBriefStatus;
         approvedAt: Date | null;
+        summary: string;
         projectId: string;
         createdById: string;
         approvedById: string | null;
@@ -82,17 +82,17 @@ export declare class CreativeBriefsController {
             id: string;
             sortOrder: number;
             label: string;
-            creativeBriefId: string;
             copyAngle: string;
             imageConcept: string;
+            creativeBriefId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        summary: string;
         status: import("../generated/prisma/enums.js").CreativeBriefStatus;
         approvedAt: Date | null;
+        summary: string;
         projectId: string;
         createdById: string;
         approvedById: string | null;

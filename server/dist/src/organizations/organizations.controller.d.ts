@@ -35,10 +35,10 @@ export declare class OrganizationsController {
         id: string;
         email: string;
         role: import("../generated/prisma/enums.js").OrganizationRole;
-        expiresAt: Date;
         organization: {
             name: string;
         };
+        expiresAt: Date;
     }>;
     updateMemberRole(user: AuthUser, organizationId: string, membershipId: string, dto: UpdateMemberRoleDto): Promise<{
         id: string;

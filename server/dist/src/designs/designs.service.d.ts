@@ -18,10 +18,10 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
-            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
+            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -29,11 +29,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
+        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
-        figmaUrl: string;
         linkedById: string;
-        unlinkedAt: Date | null;
     })[]>;
     attach(user: AuthUser, organizationId: string, projectId: string, dto: CreateDesignDocumentDto): Promise<{
         linkedBy: {
@@ -42,10 +42,10 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
-            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
+            designDocumentId: string;
         }[];
     } & {
         id: string;
@@ -53,11 +53,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
+        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
-        figmaUrl: string;
         linkedById: string;
-        unlinkedAt: Date | null;
     }>;
     sync(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         synced: boolean;
@@ -66,11 +66,11 @@ export declare class DesignsService {
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
+        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
-        figmaUrl: string;
         linkedById: string;
-        unlinkedAt: Date | null;
     } | {
         synced: boolean;
         linkedBy: {
@@ -79,21 +79,21 @@ export declare class DesignsService {
         };
         versions: {
             id: string;
-            designDocumentId: string;
             thumbnailUrl: string | null;
             figmaLastModified: Date | null;
             syncedAt: Date;
+            designDocumentId: string;
         }[];
         id: string;
         name: string;
         createdAt: Date;
         updatedAt: Date;
         projectId: string;
+        unlinkedAt: Date | null;
+        figmaUrl: string;
         figmaFileKey: string;
         figmaNodeId: string | null;
-        figmaUrl: string;
         linkedById: string;
-        unlinkedAt: Date | null;
     }>;
     unlink(user: AuthUser, organizationId: string, projectId: string, designId: string): Promise<{
         removed: boolean;
@@ -117,8 +117,8 @@ export declare class DesignsService {
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        designDocumentId: string;
         reviewerId: string;
+        designDocumentId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -143,8 +143,8 @@ export declare class DesignsService {
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        designDocumentId: string;
         reviewerId: string;
+        designDocumentId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
@@ -169,8 +169,8 @@ export declare class DesignsService {
         updatedAt: Date;
         status: import("../generated/prisma/enums.js").DesignReviewStatus;
         dueDate: Date | null;
-        designDocumentId: string;
         reviewerId: string;
+        designDocumentId: string;
         assignedById: string;
         decidedVersionId: string | null;
         decisionNote: string | null;
